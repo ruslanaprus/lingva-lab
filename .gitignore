@@ -1,0 +1,37 @@
+# Dependencies and local pnpm data
+node_modules/
+.pnpm-store/
+pnpm-debug.log*
+
+# Generated site and local Cloudflare state
+/dist/
+.wrangler/
+
+# Local environment files; keep shareable examples
+.env
+.env.*
+!.env.example
+!.env.*.example
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+!.dev.vars.*.example
+
+# Test output and caches
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+coverage/
+.cache/
+__pycache__/
+*.py[cod]
+
+# OS metadata and editor temporary files
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
