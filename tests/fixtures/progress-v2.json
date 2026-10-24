@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 2,
+  "interfaceLocale": "uk",
+  "activePathId": "fr-foundations",
+  "student": "Fixture learner",
+  "group": "",
+  "paths": {
+    "de-foundations": {
+      "path": {
+        "id": "de-foundations",
+        "language": "de",
+        "title": "Німецька / Основи",
+        "revision": 1
+      },
+      "answers": {},
+      "treasures": {},
+      "activity": {}
+    },
+    "fr-foundations": {
+      "path": {
+        "id": "fr-foundations",
+        "language": "fr",
+        "title": "Французька / Основи",
+        "revision": 1
+      },
+      "answers": {
+        "workspace-original-storage": {
+          "definition": {
+            "id": "workspace-original-storage",
+            "chapterId": "workspace",
+            "revision": 1,
+            "type": "choice",
+            "title": "Архітектура колекції",
+            "prompt": "Де зберегти незмінний оригінал запису interview_01.wav?",
+            "xp": 40,
+            "options": [
+              "working/ — тут його відредагую",
+              "original/ — редагуватиму копію",
+              "output/ — поруч із висновками"
+            ],
+            "multiple": false
+          },
+          "draft": 1,
+          "attempts": [
+            {
+              "at": "2026-10-24T00:00:00.000Z",
+              "value": 1,
+              "status": "passed",
+              "feedback": "Незмінний оригінал дозволяє перевірити всі наступні перетворення.",
+              "hints": 0,
+              "definition": {
+                "id": "workspace-original-storage",
+                "chapterId": "workspace",
+                "revision": 1,
+                "type": "choice",
+                "title": "Архітектура колекції",
+                "prompt": "Де зберегти незмінний оригінал запису interview_01.wav?",
+                "xp": 40,
+                "options": [
+                  "working/ — тут його відредагую",
+                  "original/ — редагуватиму копію",
+                  "output/ — поруч із висновками"
+                ],
+                "multiple": false
+              },
+              "graderVersion": 1,
+              "selectedOptions": [
+                {
+                  "index": 1,
+                  "number": 2,
+                  "value": "original/ — редагуватиму копію"
+                }
+              ]
+            }
+          ],
+          "hints": 0,
+          "hintOpened": false,
+          "toolEvents": []
+        }
+      },
+      "treasures": {},
+      "activity": {}
+    },
+    "en-foundations": {
+      "path": {
+        "id": "en-foundations",
+        "language": "en",
+        "title": "Англійська / Основи",
+        "revision": 1
+      },
+      "answers": {},
+      "treasures": {},
+      "activity": {}
+    }
+  }
+}

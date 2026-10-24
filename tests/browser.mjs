@@ -1,11 +1,12 @@
-// Optional browser QA: supply PLAYWRIGHT_MODULE as an absolute path to an existing
-// Playwright installation, or install Playwright separately. The website has no dependencies.
+// Browser QA runs against dist/ using the development-only Playwright dependency.
+// PLAYWRIGHT_MODULE can optionally point to another installed Playwright module.
 import { createServer } from "node:http";
 import { readFile, mkdir } from "node:fs/promises";
 import { extname, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
-import { LANGUAGES, getModules } from "../course.js";
+import { LANGUAGES } from "../content/registry.js";
+import { foundationChapters as getModules } from "./helpers/course.mjs";
 import { checkActivityReports } from "./browser-activity.mjs";
 import { checkChapterFeedback } from "./browser-feedback.mjs";
 const { chromium } = await import(
@@ -13,7 +14,7 @@ const { chromium } = await import(
     ? pathToFileURL(process.env.PLAYWRIGHT_MODULE).href
     : "@playwright/test"
 );
-const root = resolve(fileURLToPath(new URL("../", import.meta.url)));
+const root = resolve(fileURLToPath(new URL("../dist/", import.meta.url)));
 const output = process.env.LINGVA_QA_OUTPUT || "/tmp/lingva-lab-qa";
 await mkdir(output, { recursive: true });
 const contentTypes = {
@@ -28,15 +29,11 @@ const server = createServer(async (req, res) => {
   try {
     const path = resolve(
       root,
-      "." +
-        new URL(req.url, "http://localhost").pathname.replace(
-          /\/$/,
-          "/index.html",
-        ),
+      "." + new URL(req.url, "http://localhost").pathname.replace(/\/$/, "/index.html"),
     );
     if (!path.startsWith(root + sep) && path !== root) throw Error("path");
     for (const line of headers.split("\n")) {
-      const match = line.match(/^  ([\w-]+): (.+)$/);
+      const match = line.match(/^ {2}([\w-]+): (.+)$/);
       if (match) res.setHeader(match[1], match[2]);
     }
     res.setHeader("Content-Type", contentTypes[extname(path)] || "text/plain");
@@ -53,7 +50,12 @@ await new Promise((resolve, reject) => {
 const base = `http://127.0.0.1:${server.address().port}`;
 let browser;
 try {
-  browser = await chromium.launch({ channel: "chrome", headless: true });
+  browser = await chromium.launch({
+    ...(process.env.PLAYWRIGHT_CHANNEL
+      ? { channel: process.env.PLAYWRIGHT_CHANNEL }
+      : {}),
+    headless: true,
+  });
   const context = await browser.newContext({
     viewport: { width: 1440, height: 1000 },
     acceptDownloads: true,
@@ -80,31 +82,31 @@ try {
   };
   if (!process.argv.includes("--layout-only")) {
     // Real failure -> hint -> success -> retry: counters and XP are observed in the UI.
-    await go("lab/1");
+    await go("lab/workspace");
     assert.equal(await page.locator("[data-chapter-feedback]").count(), 0);
-    await page.locator('[name=answer-1-1][value="0"]').check();
-    await page.locator('[data-check="1-1"]').click();
-    await page.locator("#task-1-1 .feedback.failed").waitFor();
-    await page.locator('[data-hint="1-1"]').click();
-    await page.locator('[name=answer-1-1][value="1"]').check();
-    await page.locator('[data-check="1-1"]').click();
+    await page.locator('[name=answer-workspace-original-storage][value="0"]').check();
+    await page.locator('[data-check="workspace-original-storage"]').click();
+    await page.locator("#task-workspace-original-storage .feedback.failed").waitFor();
+    await page.locator('[data-hint="workspace-original-storage"]').click();
+    await page.locator('[name=answer-workspace-original-storage][value="1"]').check();
+    await page.locator('[data-check="workspace-original-storage"]').click();
     assert.equal(await page.locator("#xp-label").textContent(), "40 XP");
-    await page.locator('[data-check="1-1"]').click();
+    await page.locator('[data-check="workspace-original-storage"]').click();
     assert.equal(await page.locator("#xp-label").textContent(), "40 XP");
     assert.match(
-      await page.locator("#task-1-1 .attempt-meta").textContent(),
+      await page
+        .locator("#task-workspace-original-storage .attempt-meta")
+        .textContent(),
       /СПРОБИ 3 · ПОМИЛКИ 1 · ПОВТОРНІ ПОДАННЯ 2/,
     );
     // Complete one whole language through actual controls, including all interactive tools.
     for (const m of getModules("de")) {
       await go("lab/" + m.id);
       for (const t of m.tasks) {
-        if (t.id === "1-1") continue;
+        if (t.id === "workspace-original-storage") continue;
         const article = page.locator(`[data-task="${t.id}"]`);
         if (["choice", "unicode", "wave"].includes(t.type))
-          await article
-            .locator(`input[type=radio][value="${t.answer}"]`)
-            .check();
+          await article.locator(`input[type=radio][value="${t.answer}"]`).check();
         else if (["exact", "json", "wer"].includes(t.type))
           await article
             .locator("[data-answer]")
@@ -119,23 +121,18 @@ try {
           await article
             .locator("[data-pattern]")
             .fill(
-              t.id === "6-1"
+              t.id === "regex-search-word-forms"
                 ? LANGUAGES.de.regexExample
                 : LANGUAGES.de.variantExample,
             );
         else if (t.type === "replace") {
-          await article
-            .locator("[data-pattern]")
-            .fill("\\[\\d{2}:\\d{2}:\\d{2}\\] ");
+          await article.locator("[data-pattern]").fill("\\[\\d{2}:\\d{2}:\\d{2}\\] ");
         } else if (t.type === "terminal") {
           const commands =
             t.goal === "navigate"
               ? ["oops", "ls", "cd original/archive/1893", "cat lost.txt"]
               : t.goal === "copy"
-                ? [
-                    "mkdir results",
-                    "cp original/interview.txt results/interview.txt",
-                  ]
+                ? ["mkdir results", "cp original/interview.txt results/interview.txt"]
                 : [`grep "${LANGUAGES.de.word}" corpus.txt`];
           for (const command of commands) {
             await article.locator("[data-command]").fill(command);
@@ -177,9 +174,7 @@ try {
         }
         await article.locator("[data-check]").click();
         await article
-          .locator(
-            `.feedback.${t.type === "portfolio" ? "submitted" : "passed"}`,
-          )
+          .locator(`.feedback.${t.type === "portfolio" ? "submitted" : "passed"}`)
           .waitFor();
       }
       assert.ok(
@@ -187,16 +182,16 @@ try {
         `Module ${m.id} did not complete`,
       );
       assert.equal(await page.locator("[data-chapter-feedback]").count(), 1);
-      assert.equal(await page.locator("[data-chapter-feedback]").evaluate((el) => el.open), false,
-        "finishing a chapter must not expand or focus the optional form");
+      assert.equal(
+        await page.locator("[data-chapter-feedback]").evaluate((el) => el.open),
+        false,
+        "finishing a chapter must not expand or focus the optional form",
+      );
       console.log("Module " + m.id + " passed.");
     }
     assert.equal(await page.locator("#xp-label").textContent(), "2280 XP");
-    assert.equal(
-      await page.locator("#progress-label").textContent(),
-      "12 / 12",
-    );
-    await go("lab/3");
+    assert.equal(await page.locator("#progress-label").textContent(), "12 / 12");
+    await go("lab/unicode");
     await page.locator("[data-treasure=unicode]").click();
     await page.locator('[name=treasure-unicode][value="1"]').check();
     await page.locator("[data-check-treasure]").click();
@@ -205,7 +200,7 @@ try {
     assert.equal(await page.locator("#xp-label").textContent(), "2340 XP");
     await checkChapterFeedback(page, go, output);
     // Reports have actual chosen answers, full attempt history and pending-review status.
-    await go("lab/1");
+    await go("lab/workspace");
     const reportPromise = page.waitForEvent("download");
     await page.locator(".sidebar-controls [data-action=report]").click();
     const report = await reportPromise;
@@ -222,10 +217,14 @@ try {
     await page.locator("[data-action=backup]").click();
     await (await backupPromise).saveAs(output + "/backup.json");
     const backup = JSON.parse(await readFile(output + "/backup.json", "utf8"));
-    assert.equal(backup.tracks.de.answers["1-1"].attempts.length, 3);
+    assert.equal(
+      backup.paths["de-foundations"].answers["workspace-original-storage"].attempts
+        .length,
+      3,
+    );
     // Hostile imports must be rejected before either in-memory or saved progress changes.
     const beforeImport = await page.evaluate(() =>
-      localStorage.getItem("lingva-lab:v1"),
+      localStorage.getItem("lingva-lab:v2"),
     );
     for (const extra of [
       { machine: true },
@@ -233,52 +232,52 @@ try {
       { extra: { toString: null } },
     ]) {
       const hostile = structuredClone(backup);
-      Object.assign(hostile.tracks.de.answers["6-1"].attempts[0].value, extra);
+      Object.assign(
+        hostile.paths["de-foundations"].answers["regex-search-word-forms"].attempts[0]
+          .value,
+        extra,
+      );
       await page.locator("#toast").evaluate((el) => {
         el.textContent = "";
       });
-      await page
-        .locator("#backup-input")
-        .setInputFiles({
-          name: "hostile-backup.json",
-          mimeType: "application/json",
-          buffer: Buffer.from(JSON.stringify(hostile)),
-        });
+      await page.locator("#backup-input").setInputFiles({
+        name: "hostile-backup.json",
+        mimeType: "application/json",
+        buffer: Buffer.from(JSON.stringify(hostile)),
+      });
       await page
         .locator("#toast")
         .filter({ hasText: "Не вдалося імпортувати" })
         .waitFor();
       assert.equal(await page.locator("#info-dialog").isVisible(), false);
       assert.equal(
-        await page.evaluate(() => localStorage.getItem("lingva-lab:v1")),
+        await page.evaluate(() => localStorage.getItem("lingva-lab:v2")),
         beforeImport,
       );
     }
     await page.reload();
     assert.equal(await page.locator("#xp-label").textContent(), "2340 XP");
-    await go("lab/6");
-    assert.equal(await page.locator("#task-6-1.passed").count(), 1);
+    await go("lab/regex-search");
+    assert.equal(await page.locator("#task-regex-search-word-forms.passed").count(), 1);
     const preservedReport = page.waitForEvent("download");
     await page.locator(".sidebar-controls [data-action=report]").click();
-    await (
-      await preservedReport
-    ).saveAs(output + "/after-rejected-import.html");
+    await (await preservedReport).saveAs(output + "/after-rejected-import.html");
     assert.match(
       await readFile(output + "/after-rejected-import.html", "utf8"),
       /Шаблон:/,
     );
     await go("portfolio");
     await page.locator("#profile-button").click();
-    await page.locator("[name=language][value=fr]").check();
+    await page.locator("[name=path][value=fr-foundations]").check();
     await page.locator("#profile-form [type=submit]").click();
     assert.equal(await page.locator("#xp-label").textContent(), "0 XP");
-    await go("lab/3");
-    assert.match(await page.locator("#task-3-2").textContent(), /œ/);
-    await page.reload();
+    await go("lab/unicode");
     assert.match(
-      await page.locator("#language-label").textContent(),
-      /Français/,
+      await page.locator("#task-unicode-special-characters").textContent(),
+      /œ/,
     );
+    await page.reload();
+    assert.match(await page.locator("#language-label").textContent(), /Français/);
     assert.equal(await page.locator("#xp-label").textContent(), "0 XP");
     // Import previews a replacement and restores all languages.
     await go("portfolio");
@@ -296,10 +295,10 @@ try {
     await page.setViewportSize({ width, height: 1000 });
     for (const route of [
       "map",
-      "lab/4",
-      "lab/6",
-      "lab/10",
-      "lab/11",
+      "lab/terminal-navigation",
+      "lab/regex-search",
+      "lab/speech-annotation",
+      "lab/speech-technologies",
       "portfolio",
       "reference",
     ]) {
@@ -323,9 +322,7 @@ try {
           .slice(0, 12),
       );
       assert.ok(
-        await page.evaluate(
-          () => document.documentElement.scrollWidth <= innerWidth,
-        ),
+        await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
         `Horizontal overflow: ${route} at ${width}: ${JSON.stringify(overflow)}`,
       );
     }
@@ -335,7 +332,7 @@ try {
         path: output + "/map-mobile.png",
         fullPage: true,
       });
-      await go("lab/6");
+      await go("lab/regex-search");
       await page.screenshot({
         path: output + "/regex-mobile.png",
         fullPage: true,
@@ -343,7 +340,7 @@ try {
     }
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await go("lab/4");
+  await go("lab/terminal-navigation");
   await page.screenshot({
     path: output + "/terminal-desktop.png",
     fullPage: true,

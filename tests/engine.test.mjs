@@ -2,26 +2,23 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
-import { LANGUAGES, getModules } from "../course.js";
+import { LANGUAGES } from "../content/registry.js";
+import { foundationChapters as getModules } from "./helpers/course.mjs";
+import { freshState, validateBackup } from "../src/persistence/state.js";
+import { evaluateTask } from "../src/learning/evaluate.js";
 import {
-  freshState,
-  evaluateTask,
   recordAttempt,
   taskStatus,
   trackStats,
   sectionStats,
-  createTerminal,
-  runTerminal,
-  createGit,
-  runGit,
-  validateBackup,
-  wer,
-  unicodePoints,
-  exportTextGrid,
-} from "../engine.js";
+} from "../src/learning/progress.js";
+import { createTerminal, runTerminal } from "../src/tools/terminal.js";
+import { createGit, runGit } from "../src/tools/git.js";
+import { wer, unicodePoints } from "../src/tools/text.js";
+import { exportTextGrid } from "../src/tools/audio.js";
 
 const workerSource = readFileSync(
-  new URL("../regex-worker.js", import.meta.url),
+  new URL("../src/workers/regex-worker.js", import.meta.url),
   "utf8",
 );
 function regex(task, value) {
@@ -43,9 +40,9 @@ const portfolio = {
 for (const lang of Object.keys(LANGUAGES))
   test(`All 60 tasks have attainable outcomes for ${lang}; portfolio remains pending review`, () => {
     const state = freshState(),
-      track = state.tracks[lang],
+      track = state.paths[`${lang}-foundations`],
       l = LANGUAGES[lang];
-    state.activeLanguage = lang;
+    state.activePathId = `${lang}-foundations`;
     const modules = getModules(lang);
     assert.equal(modules.length, 12);
     assert.equal(modules.flatMap((m) => m.tasks).length, 60);
@@ -56,23 +53,22 @@ for (const lang of Object.keys(LANGUAGES))
         else if (t.type === "exact") v = t.answer;
         else if (t.type === "json") v = JSON.stringify(t.expected);
         else if (t.type === "regex") {
-          v = { pattern: t.id === "6-1" ? l.regexExample : l.variantExample };
+          v = {
+            pattern:
+              t.id === "regex-search-word-forms" ? l.regexExample : l.variantExample,
+          };
           result = regex(t, v);
         } else if (t.type === "replace") {
           v = { pattern: "\\[\\d{2}:\\d{2}:\\d{2}\\] ", replacement: "" };
           result = regex(t, v);
         } else if (t.type === "portfolio") v = portfolio;
         else if (t.type === "wer") v = t.reference;
-        else if (t.type === "interval")
-          v = { start: "0,60", end: "1.10", label: "B" };
+        else if (t.type === "interval") v = { start: "0,60", end: "1.10", label: "B" };
         else if (t.type === "git") {
           v = createGit(lang);
           v.text = t.expected;
           v = runGit(v, "git add transcription.txt").state;
-          v = runGit(
-            v,
-            'git commit -m "Виправлено транскрипцію за джерелом"',
-          ).state;
+          v = runGit(v, 'git commit -m "Виправлено транскрипцію за джерелом"').state;
           v = runGit(v, "git log").state;
         } else if (t.type === "terminal") {
           v = { machine: createTerminal(lang), commands: [] };
@@ -80,10 +76,7 @@ for (const lang of Object.keys(LANGUAGES))
             t.goal === "navigate"
               ? ["ls", "cd original/archive/1893", "cat lost.txt"]
               : t.goal === "copy"
-                ? [
-                    "mkdir results",
-                    "cp original/interview.txt results/interview.txt",
-                  ]
+                ? ["mkdir results", "cp original/interview.txt results/interview.txt"]
                 : [`grep "${l.word}" corpus.txt`];
           for (const command of commands) {
             const r = runTerminal(v.machine, command);
@@ -108,19 +101,19 @@ for (const lang of Object.keys(LANGUAGES))
       }
       assert.equal(sectionStats(m, track).complete, true);
     }
-    const stats = trackStats(lang, track);
+    const stats = trackStats(`${lang}-foundations`, track);
     assert.equal(stats.xp, 2280);
     assert.equal(stats.passed, 48);
     assert.equal(stats.submitted, 12);
     assert.equal(stats.sections, 12);
     assert.equal(
-      validateBackup(JSON.parse(JSON.stringify(state))).activeLanguage,
-      lang,
+      validateBackup(JSON.parse(JSON.stringify(state))).activePathId,
+      `${lang}-foundations`,
     );
   });
 
 test("Errors, hints, retries and mastery survive resubmission without XP farming", () => {
-  const track = freshState().tracks.en,
+  const track = freshState().paths["en-foundations"],
     t = getModules("en")[0].tasks[0];
   assert.equal(recordAttempt(track, t, 0, evaluateTask(t, 0)).newXP, 0);
   track.answers[t.id].hints = 1;
@@ -128,7 +121,7 @@ test("Errors, hints, retries and mastery survive resubmission without XP farming
   assert.equal(recordAttempt(track, t, 1, evaluateTask(t, 1)).newXP, 0);
   assert.equal(recordAttempt(track, t, 0, evaluateTask(t, 0)).newXP, 0);
   assert.equal(taskStatus(track.answers[t.id]), "passed");
-  const stats = trackStats("en", track);
+  const stats = trackStats("en-foundations", track);
   assert.equal(stats.errors, 2);
   assert.equal(stats.attempts, 4);
   assert.equal(stats.resubmissions, 3);
@@ -138,14 +131,8 @@ test("Errors, hints, retries and mastery survive resubmission without XP farming
 
 test("Portfolio rejects an empty attestation and never marks a reflection as automatically passed", () => {
   const t = getModules("de")[0].tasks[4];
-  assert.equal(
-    evaluateTask(t, { ...portfolio, confirm: false }).status,
-    "failed",
-  );
-  assert.equal(
-    evaluateTask(t, { ...portfolio, method: "ok" }).status,
-    "failed",
-  );
+  assert.equal(evaluateTask(t, { ...portfolio, confirm: false }).status, "failed");
+  assert.equal(evaluateTask(t, { ...portfolio, method: "ok" }).status, "failed");
   assert.equal(evaluateTask(t, portfolio).status, "submitted");
 });
 
@@ -162,10 +149,7 @@ test("NFC accepts canonical equivalents, but does not collapse visually similar 
 
 test("Regex grading rejects prefix matches, invalid syntax and empty matches", () => {
   const t = getModules("en")[5].tasks[0];
-  assert.equal(
-    evaluateTask(t, {}, regex(t, { pattern: "go" })).status,
-    "failed",
-  );
+  assert.equal(evaluateTask(t, {}, regex(t, { pattern: "go" })).status, "failed");
   assert.ok(regex(t, { pattern: "[" }).error);
   assert.ok(regex(t, { pattern: "x*" }).error);
   const replacement = getModules("fr")[6].tasks[0];
@@ -189,10 +173,7 @@ test("Terminal distinguishes copying and moving; quoted paths work and missing f
   assert.equal(runTerminal(initial, "rm original/interview.txt").ok, false);
   const task = getModules("en")[3].tasks[2];
   const created = runTerminal(initial, "mkdir results").machine;
-  const moved = runTerminal(
-    created,
-    "mv original/interview.txt results/interview.txt",
-  );
+  const moved = runTerminal(created, "mv original/interview.txt results/interview.txt");
   assert.equal(
     evaluateTask(task, { machine: moved.machine, commands: [] }).status,
     "failed",
@@ -254,17 +235,19 @@ test("WER aligns insertions, deletions and substitutions and handles empty refer
 
 test("Languages keep independent progress and malformed backups are rejected", () => {
   const s = freshState();
-  s.activeLanguage = "de";
+  s.activePathId = "de-foundations";
   const t = getModules("de")[0].tasks[0];
-  recordAttempt(s.tracks.de, t, 1, evaluateTask(t, 1));
-  assert.equal(trackStats("fr", s.tracks.fr).xp, 0);
-  assert.equal(trackStats("de", s.tracks.de).xp, 40);
+  recordAttempt(s.paths["de-foundations"], t, 1, evaluateTask(t, 1));
+  assert.equal(trackStats("fr-foundations", s.paths["fr-foundations"]).xp, 0);
+  assert.equal(trackStats("de-foundations", s.paths["de-foundations"]).xp, 40);
   assert.throws(() => validateBackup({ version: 99 }));
   const bad = structuredClone(s);
-  bad.tracks.de.answers["999-1"] = {};
+  bad.paths["de-foundations"].answers["999-1"] = {};
   assert.throws(() => validateBackup(bad));
   const forged = structuredClone(s);
-  forged.tracks.de.answers["1-1"].attempts[0].value = 0;
+  forged.paths["de-foundations"].answers[
+    "workspace-original-storage"
+  ].attempts[0].status = "unrecognized-status";
   assert.throws(() => validateBackup(forged));
 });
 

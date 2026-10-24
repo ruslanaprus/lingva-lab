@@ -25,13 +25,21 @@ export class PageActivityClock {
       key: this.key,
       pageMs,
       visibleMs: eligible ? pageMs : 0,
-      activeMs: this.key && eligible
-        ? Math.max(0, Math.min(at, this.lastInteraction + ACTIVITY_IDLE_MS) - this.lastSample)
-        : 0,
+      activeMs:
+        this.key && eligible
+          ? Math.max(
+              0,
+              Math.min(at, this.lastInteraction + ACTIVITY_IDLE_MS) - this.lastSample,
+            )
+          : 0,
       enteredKey: key && key !== this.key ? key : null,
     };
-    if (key !== this.key || (!eligible && visible && focused) ||
-        (interacted && visible && focused)) this.lastInteraction = at;
+    if (
+      key !== this.key ||
+      (!eligible && visible && focused) ||
+      (interacted && visible && focused)
+    )
+      this.lastInteraction = at;
     this.key = key;
     this.visible = visible;
     this.focused = focused;

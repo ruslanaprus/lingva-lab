@@ -6,12 +6,12 @@
     <meta name="theme-color" content="#e9e7dc" />
     <meta
       name="description"
-      content="Інтерактивний практикум «Цифрові інструменти для лінгвістів»: 12 розділів, три мовні траєкторії, дослідження й портфоліо."
+      content="Інтерактивний практикум «Цифрові інструменти для лінгвістів»: мовні траєкторії, дослідження й портфоліо."
     />
     <title>lingva.lab — Цифрові інструменти для лінгвістів</title>
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css" />
-    <script type="module" src="app.js"></script>
+    <link rel="stylesheet" href="styles/main.css" />
+    <script type="module" src="src/main.js"></script>
   </head>
   <body>
     <a class="skip" href="#main">До вмісту</a>
@@ -21,9 +21,7 @@
       >
       <p class="brand-description">Цифрові інструменти<br />для лінгвістів</p>
       <div class="edition mono">
-        ПРАКТИКУМ / I СЕМЕСТР<br /><span class="muted"
-          >ВІД ТЕКСТУ ДО ДОСЛІДЖЕННЯ</span
-        >
+        ПРАКТИКУМ / I СЕМЕСТР<br /><span class="muted">ВІД ТЕКСТУ ДО ДОСЛІДЖЕННЯ</span>
       </div>
     </header>
     <div class="status-strip mono">
@@ -35,8 +33,7 @@
         <span class="muted">ДОСВІД</span><span id="xp-label">0 XP</span>
       </div>
       <div class="strip-cell">
-        <span class="muted">ПРОЙДЕНО</span
-        ><span id="progress-label">00 / 12</span>
+        <span class="muted">ПРОЙДЕНО</span><span id="progress-label">—</span>
       </div>
       <div class="strip-cell storage-state">
         <span class="live-dot"></span
@@ -44,11 +41,21 @@
       </div>
     </div>
     <nav class="main-nav mono" aria-label="Головна навігація">
-      <a href="#map" data-nav="map"><span>01</span> Карта курсу</a>
-      <a href="#lab/1" data-nav="lab"><span>02</span> Лабораторія</a>
-      <a href="#portfolio" data-nav="portfolio"><span>03</span> Портфоліо</a>
-      <a href="#reference" data-nav="reference"><span>04</span> Довідник</a>
-      <button id="help-button" class="nav-help">Як це працює ↗</button>
+      <a href="#map" data-nav="map"
+        ><span>01</span> <span data-i18n="navigation.course">Карта курсу</span></a
+      >
+      <a href="#map" data-nav="lab"
+        ><span>02</span> <span data-i18n="navigation.lab">Лабораторія</span></a
+      >
+      <a href="#portfolio" data-nav="portfolio"
+        ><span>03</span> <span data-i18n="navigation.portfolio">Портфоліо</span></a
+      >
+      <a href="#reference" data-nav="reference"
+        ><span>04</span> <span data-i18n="navigation.reference">Довідник</span></a
+      >
+      <button id="help-button" class="nav-help" data-i18n="navigation.help">
+        Як це працює
+      </button>
     </nav>
     <main id="main" tabindex="-1"></main>
     <footer class="site-footer mono">
@@ -60,12 +67,7 @@
       <form id="profile-form">
         <div class="dialog-top mono">
           <span>ВАША ДОСЛІДНИЦЬКА ТРАЄКТОРІЯ</span
-          ><button
-            type="button"
-            class="icon-button"
-            data-close
-            aria-label="Закрити"
-          >
+          ><button type="button" class="icon-button" data-close aria-label="Закрити">
             ×
           </button>
         </div>
@@ -73,27 +75,10 @@
           З якою мовою<br />працюємо<span class="orange">?</span>
         </h2>
         <p>
-          Інтерфейс залишається українським. Змінюються тексти, мовні явища та
-          приклади. Прогрес кожної мови зберігається окремо.
+          Інтерфейс залишається українським. Змінюються тексти, мовні явища та приклади.
+          Прогрес кожної мови зберігається окремо.
         </p>
-        <fieldset class="language-choices">
-          <legend class="sr-only">Мова дослідження</legend>
-          <label
-            ><input type="radio" name="language" value="de" required /><span
-              ><b>DE</b> Німецька <small>Deutsch</small></span
-            ></label
-          >
-          <label
-            ><input type="radio" name="language" value="fr" /><span
-              ><b>FR</b> Французька <small>Français</small></span
-            ></label
-          >
-          <label
-            ><input type="radio" name="language" value="en" /><span
-              ><b>EN</b> Англійська <small>English</small></span
-            ></label
-          >
-        </fieldset>
+        <fieldset class="language-choices" aria-label="Навчальна траєкторія"></fieldset>
         <div class="profile-fields">
           <label
             >Ім’я та прізвище
@@ -103,8 +88,7 @@
               placeholder="Для ваших звітів"
               autocomplete="name" /></label
           ><label
-            >Група
-            <input name="group" maxlength="40" placeholder="Наприклад, ФЛ-11"
+            >Група <input name="group" maxlength="40" placeholder="Наприклад, ФЛ-11"
           /></label>
         </div>
         <button class="button primary wide" type="submit">
@@ -126,8 +110,8 @@
     <div id="toast" class="toast mono" role="status" aria-live="polite"></div>
     <noscript
       ><p class="noscript">
-        Увімкніть JavaScript для інтерактивних лабораторних. Ваші відповіді
-        обробляються локально.
+        Увімкніть JavaScript для інтерактивних лабораторних. Ваші відповіді обробляються
+        локально.
       </p></noscript
     >
   </body>
