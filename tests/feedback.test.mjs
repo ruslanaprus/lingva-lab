@@ -186,7 +186,7 @@ test("Separate drafts survive round trips, remain isolated by language/chapter a
     { comment: { toString: null } },
     { comment: "x".repeat(4001) },
     { anonymous: "true" },
-    { taskId: "data-formats-structured-format" },
+    { taskId: "invalid/id" },
     { extra: {} },
     { author: { name: "injected" } },
   ]) {
@@ -195,6 +195,28 @@ test("Separate drafts survive round trips, remain isolated by language/chapter a
     assert.throws(() => validateFeedbackStore(malformed));
   }
   const malformed = structuredClone(copy);
-  malformed.paths["en-foundations"]["unknown-chapter"] = freshFeedbackDraft();
+  malformed.paths["en-foundations"]["invalid/chapter"] = freshFeedbackDraft();
   assert.throws(() => validateFeedbackStore(malformed));
+  assert.throws(() =>
+    validateFeedbackDraft(
+      { ...freshFeedbackDraft(), taskId: "data-formats-structured-format" },
+      "de-foundations",
+      "workspace",
+    ),
+  );
+});
+
+test("Feedback survives adding paths and retiring chapters, tasks or whole paths", () => {
+  const store = freshFeedbackStore();
+  delete store.paths["en-foundations"];
+  store.paths["de-foundations"]["retired-chapter"] = {
+    ...freshFeedbackDraft(),
+    taskId: "retired-exercise",
+    comment: "Додайте приклад",
+  };
+  store.paths["retired-course"] = { "retired-chapter": freshFeedbackDraft() };
+  const restored = validateFeedbackStore(store);
+  assert.deepEqual(restored.paths["en-foundations"], {});
+  assert.deepEqual(restored.paths["de-foundations"], store.paths["de-foundations"]);
+  assert.deepEqual(restored.paths["retired-course"], store.paths["retired-course"]);
 });

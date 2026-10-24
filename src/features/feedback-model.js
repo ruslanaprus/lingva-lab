@@ -1,5 +1,7 @@
 import { LANGUAGES, PATHS, getPath, getChapter } from "../../content/registry.js";
 import { sectionStats } from "../learning/progress.js";
+import { validId } from "../../content/schema.js";
+import { object } from "../shared/values.js";
 
 // Keep feedback drafts outside assessment backups and named chapter reports.
 export const FEEDBACK_STORAGE_KEY = "lingva-lab:feedback:v2";
@@ -41,6 +43,14 @@ export function validateFeedbackDraft(draft, pathId, id) {
   const module = Object.hasOwn(PATHS, pathId) ? getChapter(pathId, id) : null;
   if (
     !module ||
+    !(draft?.taskId === null || module.tasks.some((task) => task.id === draft?.taskId))
+  )
+    throw new Error("Не вдалося прочитати чернетку відгуку.");
+  return copyFeedbackDraft(draft);
+}
+
+function copyFeedbackDraft(draft) {
+  if (
     !onlyKeys(draft, ["topics", "taskId", "comment", "anonymous"]) ||
     !Array.isArray(draft.topics) ||
     draft.topics.length > Object.keys(FEEDBACK_TOPICS).length ||
@@ -48,7 +58,7 @@ export function validateFeedbackDraft(draft, pathId, id) {
       (topic) => typeof topic === "string" && Object.hasOwn(FEEDBACK_TOPICS, topic),
     ) ||
     new Set(draft.topics).size !== draft.topics.length ||
-    !(draft.taskId === null || module.tasks.some((t) => t.id === draft.taskId)) ||
+    !(draft.taskId === null || validId(draft.taskId)) ||
     typeof draft.comment !== "string" ||
     draft.comment.length > 4000 ||
     typeof draft.anonymous !== "boolean"
@@ -66,20 +76,19 @@ export function validateFeedbackStore(store) {
   if (
     !onlyKeys(store, ["schemaVersion", "paths"]) ||
     store.schemaVersion !== 2 ||
-    !onlyKeys(store.paths, Object.keys(PATHS))
+    !object(store.paths) ||
+    Object.keys(store.paths).length > 100
   )
     throw new Error("Несумісне сховище відгуків.");
   const clean = freshFeedbackStore();
-  for (const pathId of Object.keys(PATHS)) {
-    if (
-      !onlyKeys(
-        store.paths[pathId],
-        getPath(pathId).chapters.map((m) => m.id),
-      )
-    )
+  for (const [pathId, chapters] of Object.entries(store.paths)) {
+    if (!validId(pathId) || !object(chapters) || Object.keys(chapters).length > 1000)
       throw new Error("Несумісне сховище відгуків.");
-    for (const [id, draft] of Object.entries(store.paths[pathId]))
-      clean.paths[pathId][id] = validateFeedbackDraft(draft, pathId, id);
+    clean.paths[pathId] ??= {};
+    for (const [id, draft] of Object.entries(chapters)) {
+      if (!validId(id)) throw new Error("Несумісне сховище відгуків.");
+      clean.paths[pathId][id] = copyFeedbackDraft(draft);
+    }
   }
   return clean;
 }
