@@ -130,9 +130,11 @@ export async function checkActivityReports(browser, base, output) {
     assert.equal(sectionReport.activity.awayMs, 70_000);
     assert.equal(sectionReport.activity.idleMs, 25_000);
     assert.equal(sectionReport.activity.idleAfterMs, 120_000);
-    assert.deepEqual(sectionReport.tasks[0].record.attempts[0].selectedOptions, [
-      { index: 0, number: 1, value: "working/ — тут його відредагую" },
-    ]);
+    assert.deepEqual(
+      sectionReport.tasks.find((task) => task.id === "workspace-original-storage")
+        .record.attempts[0].selectedOptions,
+      [{ index: 0, number: 1, value: "working/ — тут його відредагую" }],
+    );
     const textReport = JSON.parse(await downloadReport("data-formats", "json"));
     assert.equal(textReport.tasks[2].record.attempts[0].value, typed);
     assert.equal(textReport.tasks[2].record.attempts[0].status, "failed");

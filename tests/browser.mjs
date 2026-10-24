@@ -1,3 +1,5 @@
+import { checkWorkspaceWorkshop } from "./browser-workspace.mjs";
+import { portfolioAnswer } from "./helpers/answers.mjs";
 // Browser QA runs against dist/ using the development-only Playwright dependency.
 // PLAYWRIGHT_MODULE can optionally point to another installed Playwright module.
 import { createServer } from "node:http";
@@ -5,7 +7,7 @@ import { readFile, mkdir } from "node:fs/promises";
 import { extname, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
-import { LANGUAGES } from "../content/registry.js";
+import { LANGUAGES, TREASURES } from "../content/registry.js";
 import { foundationChapters as getModules } from "./helpers/course.mjs";
 import { checkActivityReports } from "./browser-activity.mjs";
 import { checkChapterFeedback } from "./browser-feedback.mjs";
@@ -15,6 +17,9 @@ const { chromium } = await import(
     : "@playwright/test"
 );
 const root = resolve(fileURLToPath(new URL("../dist/", import.meta.url)));
+const allTasks = getModules("de").flatMap((chapter) => chapter.tasks);
+const completeXP = allTasks.reduce((sum, task) => sum + task.xp, 0);
+const withTreasureXP = completeXP + TREASURES.unicode.xp;
 const output = process.env.LINGVA_QA_OUTPUT || "/tmp/lingva-lab-qa";
 await mkdir(output, { recursive: true });
 const contentTypes = {
@@ -105,9 +110,14 @@ try {
       for (const t of m.tasks) {
         if (t.id === "workspace-original-storage") continue;
         const article = page.locator(`[data-task="${t.id}"]`);
-        if (["choice", "unicode", "wave"].includes(t.type))
-          await article.locator(`input[type=radio][value="${t.answer}"]`).check();
-        else if (["exact", "json", "wer"].includes(t.type))
+        if (["choice", "unicode", "wave"].includes(t.type)) {
+          for (const index of t.multiple ? t.answer : [t.answer])
+            await article
+              .locator(
+                `input[type=${t.multiple ? "checkbox" : "radio"}][value="${index}"]`,
+              )
+              .check();
+        } else if (["exact", "json", "wer"].includes(t.type))
           await article
             .locator("[data-answer]")
             .fill(
@@ -157,19 +167,9 @@ try {
           await article.locator("[data-export-grid]").click();
           await (await downloaded).saveAs(output + "/sample.TextGrid");
         } else if (t.type === "portfolio") {
-          await article
-            .locator("[data-portfolio=artifact]")
-            .fill("results/lab-" + m.id + ".txt");
-          await article
-            .locator("[data-portfolio=method]")
-            .fill(
-              "Мета — перевірити роботу цифрового інструмента на невеликій вибірці. Я зберігаю вихідні дані, описую інструмент і параметри, документую послідовність дій та порівнюю результат із перевіреним джерелом.",
-            );
-          await article
-            .locator("[data-portfolio=reflection]")
-            .fill(
-              "Висновки обмежені розміром вибірки. Для перевірки потрібні незалежні приклади та повторне анотування. Дані, параметри та результати збережені окремо для іншого дослідника.",
-            );
+          const value = portfolioAnswer(t, "de");
+          for (const key of ["artifact", "method", "reflection"])
+            await article.locator(`[data-portfolio=${key}]`).fill(value[key]);
           await article.locator("[data-portfolio=confirm]").check();
         }
         await article.locator("[data-check]").click();
@@ -189,15 +189,15 @@ try {
       );
       console.log("Module " + m.id + " passed.");
     }
-    assert.equal(await page.locator("#xp-label").textContent(), "2280 XP");
+    assert.equal(await page.locator("#xp-label").textContent(), `${completeXP} XP`);
     assert.equal(await page.locator("#progress-label").textContent(), "12 / 12");
     await go("lab/unicode");
     await page.locator("[data-treasure=unicode]").click();
     await page.locator('[name=treasure-unicode][value="1"]').check();
     await page.locator("[data-check-treasure]").click();
-    assert.equal(await page.locator("#xp-label").textContent(), "2340 XP");
+    assert.equal(await page.locator("#xp-label").textContent(), `${withTreasureXP} XP`);
     await page.locator("[data-check-treasure]").click();
-    assert.equal(await page.locator("#xp-label").textContent(), "2340 XP");
+    assert.equal(await page.locator("#xp-label").textContent(), `${withTreasureXP} XP`);
     await checkChapterFeedback(page, go, output);
     // Reports have actual chosen answers, full attempt history and pending-review status.
     await go("lab/workspace");
@@ -256,7 +256,7 @@ try {
       );
     }
     await page.reload();
-    assert.equal(await page.locator("#xp-label").textContent(), "2340 XP");
+    assert.equal(await page.locator("#xp-label").textContent(), `${withTreasureXP} XP`);
     await go("lab/regex-search");
     assert.equal(await page.locator("#task-regex-search-word-forms.passed").count(), 1);
     const preservedReport = page.waitForEvent("download");
@@ -283,12 +283,13 @@ try {
     await go("portfolio");
     await page.locator("#backup-input").setInputFiles(output + "/backup.json");
     await page.locator("#confirm-import").click();
-    assert.equal(await page.locator("#xp-label").textContent(), "2340 XP");
+    assert.equal(await page.locator("#xp-label").textContent(), `${withTreasureXP} XP`);
     await go("reference");
     await page.locator("#reference-search").fill("TextGrid");
     assert.ok((await page.locator(".glossary-item:visible").count()) >= 1);
     assert.ok((await page.locator(".glossary-item:visible").count()) < 10);
     await checkActivityReports(browser, base, output);
+    await checkWorkspaceWorkshop(browser, base, output);
   }
   // Desktop, tablet and mobile layouts cover every page and the most demanding lab controls.
   for (const width of [320, 390, 768, 1024, 1440]) {
@@ -355,7 +356,7 @@ try {
   console.log(
     process.argv.includes("--layout-only")
       ? "PASS: 35 responsive layouts across five viewport widths; no JavaScript or HTTP errors."
-      : "PASS: 60 browser task flows, hostile-import rejection/storage preservation, reload/report recovery, valid backup restore, retries/XP/history, language isolation and 35 responsive layouts.",
+      : `PASS: ${allTasks.length} browser task flows, hostile-import rejection/storage preservation, reload/report recovery, valid backup restore, retries/XP/history, language isolation and 35 responsive layouts.`,
   );
   console.log("QA artifacts: " + output);
 } finally {

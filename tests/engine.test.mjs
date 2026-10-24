@@ -1,3 +1,4 @@
+import { portfolioAnswer } from "./helpers/answers.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -38,14 +39,15 @@ const portfolio = {
 };
 
 for (const lang of Object.keys(LANGUAGES))
-  test(`All 60 tasks have attainable outcomes for ${lang}; portfolio remains pending review`, () => {
+  test(`All current tasks have attainable outcomes for ${lang}; portfolio remains pending review`, () => {
     const state = freshState(),
       track = state.paths[`${lang}-foundations`],
       l = LANGUAGES[lang];
     state.activePathId = `${lang}-foundations`;
     const modules = getModules(lang);
     assert.equal(modules.length, 12);
-    assert.equal(modules.flatMap((m) => m.tasks).length, 60);
+    const tasks = modules.flatMap((m) => m.tasks);
+    assert.equal(new Set(tasks.map((task) => task.id)).size, tasks.length);
     for (const m of modules) {
       for (const t of m.tasks) {
         let v, result;
@@ -61,7 +63,7 @@ for (const lang of Object.keys(LANGUAGES))
         } else if (t.type === "replace") {
           v = { pattern: "\\[\\d{2}:\\d{2}:\\d{2}\\] ", replacement: "" };
           result = regex(t, v);
-        } else if (t.type === "portfolio") v = portfolio;
+        } else if (t.type === "portfolio") v = portfolioAnswer(t, lang);
         else if (t.type === "wer") v = t.reference;
         else if (t.type === "interval") v = { start: "0,60", end: "1.10", label: "B" };
         else if (t.type === "git") {
@@ -102,9 +104,18 @@ for (const lang of Object.keys(LANGUAGES))
       assert.equal(sectionStats(m, track).complete, true);
     }
     const stats = trackStats(`${lang}-foundations`, track);
-    assert.equal(stats.xp, 2280);
-    assert.equal(stats.passed, 48);
-    assert.equal(stats.submitted, 12);
+    assert.equal(
+      stats.xp,
+      tasks.reduce((sum, task) => sum + task.xp, 0),
+    );
+    assert.equal(
+      stats.passed,
+      tasks.filter((task) => task.type !== "portfolio").length,
+    );
+    assert.equal(
+      stats.submitted,
+      tasks.filter((task) => task.type === "portfolio").length,
+    );
     assert.equal(stats.sections, 12);
     assert.equal(
       validateBackup(JSON.parse(JSON.stringify(state))).activePathId,
@@ -130,7 +141,9 @@ test("Errors, hints, retries and mastery survive resubmission without XP farming
 });
 
 test("Portfolio rejects an empty attestation and never marks a reflection as automatically passed", () => {
-  const t = getModules("de")[0].tasks[4];
+  const t = getModules("de")[0].tasks.find(
+    (task) => task.type === "portfolio" && !task.submission,
+  );
   assert.equal(evaluateTask(t, { ...portfolio, confirm: false }).status, "failed");
   assert.equal(evaluateTask(t, { ...portfolio, method: "ok" }).status, "failed");
   assert.equal(evaluateTask(t, portfolio).status, "submitted");
@@ -245,9 +258,8 @@ test("Languages keep independent progress and malformed backups are rejected", (
   bad.paths["de-foundations"].answers["999-1"] = {};
   assert.throws(() => validateBackup(bad));
   const forged = structuredClone(s);
-  forged.paths["de-foundations"].answers[
-    "workspace-original-storage"
-  ].attempts[0].status = "unrecognized-status";
+  forged.paths["de-foundations"].answers[t.id].attempts[0].status =
+    "unrecognized-status";
   assert.throws(() => validateBackup(forged));
 });
 

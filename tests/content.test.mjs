@@ -1,3 +1,4 @@
+import { exerciseSnapshot } from "../src/learning/progress.js";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -97,6 +98,7 @@ test("A path can reuse, adapt and author chapters with its own order and task co
   );
   const adapted = adaptChapter(french.chapters[0], (chapter) => ({
     ...chapter,
+    workshop: undefined,
     tasks: [chapter.tasks[0], { ...extra, revision: 1, xp: 10 }],
   }));
   const authored = defineChapter({
@@ -225,7 +227,7 @@ test("Exercise revisions preserve historical prompts, choices and outcomes witho
   const clean = validateBackup(JSON.parse(JSON.stringify(state)));
   assert.equal(
     clean.paths[course.id].answers[first.id].attempts[0].definition.prompt,
-    first.prompt,
+    exerciseSnapshot(first).prompt,
   );
   assert.equal(
     clean.paths[course.id].answers[first.id].attempts[0].selectedOptions[0].value,
@@ -244,8 +246,14 @@ test("Exercise revisions preserve historical prompts, choices and outcomes witho
     track: clean.paths[course.id],
     chapterId: "workspace",
   });
-  assert.equal(report.tasks[0].record.attempts[0].definition.prompt, first.prompt);
-  assert.equal(report.tasks[0].record.attempts[1].definition.prompt, "Нові умови");
+  assert.equal(
+    report.tasks[0].record.attempts[0].definition.prompt,
+    exerciseSnapshot(first).prompt,
+  );
+  assert.equal(
+    report.tasks[0].record.attempts[1].definition.prompt,
+    exerciseSnapshot(revised).prompt,
+  );
 });
 
 test("Retired exercises and paths remain in backups; retired exercises appear in chapter reports", () => {

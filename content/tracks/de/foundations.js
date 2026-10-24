@@ -18,7 +18,7 @@ export default {
   id: "de-foundations",
   language: "de",
   level: "foundations",
-  revision: 1,
+  revision: 2,
   milestones: foundationMilestones,
   assessment: foundationAssessment,
   title: "Німецька / Основи",

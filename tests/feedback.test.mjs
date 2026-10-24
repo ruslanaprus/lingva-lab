@@ -1,3 +1,4 @@
+import { portfolioAnswer } from "./helpers/answers.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { foundationChapters as getModules } from "./helpers/course.mjs";
@@ -24,12 +25,7 @@ function completedChapter(language = "de", id = "workspace") {
   for (const task of module.tasks) {
     const value =
       task.type === "portfolio"
-        ? {
-            artifact: "private-research-file.txt",
-            method: "Method ".repeat(30),
-            reflection: "Limitations ".repeat(20),
-            confirm: true,
-          }
+        ? portfolioAnswer(task, language)
         : task.type === "json"
           ? JSON.stringify(task.expected)
           : task.answer;

@@ -2,6 +2,7 @@ import { getPath, getExercise, TREASURES } from "../../content/registry.js";
 import { now } from "../shared/values.js";
 import { selectionDetails } from "./values.js";
 import { GRADER_VERSION } from "../version.js";
+import { lessonText } from "../../content/shared/lesson-text.js";
 
 export function exerciseSnapshot(task) {
   return {
@@ -10,7 +11,9 @@ export function exerciseSnapshot(task) {
     revision: task.revision ?? 1,
     type: task.type,
     title: task.title,
-    prompt: task.prompt,
+    prompt: task.lesson
+      ? `${task.prompt}\n\nПояснення до вправи\n${lessonText(task.lesson)}`
+      : task.prompt,
     xp: task.xp ?? 0,
     ...(task.options ? { options: [...task.options], multiple: !!task.multiple } : {}),
   };

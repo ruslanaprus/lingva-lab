@@ -1,4 +1,29 @@
 export const SOURCES = {
+  memory: {
+    title: "Intel — What Is Computer and Laptop RAM?",
+    url: "https://www.intel.com/content/www/us/en/tech-tips-and-tricks/computer-ram.html",
+    note: "Пояснення RAM і довготривалого зберігання. Додаткове читання англійською; купувати обладнання для вправи не потрібно.",
+  },
+  aliases: {
+    title: "Apple Support — Create and remove aliases on Mac",
+    url: "https://support.apple.com/guide/mac-help/create-and-remove-aliases-on-mac-mchlp1046/mac",
+    note: "Різниця між alias і початковим об’єктом. Додаткове читання англійською.",
+  },
+  organization: {
+    title: "DataONE — Describe the overall organization of your dataset",
+    url: "https://dataoneorg.github.io/Education/bestpractices/describe-the-overall",
+    note: "Опис організації та зв’язків між файлами. Додаткове читання англійською; необхідні пояснення є у вправах українською.",
+  },
+  readme: {
+    title: "Cornell Data Services — Writing READMEs for Research Data",
+    url: "https://data.research.cornell.edu/data-management/sharing/readme/",
+    note: "Призначення супровідного README та орієнтири для документації. Додаткове читання англійською.",
+  },
+  downloads: {
+    title: "Google Chrome Довідка — Як завантажити файл",
+    url: "https://support.google.com/chrome/answer/95759?hl=uk",
+    note: "Список завантажень, показ у папці та місце збереження. Українською; для іншого браузера знайдіть аналогічне меню.",
+  },
   shell: {
     title: "Software Carpentry — The Unix Shell",
     url: "https://swcarpentry.github.io/shell-novice/",

@@ -120,16 +120,41 @@ export function evaluateTask(task, value, regexResult) {
           "Гіпотеза ще відрізняється від еталона. Перевірте пропуски, заміни й додані слова.",
         );
   if (task.type === "portfolio") {
+    const minimumMethod = task.submission?.minimumMethodLength ?? 120;
+    const minimumReflection = task.submission?.minimumReflectionLength ?? 100;
     if (
       !value ||
       String(value.artifact || "").trim().length < 5 ||
-      String(value.method || "").trim().length < 120 ||
-      String(value.reflection || "").trim().length < 100 ||
+      String(value.method || "").trim().length < minimumMethod ||
+      String(value.reflection || "").trim().length < minimumReflection ||
       !value.confirm
     )
       return fail(
-        "Для подання вкажіть артефакт (від 5 символів), метод і результати (від 120), обмеження та висновок (від 100), і підтвердьте самоперевірку.",
+        `Для подання вкажіть артефакт (від 5 символів), ${task.submission ? "повний текст README" : "метод і результати"} (від ${minimumMethod}), обмеження та висновок (від ${minimumReflection}), і підтвердьте самоперевірку.`,
       );
+    if (task.submission?.sections) {
+      const headings = value.method
+        .normalize("NFC")
+        .split(/\r?\n/u)
+        .map((line) =>
+          line
+            .trim()
+            .replace(/^(?:#{1,6}\s*|\d+[.)]\s*)/u, "")
+            .replace(/:\s*$/u, "")
+            .trim(),
+        );
+      const missing = task.submission.sections.filter(
+        (section) => !headings.includes(section),
+      );
+      if (missing.length)
+        return fail(
+          `У README бракує заголовків зі шаблону: ${missing.join("; ")}. Додайте кожну частину окремим рядком і заповніть її фактами.`,
+        );
+      if (value.method.includes("[Замініть цей рядок"))
+        return fail(
+          "У README залишилися підказки шаблону. Замініть їх конкретною інформацією про вашу колекцію.",
+        );
+    }
     return {
       status: "submitted",
       feedback:
