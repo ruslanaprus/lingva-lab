@@ -225,7 +225,41 @@ function renderMap() {
     next = nextModule(),
     stats = trackStats(language(), track());
   return `<div class="page">
- <section class="hero" aria-labelledby="hero-title"><div class="hero-copy"><p class="mono eyebrow">DIGITAL TOOLS FOR LINGUISTS</p><h1 id="hero-title">Мова —<br>це теж<br><span class="orange">дані.</span></h1><p class="hero-desc">Працюйте з текстами. Досліджуйте мовлення. Ставте інструментам правильні запитання.</p></div><div class="hero-art" aria-label="Від літери до цифрового представлення"><div class="specimen-top mono"><span>ОБ’ЄКТ ДОСЛІДЖЕННЯ / 001</span><span>U+0259</span></div><div class="specimen-main" aria-hidden="true"><div class="specimen-axis"></div><div class="specimen-circle"></div><div class="specimen-word">Aa<span class="orange">ə</span></div><span class="specimen-label mono">СИМВОЛ ≠ ГЛІФ</span></div><div class="specimen-foot"><p>Від першої папки<br>до власного мовного дослідження.</p><span>↘</span></div></div></section>
+ <section class="hero" aria-labelledby="hero-title">
+   <div class="hero-copy"><p class="mono eyebrow">DIGITAL TOOLS FOR LINGUISTS</p><h1 id="hero-title">Мова —<br>це теж<br><span class="orange">дані.</span></h1><p class="hero-desc">Працюйте з текстами. Досліджуйте мовлення. Ставте інструментам правильні запитання.</p></div>
+   <div class="hero-art">
+     <div class="lexicon-header mono"><span>МОВА × ТЕХНОЛОГІЇ</span><span>01—12</span></div>
+     <svg class="lexicon-cloud" viewBox="0 0 480 350" role="img" aria-labelledby="lexicon-title lexicon-desc" focusable="false">
+       <title id="lexicon-title">На перетині мови й цифрових інструментів</title>
+       <desc id="lexicon-desc">Хмара термінів курсу: команди grep і git diff, кодування UTF-8 та Unicode, регулярні вирази Regex, формати TXT, CSV, JSON, WAV і TextGrid, корпус, лема, токен і фонетичні символи.</desc>
+       <g aria-hidden="true">
+         <text class="lexicon-code lexicon-accent" x="68" y="40" font-size="23" transform="rotate(-5 68 40)">UTF-8</text>
+         <text class="lexicon-code lexicon-muted" x="179" y="40" font-size="18">&lt;text&gt;</text>
+         <text class="lexicon-code lexicon-muted" x="310" y="40" font-size="16">U+0259</text>
+         <text class="lexicon-bold" x="38" y="103" font-size="52">grep</text>
+         <text class="lexicon-serif" x="181" y="101" font-size="49">корпус</text>
+         <text class="lexicon-code" x="361" y="78" font-size="20">*.txt</text>
+         <text class="lexicon-code lexicon-muted" x="377" y="106" font-size="15">NFC</text>
+         <text class="lexicon-serif lexicon-accent" x="22" y="181" font-size="77">/ə/</text>
+         <text class="lexicon-bold" x="131" y="177" font-size="66" letter-spacing="-3">Unicode</text>
+         <text class="lexicon-code lexicon-muted" x="404" y="171" font-size="29">{ }</text>
+         <text class="lexicon-code" x="26" y="236" font-size="24" transform="rotate(-6 26 236)">git diff</text>
+         <text class="lexicon-bold lexicon-accent" x="164" y="252" font-size="78" letter-spacing="-3">Regex</text>
+         <text class="lexicon-serif" x="401" y="251" font-size="80">é</text>
+         <text class="lexicon-code lexicon-muted" x="45" y="289" font-size="23">.csv</text>
+         <text x="132" y="291" font-size="32" letter-spacing="-1">TextGrid</text>
+         <text class="lexicon-code" x="288" y="291" font-size="29">JSON</text>
+         <text class="lexicon-code lexicon-muted" x="383" y="288" font-size="21" transform="rotate(5 383 288)">WAV</text>
+         <text x="68" y="332" font-size="23">лема</text>
+         <text class="lexicon-serif lexicon-accent" x="158" y="335" font-size="36">ß</text>
+         <text class="lexicon-serif" x="210" y="334" font-size="34">œ</text>
+         <text x="277" y="332" font-size="23">токен</text>
+         <text class="lexicon-code lexicon-muted" x="375" y="330" font-size="17">POS</text>
+       </g>
+     </svg>
+     <div class="lexicon-footer mono"><span>ТЕКСТ · КОД · ЗВУК</span><span>DE / FR / EN</span></div>
+   </div>
+ </section>
  <div class="language-bar"><p class="mono">01 / ВАША МОВА</p><div class="language-buttons">${Object.entries(
    LANGUAGES,
  )

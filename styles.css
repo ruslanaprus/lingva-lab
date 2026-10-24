@@ -295,6 +295,7 @@ main:focus {
   letter-spacing: -0.015em;
 }
 .hero-art {
+  min-width: 0;
   border-left: 1px solid var(--line);
   position: relative;
   display: flex;
@@ -305,86 +306,50 @@ main:focus {
   background-size: 36px 36px;
   overflow: hidden;
 }
-.specimen-top,
-.specimen-bottom {
+.lexicon-header {
   display: flex;
   justify-content: space-between;
+  gap: 12px;
   padding: 24px 28px;
   color: var(--muted);
   font-size: 9px;
 }
-.specimen-top:before {
-  content: "+";
-  position: absolute;
-  left: -5px;
-  top: 43px;
-  font-size: 22px;
-}
-.specimen-main {
-  position: relative;
+.lexicon-cloud {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  max-height: 390px;
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 250px;
+  margin-block: auto;
+  fill: var(--ink);
+  font-family: var(--sans);
 }
-.specimen-word {
-  font-size: clamp(90px, 11.8vw, 190px);
+.lexicon-code {
+  font-family: var(--mono);
+}
+.lexicon-bold {
   font-weight: 700;
-  letter-spacing: -0.09em;
-  line-height: 1;
-  transform: rotate(-8deg);
-  position: relative;
 }
-.specimen-word .orange {
+.lexicon-serif {
   font-family: Georgia, serif;
   font-style: italic;
-  font-weight: 400;
 }
-.specimen-circle {
-  position: absolute;
-  inset: 4% 14%;
-  border: 1px solid var(--accent);
-  border-radius: 50%;
-  transform: rotate(-27deg);
+.lexicon-accent {
+  fill: var(--accent);
 }
-.specimen-axis {
-  height: 1px;
-  background: var(--accent);
-  position: absolute;
-  left: 5%;
-  right: 5%;
-  top: 54%;
-  opacity: 0.5;
+.lexicon-muted {
+  fill: var(--muted);
 }
-.specimen-label {
-  position: absolute;
-  right: 5%;
-  bottom: 14%;
-  border: 1px solid var(--accent);
-  color: var(--accent);
-  padding: 3px 8px;
-  transform: rotate(-8deg);
-  background: var(--paper);
-  font-size: 10px;
-}
-.specimen-foot {
+.lexicon-footer {
   margin: 0 28px 25px;
-  padding-top: 17px;
+  padding-top: 14px;
   border-top: 1px solid var(--line);
   display: flex;
   justify-content: space-between;
-  align-items: end;
-}
-.specimen-foot p {
-  font-size: 14px;
-  max-width: 245px;
-  line-height: 1.45;
-}
-.specimen-foot span {
-  font-size: 32px;
-  line-height: 1;
-  color: var(--accent);
+  gap: 12px;
+  font-size: 9px;
+  color: var(--muted);
 }
 .language-bar {
   display: flex;
@@ -1786,19 +1751,13 @@ dialog li + li {
   .hero .eyebrow {
     font-size: 9px;
   }
-  .specimen-word {
-    font-size: 120px;
-  }
-  .specimen-foot p {
-    font-size: 12px;
-  }
-  .specimen-top,
-  .specimen-bottom {
+  .lexicon-header {
     padding-inline: 18px;
     font-size: 8px;
   }
-  .specimen-foot {
+  .lexicon-footer {
     margin-inline: 18px;
+    font-size: 8px;
   }
   .language-bar {
     flex-wrap: wrap;
@@ -1975,39 +1934,17 @@ dialog li + li {
   .hero-art {
     border-left: 0;
     border-top: 1px solid var(--line);
-    min-height: 245px;
-    max-height: 265px;
+    min-height: 0;
   }
-  .specimen-main {
-    min-height: 145px;
-  }
-  .specimen-word {
-    font-size: 122px;
-  }
-  .specimen-top {
+  .lexicon-header {
     padding: 15px 18px;
   }
-  .specimen-circle {
-    inset: 0 25%;
+  .lexicon-cloud {
+    max-height: 320px;
   }
-  .specimen-axis {
-    left: 15%;
-    right: 15%;
-  }
-  .specimen-label {
-    right: 15%;
-    bottom: 7%;
-  }
-  .specimen-foot {
+  .lexicon-footer {
     margin-bottom: 17px;
     padding-top: 12px;
-  }
-  .specimen-foot p {
-    max-width: 220px;
-    font-size: 11px;
-  }
-  .specimen-foot span {
-    font-size: 25px;
   }
   .language-bar > p {
     width: 100%;
