@@ -24,6 +24,7 @@ test("Build removes stale output while keeping cleanup inside its own project", 
     "course.js",
     "engine.js",
     "activity.js",
+    "feedback.js",
     "regex-worker.js",
     "_headers",
   ];

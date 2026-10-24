@@ -7,6 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
 import { LANGUAGES, getModules } from "../course.js";
 import { checkActivityReports } from "./browser-activity.mjs";
+import { checkChapterFeedback } from "./browser-feedback.mjs";
 const { chromium } = await import(
   process.env.PLAYWRIGHT_MODULE
     ? pathToFileURL(process.env.PLAYWRIGHT_MODULE).href
@@ -80,6 +81,7 @@ try {
   if (!process.argv.includes("--layout-only")) {
     // Real failure -> hint -> success -> retry: counters and XP are observed in the UI.
     await go("lab/1");
+    assert.equal(await page.locator("[data-chapter-feedback]").count(), 0);
     await page.locator('[name=answer-1-1][value="0"]').check();
     await page.locator('[data-check="1-1"]').click();
     await page.locator("#task-1-1 .feedback.failed").waitFor();
@@ -184,6 +186,9 @@ try {
         await page.locator(".section-complete").count(),
         `Module ${m.id} did not complete`,
       );
+      assert.equal(await page.locator("[data-chapter-feedback]").count(), 1);
+      assert.equal(await page.locator("[data-chapter-feedback]").evaluate((el) => el.open), false,
+        "finishing a chapter must not expand or focus the optional form");
       console.log("Module " + m.id + " passed.");
     }
     assert.equal(await page.locator("#xp-label").textContent(), "2280 XP");
@@ -198,6 +203,7 @@ try {
     assert.equal(await page.locator("#xp-label").textContent(), "2340 XP");
     await page.locator("[data-check-treasure]").click();
     assert.equal(await page.locator("#xp-label").textContent(), "2340 XP");
+    await checkChapterFeedback(page, go, output);
     // Reports have actual chosen answers, full attempt history and pending-review status.
     await go("lab/1");
     const reportPromise = page.waitForEvent("download");

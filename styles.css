@@ -1266,6 +1266,80 @@ textarea::placeholder {
   grid-template-columns: repeat(4, 1fr);
   border-bottom: 1px solid var(--ink);
 }
+.chapter-feedback {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-block: 28px;
+}
+.chapter-feedback > summary {
+  padding: 20px 0;
+  cursor: pointer;
+  font-size: 15px;
+}
+.chapter-feedback > summary > span:first-child {
+  font-weight: 700;
+}
+.chapter-feedback > summary .micro {
+  display: block;
+  margin: 5px 0 0 20px;
+  font-size: 11px;
+}
+.chapter-feedback-body {
+  padding-bottom: 24px;
+  max-width: 720px;
+}
+.chapter-feedback-body > p {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 22px;
+}
+.chapter-feedback form {
+  display: grid;
+  gap: 20px;
+}
+.feedback-topics {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.feedback-topics legend {
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+.feedback-topics legend .muted {
+  display: block;
+  font-size: 12px;
+  margin-top: 5px;
+}
+.chapter-feedback select {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--white);
+  font-size: 13px;
+}
+.chapter-feedback textarea {
+  min-height: 145px;
+}
+.feedback-identity {
+  margin: 10px 0 0 25px;
+  font-size: 11px;
+}
+.chapter-feedback-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px 18px;
+  flex-wrap: wrap;
+}
+.feedback-save-status:empty {
+  display: none;
+}
 .stat-block {
   padding: 28px 20px 27px 0;
   border-right: 1px solid var(--line);

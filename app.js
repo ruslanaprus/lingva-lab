@@ -29,6 +29,10 @@ import {
   exportTextGrid,
 } from "./engine.js";
 import { PageActivityClock, activitySummary, formatDuration } from "./activity.js";
+import {
+  FEEDBACK_STORAGE_KEY, FEEDBACK_TOPICS, freshFeedbackDraft, freshFeedbackStore,
+  validateFeedbackStore, feedbackModule, createChapterFeedback, chapterFeedbackText,
+} from "./feedback.js";
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -72,6 +76,28 @@ const taskById = (id) =>
     .find((t) => t.id === id);
 const currentRoute = () => location.hash.slice(1) || "map";
 const activityClock = new PageActivityClock();
+let feedbackStore = freshFeedbackStore(), feedbackSaveTimer, feedbackDirty = false,
+  feedbackStorageAvailable = true, feedbackOpenKey = null;
+try {
+  const raw = localStorage.getItem(FEEDBACK_STORAGE_KEY);
+  if (raw) feedbackStore = validateFeedbackStore(JSON.parse(raw));
+} catch {
+  feedbackStorageAvailable = false;
+}
+
+function persistFeedback() {
+  clearTimeout(feedbackSaveTimer);
+  if (!feedbackDirty) return;
+  try {
+    localStorage.setItem(FEEDBACK_STORAGE_KEY, JSON.stringify(feedbackStore));
+    feedbackDirty = false;
+    feedbackStorageAvailable = true;
+  } catch {
+    feedbackStorageAvailable = false;
+  }
+}
+window.addEventListener("pagehide", persistFeedback);
+document.addEventListener("visibilitychange", persistFeedback);
 
 function checkpointActivity({ syncRoute = false, interacted = false, leaving = false } = {}) {
   let key = activityClock.key;
@@ -233,6 +259,8 @@ function render({ keepScroll = false } = {}) {
     parts = route.split("/"),
     page = parts[0],
     main = $("#main");
+  if (feedbackOpenKey !== `${language()}/${Number(parts[1])}` || page !== "lab")
+    feedbackOpenKey = null;
   activeTreasure = null;
   $$("[data-nav]").forEach((a) => {
     a.classList.toggle("active", a.dataset.nav === page);
@@ -376,8 +404,89 @@ function renderLab(m) {
  <details class="theory" open><summary class="mono">ПЕРЕД ПОЧАТКОМ / ТЕОРІЯ ТА ДЖЕРЕЛА</summary><div class="theory-body">${esc(m.theory)}<div class="term-chips">${m.terms.map((t) => `<button class="term-chip" data-term="${esc(t)}">${esc(t)} ↗</button>`).join("")}</div><ul class="sources-list">${m.sources.map((key) => `<li><a href="${SOURCES[key].url}" target="_blank" rel="noopener noreferrer">${esc(SOURCES[key].title)} ↗</a></li>`).join("")}</ul></div></details>
  ${m.treasure ? `<p class="treasure-clue mono">${m.treasure === "archive" ? "В архівах інколи трапляються листи з іншого століття." : m.treasure === "unicode" ? "Не всі двійники — той самий символ." : "Ідеальний результат може приховувати пропущене."} <button class="treasure-trigger" data-treasure="${m.treasure}" aria-label="Дослідити примітку: прихований виклик">◇</button></p><div id="treasure-slot"></div>` : ""}
  ${s.complete ? `<div class="section-complete"><p class="mono orange">МАРШРУТ РОЗДІЛУ ПРОЙДЕНО</p><h3>Є результат. Є історія.</h3><p>4 завдання перевірено автоматично; прикладну роботу подано для викладача. Завантажте звіт і передайте артефакти окремо.</p><button class="button small dark" data-action="report" data-module="${m.id}">Завантажити звіт ↓</button></div>` : ""}
- ${m.tasks.map((t, i) => renderTask(t, i)).join("")}<div class="lab-end"><div><p>Маленька вибірка. Чіткий метод.</p><p class="mono">СИЛЬНЕ ДОСЛІДЖЕННЯ ПОЧИНАЄТЬСЯ З ВІДТВОРЮВАНОСТІ.</p></div><a class="button" href="${m.id === 12 ? "#portfolio" : "#lab/" + (m.id + 1)}">${m.id === 12 ? "До портфоліо" : "Наступний розділ"} ↗</a></div></div></div></div>`;
+ ${m.tasks.map((t, i) => renderTask(t, i)).join("")}${s.complete ? renderChapterFeedback(m) : ""}<div class="lab-end"><div><p>Маленька вибірка. Чіткий метод.</p><p class="mono">СИЛЬНЕ ДОСЛІДЖЕННЯ ПОЧИНАЄТЬСЯ З ВІДТВОРЮВАНОСТІ.</p></div><a class="button" href="${m.id === 12 ? "#portfolio" : "#lab/" + (m.id + 1)}">${m.id === 12 ? "До портфоліо" : "Наступний розділ"} ↗</a></div></div></div></div>`;
 }
+
+function renderChapterFeedback(module) {
+  const draft = feedbackStore.tracks[language()][module.id] ?? freshFeedbackDraft();
+  return `<details class="chapter-feedback" data-chapter-feedback="${module.id}" ${feedbackOpenKey === `${language()}/${module.id}` ? "open" : ""}>
+    <summary><span>Є ідея, як покращити цей розділ?</span><span class="micro muted">Залишити відгук · необов’язково</span></summary>
+    <div class="chapter-feedback-body">
+      <p>Розкажіть, чого бракувало для навчання. Можливо, варто уточнити інструкцію, додати приклад або більше вправ? Відгук не впливає на оцінку, XP чи доступ до наступного розділу.</p>
+      <form data-feedback-form="${module.id}" novalidate>
+        <fieldset class="feedback-topics"><legend>Що хотіли б покращити? <span class="muted">Можна обрати кілька пунктів або написати свою ідею нижче.</span></legend>
+          ${Object.entries(FEEDBACK_TOPICS).map(([key, label]) => `<label class="confirm-label"><input type="checkbox" name="feedback-topic" value="${key}" ${draft.topics.includes(key) ? "checked" : ""}><span>${esc(label)}</span></label>`).join("")}
+        </fieldset>
+        <label><span class="input-label">До чого стосується відгук? (необов’язково)</span><select name="feedback-task"><option value="">Увесь розділ</option>${module.tasks.map((task, i) => `<option value="${task.id}" ${draft.taskId === task.id ? "selected" : ""}>${i + 1}. ${esc(task.title)}</option>`).join("")}</select></label>
+        <label><span class="input-label">Ваша пропозиція (необов’язково, до 4000 символів)</span><textarea name="feedback-comment" maxlength="4000" rows="5" placeholder="Наприклад: у завданні ${module.id}-2 було незрозуміло, як почати. Допоміг би короткий розібраний приклад. А ще хотілося б більше вправ на цю тему.">${esc(draft.comment)}</textarea></label>
+        <div><label class="confirm-label"><input type="checkbox" name="feedback-anonymous" ${draft.anonymous ? "checked" : ""}><span>Анонімно — не додавати ім’я та групу</span></label>
+          <p class="micro muted feedback-identity" data-feedback-identity>${esc(feedbackIdentityNote(draft.anonymous))}</p></div>
+        <p class="micro muted">Зараз відгук зберігається на цьому пристрої. Щоб поділитися ним, завантажте окремий файл і передайте викладачеві. Відгук не додається до навчального звіту чи резервної копії прогресу.</p>
+        <div class="chapter-feedback-actions"><button type="submit" class="button small">Зберегти на пристрої</button><button type="button" class="button small" data-download-feedback="${module.id}">Завантажити відгук (.txt) ↓</button><button type="button" class="hint-button" data-close-feedback>Згорнути</button></div>
+        <p class="micro feedback-save-status" data-feedback-status role="status">${feedbackStorageAvailable ? "" : "Не вдалося зберегти чернетку у браузері. Ви можете завантажити відгук окремим файлом."}</p>
+      </form>
+    </div>
+  </details>`;
+}
+function feedbackIdentityNote(anonymous) {
+  return anonymous
+    ? "Ім’я, група, відповіді, час роботи й дати подань у файл не потрапляють. Якщо хочете лишитися без імені, не вказуйте особисті дані у тексті й передайте файл через канал, що не розкриває авторство."
+    : `До файлу буде додано ім’я: ${state.student || "не вказано"}; група: ${state.group || "не вказано"}. Відповіді й час роботи не додаються.`;
+}
+function readFeedbackForm(form) {
+  return {
+    topics: $$('[name="feedback-topic"]:checked', form).map((input) => input.value),
+    taskId: form.elements["feedback-task"].value || null,
+    comment: form.elements["feedback-comment"].value,
+    anonymous: form.elements["feedback-anonymous"].checked,
+  };
+}
+function rememberFeedback(form) {
+  const id = Number(form.dataset.feedbackForm);
+  if (!feedbackModule(state, language(), id)) return;
+  const draft = readFeedbackForm(form);
+  feedbackStore.tracks[language()][id] = draft;
+  feedbackDirty = true;
+  clearTimeout(feedbackSaveTimer);
+  feedbackSaveTimer = setTimeout(persistFeedback, 220);
+  $("[data-feedback-identity]", form).textContent = feedbackIdentityNote(draft.anonymous);
+  $("[data-feedback-status]", form).textContent = "";
+}
+function handleChapterFeedback(form, downloadFile = false) {
+  const status = $("[data-feedback-status]", form);
+  try {
+    const id = Number(form.dataset.feedbackForm);
+    const draft = readFeedbackForm(form);
+    const feedback = createChapterFeedback(state, language(), id, draft);
+    feedbackStore.tracks[language()][id] = draft;
+    feedbackDirty = true;
+    persistFeedback();
+    if (downloadFile) {
+      download(`lingva-lab-feedback_${language()}_${pad(id)}.txt`, chapterFeedbackText(feedback));
+      status.textContent = "Файл завантажено. Він ще не надісланий викладачеві: передайте його окремо зручним для вас способом.";
+    } else status.textContent = feedbackStorageAvailable
+      ? "Відгук збережено на цьому пристрої. Щоб поділитися, завантажте його окремим файлом."
+      : "Не вдалося зберегти чернетку у браузері. Скористайтеся завантаженням відгуку.";
+  } catch (error) {
+    status.textContent = error.message;
+  }
+}
+$("#main").addEventListener("toggle", (e) => {
+  if (!e.target.matches("[data-chapter-feedback]")) return;
+  const key = `${language()}/${e.target.dataset.chapterFeedback}`;
+  if (e.target.open) feedbackOpenKey = key;
+  else if (feedbackOpenKey === key) feedbackOpenKey = null;
+}, true);
+for (const event of ["input", "change"])
+  $("#main").addEventListener(event, (e) => {
+    const form = e.target.closest("[data-feedback-form]");
+    if (form) rememberFeedback(form);
+  });
+$("#main").addEventListener("submit", (e) => {
+  if (!e.target.matches("[data-feedback-form]")) return;
+  e.preventDefault();
+  handleChapterFeedback(e.target);
+});
 
 function renderTask(t, index) {
   const r = track().answers[t.id],
@@ -520,6 +629,16 @@ $("#main").addEventListener("keydown", (e) => {
 $("#main").addEventListener("click", async (e) => {
   const b = e.target.closest("button,a");
   if (!b) return;
+  if (b.hasAttribute("data-download-feedback")) {
+    handleChapterFeedback(b.closest("[data-feedback-form]"), true);
+    return;
+  }
+  if (b.hasAttribute("data-close-feedback")) {
+    const panel = b.closest("[data-chapter-feedback]");
+    panel.open = false;
+    $("summary", panel).focus({ preventScroll: true });
+    return;
+  }
   if (b.dataset.language) {
     showProfile(b.dataset.language);
     return;
