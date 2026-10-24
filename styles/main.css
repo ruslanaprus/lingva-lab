@@ -232,7 +232,7 @@ button svg {
 .main-nav a.active {
   border-bottom-color: var(--ink);
 }
-.main-nav a span {
+.main-nav a > span:first-child {
   margin-right: 10px;
   color: var(--muted);
 }
@@ -1814,7 +1814,7 @@ dialog li + li {
   .nav-help {
     display: none;
   }
-  .main-nav a span {
+  .main-nav a > span:first-child {
     margin-right: 5px;
   }
   .hero h1 {
@@ -1991,7 +1991,7 @@ dialog li + li {
     display: flex;
     gap: 6px;
   }
-  .main-nav a span {
+  .main-nav a > span:first-child {
     margin: 0;
   }
   .page {

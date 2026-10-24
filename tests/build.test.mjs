@@ -17,28 +17,28 @@ test("Build removes stale output while keeping cleanup inside its own project", 
   const sandbox = await mkdtemp(join(tmpdir(), "lingva-build-"));
   const project = join(sandbox, "site");
   const unrelated = join(sandbox, "other");
-  const files = [
-    "index.html",
-    "styles.css",
-    "app.js",
-    "course.js",
-    "engine.js",
-    "activity.js",
-    "feedback.js",
-    "regex-worker.js",
-    "_headers",
-  ];
+  const files = ["index.html", "_headers"];
+  const directories = ["src", "content", "styles", "assets"];
   try {
     await mkdir(join(project, "scripts"), { recursive: true });
-    await mkdir(join(project, "assets"));
+    for (const directory of directories) await mkdir(join(project, directory));
+    await writeFile(
+      join(project, "package.json"),
+      JSON.stringify({ version: "2.0.0" }),
+    );
+    await writeFile(
+      join(project, "src", "version.js"),
+      'export const APP_VERSION = "development";',
+    );
+    await writeFile(join(project, "content", "course.js"), "course fixture");
+    await writeFile(join(project, "styles", "main.css"), "body{}");
     await mkdir(join(project, "dist", "assets"), { recursive: true });
     await mkdir(join(unrelated, "dist"), { recursive: true });
     await copyFile(
       new URL("../scripts/build.mjs", import.meta.url),
       join(project, "scripts", "build.mjs"),
     );
-    for (const file of files)
-      await writeFile(join(project, file), `source: ${file}`);
+    for (const file of files) await writeFile(join(project, file), `source: ${file}`);
     await writeFile(join(project, "assets", "signal.wav"), "fixture asset");
     await writeFile(
       join(project, "dist", "student-backup.json"),
@@ -54,16 +54,18 @@ test("Build removes stale output while keeping cleanup inside its own project", 
     });
     assert.deepEqual(
       (await readdir(join(project, "dist"))).sort(),
-      [...files, "assets"].sort(),
+      [...files, ...directories].sort(),
     );
-    assert.deepEqual(await readdir(join(project, "dist", "assets")), [
-      "signal.wav",
-    ]);
+    assert.deepEqual(await readdir(join(project, "dist", "assets")), ["signal.wav"]);
     for (const file of files)
       assert.equal(
         await readFile(join(project, "dist", file), "utf8"),
         `source: ${file}`,
       );
+    assert.equal(
+      await readFile(join(project, "dist", "src", "version.js"), "utf8"),
+      'export const APP_VERSION = "2.0.0";',
+    );
     assert.equal(
       await readFile(join(unrelated, "dist", "keep.txt"), "utf8"),
       "unrelated project",

@@ -1,23 +1,38 @@
+import { exerciseSnapshot } from "../src/learning/progress.js";
+import { TREASURES } from "../content/registry.js";
 import test from "node:test";
 import assert from "node:assert/strict";
-import {
-  freshState,
-  createGit,
-  createTerminal,
-  validateBackup,
-  formatTaskValue,
-} from "../engine.js";
-import { getModules } from "../course.js";
+import { freshState, validateBackup } from "../src/persistence/state.js";
+import { createGit } from "../src/tools/git.js";
+import { createTerminal } from "../src/tools/terminal.js";
+import { formatTaskValue } from "../src/learning/values.js";
+import { foundationChapters as getModules } from "./helpers/course.mjs";
 
 const timestamp = "2026-10-23T00:00:00.000Z";
 function backupWithValue(language, id, value, location = "attempt") {
   const state = freshState();
-  state.activeLanguage = language;
-  state.tracks[language].answers[id] = {
+  state.activePathId = `${language}-foundations`;
+  const definition = exerciseSnapshot(
+    getModules(language)
+      .flatMap((chapter) => chapter.tasks)
+      .find((task) => task.id === id),
+  );
+  state.paths[`${language}-foundations`].answers[id] = {
+    definition,
     draft: location === "draft" ? value : null,
     attempts:
       location === "attempt"
-        ? [{ at: timestamp, value, status: "failed", feedback: "", hints: 0 }]
+        ? [
+            {
+              at: timestamp,
+              value,
+              status: "failed",
+              feedback: "",
+              hints: 0,
+              definition,
+              graderVersion: 1,
+            },
+          ]
         : [],
     hints: 0,
     hintOpened: false,
@@ -29,14 +44,17 @@ function backupWithValue(language, id, value, location = "attempt") {
 for (const language of ["de", "fr", "en"]) {
   test(`${language}: reject foreign type discriminators in drafts and history`, () => {
     const cases = [
-      ["6-1", { pattern: "x" }],
-      ["7-1", { pattern: "x", replacement: "" }],
+      ["regex-search-word-forms", { pattern: "x" }],
+      ["regex-cleanup-timestamps", { pattern: "x", replacement: "" }],
       [
-        "1-5",
+        "workspace-portfolio",
         { artifact: "results.txt", method: "", reflection: "", confirm: false },
       ],
-      ["10-1", { start: "0.60", end: "1.10", label: "B" }],
-      ["8-1", createGit(language)],
+      [
+        "speech-annotation-segment-boundaries",
+        { start: "0.60", end: "1.10", label: "B" },
+      ],
+      ["git-history-research-commit", createGit(language)],
     ];
     for (const [id, value] of cases) {
       for (const location of ["draft", "attempt"]) {
@@ -49,12 +67,7 @@ for (const language of ["de", "fr", "en"]) {
           { extra: { toString: null } },
         ]) {
           // A legitimate Git value already owns history; machine and nested extras cover that path.
-          const input = backupWithValue(
-            language,
-            id,
-            { ...value, ...extra },
-            location,
-          );
+          const input = backupWithValue(language, id, { ...value, ...extra }, location);
           assert.throws(
             () => validateBackup(input),
             /сумісна резервна копія/,
@@ -68,18 +81,35 @@ for (const language of ["de", "fr", "en"]) {
 
 test("Reject nonprimitive choices and treasure answers instead of coercing them", () => {
   for (const value of [true, false, [], [1], "", {}]) {
-    assert.throws(() => validateBackup(backupWithValue("de", "1-1", value)));
+    assert.throws(() =>
+      validateBackup(backupWithValue("de", "workspace-original-storage", value)),
+    );
     const state = freshState();
-    state.tracks.de.treasures.unicode = {
+    const definition = exerciseSnapshot({
+      ...TREASURES.unicode,
+      id: "unicode",
+      type: "choice",
+      revision: 1,
+    });
+    state.paths["de-foundations"].treasures.unicode = {
+      definition,
       attempts: [
-        { at: timestamp, value, status: "failed", feedback: "", hints: 0 },
+        {
+          at: timestamp,
+          value,
+          status: "failed",
+          feedback: "",
+          hints: 0,
+          definition,
+          graderVersion: 1,
+        },
       ],
     };
     assert.throws(() => validateBackup(state));
   }
   for (const value of [null, 0, "0", 1, "1"]) {
     assert.doesNotThrow(() =>
-      validateBackup(backupWithValue("de", "1-1", value)),
+      validateBackup(backupWithValue("de", "workspace-original-storage", value)),
     );
   }
 });
@@ -90,19 +120,27 @@ test("Reject unvalidated fields at every retained record layer", () => {
       state.extra = {};
     },
     (state) => {
-      state.tracks.de.extra = {};
+      state.paths["de-foundations"].extra = {};
     },
     (state) => {
-      state.tracks.de.answers["4-1"].extra = {};
+      state.paths["de-foundations"].answers[
+        "terminal-navigation-archive-navigation"
+      ].extra = {};
     },
     (state) => {
-      state.tracks.de.answers["4-1"].attempts[0].extra = {};
+      state.paths["de-foundations"].answers[
+        "terminal-navigation-archive-navigation"
+      ].attempts[0].extra = {};
     },
     (state) => {
-      state.tracks.de.answers["4-1"].attempts[0].value.machine.extra = {};
+      state.paths["de-foundations"].answers[
+        "terminal-navigation-archive-navigation"
+      ].attempts[0].value.machine.extra = {};
     },
     (state) => {
-      state.tracks.de.answers["4-1"].attempts[0].value.commands.push({
+      state.paths["de-foundations"].answers[
+        "terminal-navigation-archive-navigation"
+      ].attempts[0].value.commands.push({
         input: "ls",
         ok: true,
         action: "ls",
@@ -110,7 +148,9 @@ test("Reject unvalidated fields at every retained record layer", () => {
       });
     },
     (state) => {
-      state.tracks.de.answers["4-1"].toolEvents.push({
+      state.paths["de-foundations"].answers[
+        "terminal-navigation-archive-navigation"
+      ].toolEvents.push({
         at: timestamp,
         input: "ls",
         output: "original/",
@@ -119,10 +159,10 @@ test("Reject unvalidated fields at every retained record layer", () => {
       });
     },
     (state) => {
-      state.tracks.de.treasures.unicode = { attempts: [], extra: {} };
+      state.paths["de-foundations"].treasures.unicode = { attempts: [], extra: {} };
     },
     (state) => {
-      state.tracks.de.treasures.unicode = {
+      state.paths["de-foundations"].treasures.unicode = {
         attempts: [
           {
             at: timestamp,
@@ -137,7 +177,7 @@ test("Reject unvalidated fields at every retained record layer", () => {
     },
   ];
   for (const mutate of cases) {
-    const state = backupWithValue("de", "4-1", {
+    const state = backupWithValue("de", "terminal-navigation-archive-navigation", {
       machine: createTerminal("de"),
       commands: [],
     });
@@ -151,17 +191,19 @@ test("Reject unvalidated fields at every retained record layer", () => {
     at: timestamp,
     extra: {},
   });
-  assert.throws(() => validateBackup(backupWithValue("de", "8-1", git)));
+  assert.throws(() =>
+    validateBackup(backupWithValue("de", "git-history-research-commit", git)),
+  );
 });
 
 test("Restore legitimate simulator histories without retaining references to input", () => {
-  const state = backupWithValue("fr", "4-1", {
+  const state = backupWithValue("fr", "terminal-navigation-archive-navigation", {
     machine: createTerminal("fr"),
-    commands: [
-      { input: "ls", ok: true, action: "ls", target: null, pattern: null },
-    ],
+    commands: [{ input: "ls", ok: true, action: "ls", target: null, pattern: null }],
   });
-  state.tracks.fr.answers["4-1"].toolEvents.push({
+  state.paths["fr-foundations"].answers[
+    "terminal-navigation-archive-navigation"
+  ].toolEvents.push({
     at: timestamp,
     input: "ls",
     output: "original/",
@@ -169,13 +211,13 @@ test("Restore legitimate simulator histories without retaining references to inp
   });
   const clean = validateBackup(state);
   assert.deepEqual(clean, state);
-  state.tracks.fr.answers["4-1"].attempts[0].value.machine.dirs.push(
-    "/tampered",
-  );
+  state.paths["fr-foundations"].answers[
+    "terminal-navigation-archive-navigation"
+  ].attempts[0].value.machine.dirs.push("/tampered");
   assert.ok(
-    !clean.tracks.fr.answers["4-1"].attempts[0].value.machine.dirs.includes(
-      "/tampered",
-    ),
+    !clean.paths["fr-foundations"].answers[
+      "terminal-navigation-archive-navigation"
+    ].attempts[0].value.machine.dirs.includes("/tampered"),
   );
   assert.deepEqual(validateBackup(JSON.parse(JSON.stringify(clean))), clean);
 });
@@ -183,23 +225,30 @@ test("Restore legitimate simulator histories without retaining references to inp
 test("Task formatting remains safe even when passed malformed, unvalidated values", () => {
   const tasks = getModules("de").flatMap((m) => m.tasks);
   const task = (id) => tasks.find((t) => t.id === id);
-  for (const id of ["6-1", "7-1", "1-5", "10-1", "8-1", "4-1"]) {
+  for (const id of [
+    "regex-search-word-forms",
+    "regex-cleanup-timestamps",
+    "workspace-portfolio",
+    "speech-annotation-segment-boundaries",
+    "git-history-research-commit",
+    "terminal-navigation-archive-navigation",
+  ]) {
     for (const value of [
       { pattern: "x", machine: true },
       { history: true },
       { extra: { toString: null } },
       { commands: [null], machine: {} },
     ]) {
-      assert.equal(
-        formatTaskValue(task(id), value),
-        "Некоректні дані відповіді",
-      );
+      assert.equal(formatTaskValue(task(id), value), "Некоректні дані відповіді");
     }
     assert.equal(formatTaskValue(task(id), null), "—");
   }
-  assert.equal(formatTaskValue(task("6-1"), { pattern: "x" }), "Шаблон: x");
+  assert.equal(
+    formatTaskValue(task("regex-search-word-forms"), { pattern: "x" }),
+    "Шаблон: x",
+  );
   assert.match(
-    formatTaskValue(task("4-1"), {
+    formatTaskValue(task("terminal-navigation-archive-navigation"), {
       machine: createTerminal("de"),
       commands: [{ input: "ls", ok: false, action: "ls" }],
     }),
@@ -212,7 +261,7 @@ test("Task formatting remains safe even when passed malformed, unvalidated value
     at: timestamp,
   });
   assert.match(
-    formatTaskValue(task("8-1"), git),
+    formatTaskValue(task("git-history-research-commit"), git),
     /Checked source\nCorrected text/,
   );
 });
