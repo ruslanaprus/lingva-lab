@@ -23,6 +23,7 @@ import {
   createGit,
   runGit,
   validateBackup,
+  formatTaskValue,
   exportTextGrid,
 } from "./engine.js";
 
@@ -289,7 +290,7 @@ function renderTask(t, index) {
   const r = track().answers[t.id],
     status = taskStatus(r),
     latest = r?.attempts.at(-1);
-  return `<article class="task-card ${status}" id="task-${t.id}" data-task="${t.id}"><div class="task-top mono"><span>ЗАВДАННЯ ${pad(index + 1)} / ${t.type === "portfolio" ? "ПРИКЛАДНА РОБОТА" : "ДОСЛІДНИЦЬКА ПРАКТИКА"} · ${t.xp} XP</span><span class="task-status ${status}">${labels[status]}</span></div><h2>${esc(t.title)}</h2><p class="task-prompt">${esc(t.prompt)}</p><div class="task-input">${taskInput(t, r?.draft)}</div><div class="task-actions"><button class="button dark" data-check="${t.id}">${t.type === "portfolio" ? (status === "submitted" ? "Подати нову версію" : "Подати роботу") : status === "passed" ? "Перевірити ще раз" : "Перевірити відповідь"} <span>↗</span></button><button class="hint-button" data-hint="${t.id}" aria-expanded="${!!r?.hintOpened}">Підказка${r?.hints ? " · використано" : ""}</button></div>${r?.hintOpened ? `<div class="hint-content">${esc(t.hint)}</div>` : ""}${latest ? `<div class="feedback ${latest.status}" role="status"><b>${labels[latest.status]}.</b> ${esc(latest.feedback)}${status === "passed" && latest.status === "failed" ? "<p>Попередній успіх збережено; ця нова спроба потребує правки.</p>" : ""}</div>` : ""}<p class="attempt-meta mono">СПРОБИ ${r?.attempts.length || 0} · ПОМИЛКИ ${r?.attempts.filter((a) => a.status === "failed").length || 0} · ПОВТОРНІ ПОДАННЯ ${Math.max(0, (r?.attempts.length || 0) - 1)}${r?.toolEvents.length ? " · ПОМИЛКИ КОМАНД " + r.toolEvents.filter((e) => !e.ok).length : ""}</p>${r?.attempts.length ? `<details class="history"><summary>Історія відповідей (${r.attempts.length})</summary><ol>${r.attempts.map((a) => `<li>${date(a.at)} · ${labels[a.status]} · підказки ${a.hints}<pre>${esc(readableValue(a.value))}</pre></li>`).join("")}</ol></details>` : ""}</article>`;
+  return `<article class="task-card ${status}" id="task-${t.id}" data-task="${t.id}"><div class="task-top mono"><span>ЗАВДАННЯ ${pad(index + 1)} / ${t.type === "portfolio" ? "ПРИКЛАДНА РОБОТА" : "ДОСЛІДНИЦЬКА ПРАКТИКА"} · ${t.xp} XP</span><span class="task-status ${status}">${labels[status]}</span></div><h2>${esc(t.title)}</h2><p class="task-prompt">${esc(t.prompt)}</p><div class="task-input">${taskInput(t, r?.draft)}</div><div class="task-actions"><button class="button dark" data-check="${t.id}">${t.type === "portfolio" ? (status === "submitted" ? "Подати нову версію" : "Подати роботу") : status === "passed" ? "Перевірити ще раз" : "Перевірити відповідь"} <span>↗</span></button><button class="hint-button" data-hint="${t.id}" aria-expanded="${!!r?.hintOpened}">Підказка${r?.hints ? " · використано" : ""}</button></div>${r?.hintOpened ? `<div class="hint-content">${esc(t.hint)}</div>` : ""}${latest ? `<div class="feedback ${latest.status}" role="status"><b>${labels[latest.status]}.</b> ${esc(latest.feedback)}${status === "passed" && latest.status === "failed" ? "<p>Попередній успіх збережено; ця нова спроба потребує правки.</p>" : ""}</div>` : ""}<p class="attempt-meta mono">СПРОБИ ${r?.attempts.length || 0} · ПОМИЛКИ ${r?.attempts.filter((a) => a.status === "failed").length || 0} · ПОВТОРНІ ПОДАННЯ ${Math.max(0, (r?.attempts.length || 0) - 1)}${r?.toolEvents.length ? " · ПОМИЛКИ КОМАНД " + r.toolEvents.filter((e) => !e.ok).length : ""}</p>${r?.attempts.length ? `<details class="history"><summary>Історія відповідей (${r.attempts.length})</summary><ol>${r.attempts.map((a) => `<li>${date(a.at)} · ${labels[a.status]} · підказки ${a.hints}<pre>${esc(formatTaskValue(t, a.value))}</pre></li>`).join("")}</ol></details>` : ""}</article>`;
 }
 function optionsInput(t, value) {
   return `<fieldset class="options" style="border:0;padding:0;margin:0"><legend class="sr-only">${esc(t.title)}</legend>${t.options.map((option, i) => `<label class="option"><input type="radio" name="answer-${t.id}" value="${i}" ${value !== null && value !== undefined && String(value) === String(i) ? "checked" : ""}><span>${esc(option)}</span></label>`).join("")}</fieldset>`;
@@ -842,22 +843,6 @@ function download(filename, content, type = "text/plain;charset=utf-8") {
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
-function readableValue(value) {
-  if (value === null || value === undefined) return "—";
-  if (typeof value !== "object") return String(value);
-  if (value.machine)
-    return value.commands
-      .map((c) => "$ " + c.input + (c.ok ? "" : " [помилка]"))
-      .join("\n");
-  if (value.history)
-    return `Робочий текст: ${value.text}\nІндекс: ${value.staged ?? "порожній"}\nКоміти:\n${value.history.map((c) => c.message + "\n" + c.text).join("\n")}`;
-  return Object.entries(value)
-    .map(
-      ([key, v]) =>
-        `${{ artifact: "Артефакт", method: "Метод і результати", reflection: "Обмеження та висновок", confirm: "Самоперевірка", pattern: "Шаблон", replacement: "Заміна", start: "Початок", end: "Кінець", label: "Мітка" }[key] || key}: ${typeof v === "boolean" ? (v ? "так" : "ні") : v}`,
-    )
-    .join("\n\n");
-}
 function reportData(id) {
   const m = moduleById(id),
     ms = sectionStats(m, track());
@@ -913,7 +898,7 @@ function formatReportValue(t, value) {
   const task = taskById(t.id);
   if (task?.options && value !== null && value !== undefined)
     return `${Number(value) + 1}. ${task.options[Number(value)] ?? "Невідомий варіант"}`;
-  return readableValue(value);
+  return formatTaskValue(task, value);
 }
 function downloadMaterials(id) {
   const l = LANGUAGES[language()],

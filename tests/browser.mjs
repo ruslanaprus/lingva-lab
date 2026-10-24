@@ -215,6 +215,51 @@ try {
     await (await backupPromise).saveAs(output + "/backup.json");
     const backup = JSON.parse(await readFile(output + "/backup.json", "utf8"));
     assert.equal(backup.tracks.de.answers["1-1"].attempts.length, 3);
+    // Hostile imports must be rejected before either in-memory or saved progress changes.
+    const beforeImport = await page.evaluate(() =>
+      localStorage.getItem("lingva-lab:v1"),
+    );
+    for (const extra of [
+      { machine: true },
+      { history: true },
+      { extra: { toString: null } },
+    ]) {
+      const hostile = structuredClone(backup);
+      Object.assign(hostile.tracks.de.answers["6-1"].attempts[0].value, extra);
+      await page.locator("#toast").evaluate((el) => {
+        el.textContent = "";
+      });
+      await page
+        .locator("#backup-input")
+        .setInputFiles({
+          name: "hostile-backup.json",
+          mimeType: "application/json",
+          buffer: Buffer.from(JSON.stringify(hostile)),
+        });
+      await page
+        .locator("#toast")
+        .filter({ hasText: "Не вдалося імпортувати" })
+        .waitFor();
+      assert.equal(await page.locator("#info-dialog").isVisible(), false);
+      assert.equal(
+        await page.evaluate(() => localStorage.getItem("lingva-lab:v1")),
+        beforeImport,
+      );
+    }
+    await page.reload();
+    assert.equal(await page.locator("#xp-label").textContent(), "2340 XP");
+    await go("lab/6");
+    assert.equal(await page.locator("#task-6-1.passed").count(), 1);
+    const preservedReport = page.waitForEvent("download");
+    await page.locator(".sidebar-controls [data-action=report]").click();
+    await (
+      await preservedReport
+    ).saveAs(output + "/after-rejected-import.html");
+    assert.match(
+      await readFile(output + "/after-rejected-import.html", "utf8"),
+      /Шаблон:/,
+    );
+    await go("portfolio");
     await page.locator("#profile-button").click();
     await page.locator("[name=language][value=fr]").check();
     await page.locator("#profile-form [type=submit]").click();
@@ -304,7 +349,7 @@ try {
   console.log(
     process.argv.includes("--layout-only")
       ? "PASS: 35 responsive layouts across five viewport widths; no JavaScript or HTTP errors."
-      : "PASS: 60 browser task flows, retries/XP/history, language isolation, reload, report/TextGrid/backup downloads, import and 35 responsive layouts.",
+      : "PASS: 60 browser task flows, hostile-import rejection/storage preservation, reload/report recovery, valid backup restore, retries/XP/history, language isolation and 35 responsive layouts.",
   );
   console.log("QA artifacts: " + output);
 } finally {

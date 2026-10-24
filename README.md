@@ -42,11 +42,37 @@ Unix і Git виконуються у браузерних симулятора�
 pnpm build
 ```
 
-Команда копіює тільки необхідні статичні файли в `dist/`. Залежності та мережеві запити для збірки не потрібні.
+Команда очищує згенерований каталог `dist/` цього проєкту та копіює лише необхідні статичні файли. Попередні звіти, резервні копії та інші зайві файли у `dist/` видаляються перед збіркою. Залежності та мережеві запити для збірки не потрібні.
 
 Для [Direct Upload](https://developers.cloudflare.com/pages/get-started/direct-upload/) у Cloudflare Pages завантажте вміст `dist/` через панель керування. Для інтеграції з Git виберіть framework preset **None**, build command `pnpm build`, output directory `dist`. Сайт не використовує Functions, бази даних або платні API.
 
-Cloudflare підтримує [статичні HTML-сайти](https://developers.cloudflare.com/pages/framework-guides/deploy-anything/). Конкретні актуальні квоти дивіться в [Pages limits](https://developers.cloudflare.com/pages/platform/limits/). Сайт у цій сесії не опубліковано і до облікового запису Cloudflare не підключено.
+Cloudflare підтримує [статичні HTML-сайти](https://developers.cloudflare.com/pages/framework-guides/deploy-anything/). Конкретні актуальні квоти дивіться в [Pages limits](https://developers.cloudflare.com/pages/platform/limits/).
+
+### Автодеплой через GitHub Actions
+
+Workflow [`.github/workflows/deploy-cloudflare.yml`](.github/workflows/deploy-cloudflare.yml) запускається після кожного push у `main`: встановлює pnpm із версії в `package.json`, виконує `pnpm test`, збирає `dist/` і публікує його в Cloudflare Pages. Якщо тести або збірка завершуються помилкою, деплой не виконується. Запуск вручну доступний через **Actions → Deploy to Cloudflare Pages → Run workflow** для гілки `main`.
+
+Одноразове налаштування:
+
+1. Створіть у своєму Cloudflare account проєкт Pages із назвою `lingva-lab` і production branch `main`. Для Direct Upload це можна зробити локально:
+
+   ```sh
+   npx wrangler@4 login
+   npx wrangler@4 pages project create lingva-lab --production-branch=main
+   ```
+
+2. Створіть Cloudflare API token із дозволом **Account → Cloudflare Pages → Edit**, обмеженим відповідним account.
+3. У GitHub-репозиторії відкрийте **Settings → Secrets and variables → Actions** і додайте repository secrets:
+
+   | Secret | Значення |
+   | --- | --- |
+   | `CLOUDFLARE_API_TOKEN` | API token із попереднього кроку |
+   | `CLOUDFLARE_ACCOUNT_ID` | ID account, у якому створено проєкт Pages |
+
+4. Якщо проєкт має іншу назву, додайте repository variable `CLOUDFLARE_PAGES_PROJECT_NAME` із точною назвою цього проєкту. Без цієї змінної використовується `lingva-lab`. Його production branch також має бути `main`.
+5. Закомітьте й надішліть workflow у `main`. Наступні push у `main` автоматично оновлюватимуть сайт після успішних перевірок.
+
+Якщо проєкт Pages уже має Git integration, вимкніть його автоматичні збірки, щоб уникнути подвійних деплоїв. Деталі: [Cloudflare Pages CI](https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/) і [керування Git integration](https://developers.cloudflare.com/pages/configuration/git-integration/).
 
 Файл `_headers` задає політику джерел контенту та інші заголовки для Pages. Звичайний Python HTTP-сервер їх не застосовує; браузерні QA-перевірки запускають тестовий сервер із цими заголовками.
 
@@ -57,7 +83,7 @@ pnpm test
 pnpm build
 ```
 
-Тести перевіряють досяжність результату всіх 180 варіантів завдань, незалежність траєкторій, облік помилок і повторів, одноразове нарахування XP, Unicode, regex, знімки Git, семантику копіювання, WER та імпорт.
+Тести перевіряють досяжність результату всіх 180 варіантів завдань, незалежність траєкторій, облік помилок і повторів, одноразове нарахування XP, Unicode, regex, знімки Git, семантику копіювання, WER та імпорт. Регресійні перевірки відхиляють сторонні поля у резервних копіях, перевіряють безпечне форматування відповідей і видалення зайвих файлів лише з `dist/` цього проєкту. Формат версії 1 приймає тільки визначені поля; довільні додаткові поля не підтримуються.
 
 Додаткова браузерна перевірка використовує окремо встановлений Playwright і Chrome:
 

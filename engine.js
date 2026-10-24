@@ -564,125 +564,221 @@ export function runGit(state, command) {
   );
 }
 
+const object = (value) =>
+  value !== null && typeof value === "object" && !Array.isArray(value);
+const text = (value, max = 50000) =>
+  typeof value === "string" && value.length <= max;
+const onlyKeys = (value, keys) =>
+  object(value) && Object.keys(value).every((key) => keys.includes(key));
+const pick = (value, keys) =>
+  Object.fromEntries(
+    keys
+      .filter((key) => Object.hasOwn(value, key))
+      .map((key) => [key, value[key]]),
+  );
+const indexValue = (value, count) =>
+  (typeof value === "number" ||
+    (typeof value === "string" && /^(0|[1-9]\d*)$/.test(value))) &&
+  Number.isSafeInteger(Number(value)) &&
+  Number(value) >= 0 &&
+  Number(value) < count;
+const attemptKeys = ["at", "value", "status", "feedback", "hints"];
+const eventKeys = ["at", "input", "output", "ok"];
+const commandKeys = ["input", "ok", "action", "target", "pattern"];
+const commitKeys = ["text", "message", "at"];
+const machineKeys = ["cwd", "dirs", "word", "files"];
+const valueKeys = {
+  regex: ["pattern", "replacement"],
+  replace: ["pattern", "replacement"],
+  portfolio: ["artifact", "method", "reflection", "confirm"],
+  interval: ["start", "end", "label"],
+  git: ["text", "staged", "history", "logViewed", "commands"],
+  terminal: ["machine", "commands"],
+};
+const validAttempt = (a) =>
+  onlyKeys(a, attemptKeys) &&
+  ["passed", "failed", "submitted"].includes(a.status) &&
+  text(a.at, 40) &&
+  !Number.isNaN(Date.parse(a.at)) &&
+  text(a.feedback, 5000) &&
+  Number.isSafeInteger(a.hints) &&
+  a.hints >= 0;
+const validCommand = (c) =>
+  onlyKeys(c, commandKeys) &&
+  text(c.input, 1000) &&
+  typeof c.ok === "boolean" &&
+  text(c.action, 100) &&
+  (c.target == null || text(c.target, 1000)) &&
+  (c.pattern == null || text(c.pattern, 1000));
+const validCommit = (c) =>
+  onlyKeys(c, commitKeys) &&
+  text(c.text, 10000) &&
+  text(c.message, 500) &&
+  text(c.at, 40);
+function validTaskValue(task, value) {
+  if (value === null) return true;
+  if (["choice", "unicode", "wave"].includes(task.type))
+    return indexValue(value, task.options.length);
+  if (["exact", "json", "wer"].includes(task.type)) return text(value, 10000);
+  const keys = valueKeys[task.type];
+  if (!keys || !onlyKeys(value, keys)) return false;
+  if (["regex", "replace"].includes(task.type))
+    return (
+      text(value.pattern, 300) &&
+      (value.replacement === undefined || text(value.replacement, 1000))
+    );
+  if (task.type === "portfolio")
+    return (
+      text(value.artifact, 1000) &&
+      text(value.method, 15000) &&
+      text(value.reflection, 15000) &&
+      typeof value.confirm === "boolean"
+    );
+  if (task.type === "interval")
+    return ["start", "end", "label"].every((key) => text(value[key], 100));
+  if (task.type === "git")
+    return (
+      text(value.text, 10000) &&
+      (value.staged === null || text(value.staged, 10000)) &&
+      typeof value.logViewed === "boolean" &&
+      Array.isArray(value.history) &&
+      value.history.length <= 5000 &&
+      value.history.every(validCommit) &&
+      // Current simulator exports this unused field as an empty array; older imports may omit it.
+      (value.commands === undefined ||
+        (Array.isArray(value.commands) && value.commands.length === 0))
+    );
+  const m = value.machine;
+  return (
+    onlyKeys(m, machineKeys) &&
+    text(m.cwd, 1000) &&
+    text(m.word, 100) &&
+    Array.isArray(m.dirs) &&
+    m.dirs.length <= 1000 &&
+    m.dirs.every((p) => text(p, 1000)) &&
+    object(m.files) &&
+    Object.keys(m.files).length <= 1000 &&
+    Object.entries(m.files).every(
+      ([p, v]) => text(p, 1000) && text(v, 50000),
+    ) &&
+    Array.isArray(value.commands) &&
+    value.commands.length <= 10000 &&
+    value.commands.every(validCommand)
+  );
+}
+function copyTaskValue(task, value) {
+  if (value === null || typeof value !== "object") return value;
+  const clean = pick(value, valueKeys[task.type]);
+  if (task.type === "git") {
+    clean.history = value.history.map((c) => pick(c, commitKeys));
+    if (value.commands !== undefined) clean.commands = [];
+  }
+  if (task.type === "terminal") {
+    clean.machine = {
+      cwd: value.machine.cwd,
+      word: value.machine.word,
+      dirs: [...value.machine.dirs],
+      files: Object.fromEntries(Object.entries(value.machine.files)),
+    };
+    clean.commands = value.commands.map((c) => pick(c, commandKeys));
+  }
+  return clean;
+}
+
+// Use the course's type and the same shape checks as import, never data-supplied discriminators.
+export function formatTaskValue(task, value) {
+  if (value === null || value === undefined) return "—";
+  if (!task || !validTaskValue(task, value)) return "Некоректні дані відповіді";
+  if (typeof value !== "object") return String(value);
+  if (task.type === "terminal")
+    return value.commands
+      .map((c) => "$ " + c.input + (c.ok ? "" : " [помилка]"))
+      .join("\n");
+  if (task.type === "git")
+    return `Робочий текст: ${value.text}\nІндекс: ${value.staged ?? "порожній"}\nКоміти:\n${value.history.map((c) => c.message + "\n" + c.text).join("\n")}`;
+  const labels = {
+    artifact: "Артефакт",
+    method: "Метод і результати",
+    reflection: "Обмеження та висновок",
+    confirm: "Самоперевірка",
+    pattern: "Шаблон",
+    replacement: "Заміна",
+    start: "Початок",
+    end: "Кінець",
+    label: "Мітка",
+  };
+  return valueKeys[task.type]
+    .filter((key) => Object.hasOwn(value, key))
+    .map(
+      (key) =>
+        `${labels[key]}: ${typeof value[key] === "boolean" ? (value[key] ? "так" : "ні") : value[key]}`,
+    )
+    .join("\n\n");
+}
+
 export function validateBackup(data) {
   const fail = () => {
     throw new Error("Це не сумісна резервна копія lingva.lab версії 1.");
   };
   if (
-    !data ||
+    !onlyKeys(data, [
+      "version",
+      "activeLanguage",
+      "student",
+      "group",
+      "tracks",
+    ]) ||
     data.version !== 1 ||
     !["de", "fr", "en", null].includes(data.activeLanguage) ||
     typeof data.student !== "string" ||
     data.student.length > 100 ||
     typeof data.group !== "string" ||
     data.group.length > 40 ||
-    !data.tracks
+    !onlyKeys(data.tracks, Object.keys(LANGUAGES))
   )
     fail();
   const clean = freshState();
   clean.activeLanguage = data.activeLanguage;
   clean.student = data.student;
   clean.group = data.group;
-  const text = (v, max = 50000) => typeof v === "string" && v.length <= max;
-  const attempt = (a) =>
-    a &&
-    ["passed", "failed", "submitted"].includes(a.status) &&
-    text(a.at, 40) &&
-    !Number.isNaN(Date.parse(a.at)) &&
-    text(a.feedback, 5000) &&
-    Number.isInteger(a.hints) &&
-    a.hints >= 0;
-  const object = (value) =>
-    value !== null && typeof value === "object" && !Array.isArray(value);
-  const validValue = (task, value) => {
-    if (value === null) return true;
-    if (["choice", "unicode", "wave"].includes(task.type))
-      return (
-        Number.isInteger(Number(value)) &&
-        Number(value) >= 0 &&
-        Number(value) < task.options.length
-      );
-    if (["exact", "json", "wer"].includes(task.type)) return text(value, 10000);
-    if (!object(value)) return false;
-    if (["regex", "replace"].includes(task.type))
-      return (
-        text(value.pattern, 300) &&
-        (value.replacement === undefined || text(value.replacement, 1000))
-      );
-    if (task.type === "portfolio")
-      return (
-        text(value.artifact, 1000) &&
-        text(value.method, 15000) &&
-        text(value.reflection, 15000) &&
-        typeof value.confirm === "boolean"
-      );
-    if (task.type === "interval")
-      return ["start", "end", "label"].every((key) => text(value[key], 100));
-    if (task.type === "git")
-      return (
-        text(value.text, 10000) &&
-        (value.staged === null || text(value.staged, 10000)) &&
-        typeof value.logViewed === "boolean" &&
-        Array.isArray(value.history) &&
-        value.history.length <= 5000 &&
-        value.history.every(
-          (commit) =>
-            object(commit) &&
-            text(commit.text, 10000) &&
-            text(commit.message, 500) &&
-            text(commit.at, 40),
-        )
-      );
-    if (task.type === "terminal") {
-      const m = value.machine;
-      return (
-        object(m) &&
-        text(m.cwd, 1000) &&
-        text(m.word, 100) &&
-        Array.isArray(m.dirs) &&
-        m.dirs.length <= 1000 &&
-        m.dirs.every((p) => text(p, 1000)) &&
-        object(m.files) &&
-        Object.keys(m.files).length <= 1000 &&
-        Object.entries(m.files).every(
-          ([p, v]) => text(p, 1000) && text(v, 50000),
-        ) &&
-        Array.isArray(value.commands) &&
-        value.commands.length <= 10000 &&
-        value.commands.every(
-          (c) =>
-            object(c) &&
-            text(c.input, 1000) &&
-            typeof c.ok === "boolean" &&
-            text(c.action, 100) &&
-            (c.target == null || text(c.target, 1000)) &&
-            (c.pattern == null || text(c.pattern, 1000)),
-        )
-      );
-    }
-    return false;
-  };
+  const copyAttempt = (a, task) => ({
+    ...pick(a, attemptKeys),
+    value: task ? copyTaskValue(task, a.value) : a.value,
+  });
   for (const lang of Object.keys(LANGUAGES)) {
     const track = data.tracks[lang];
-    if (!track || !object(track.answers) || !object(track.treasures)) fail();
+    if (
+      !onlyKeys(track, ["answers", "treasures"]) ||
+      !object(track.answers) ||
+      !object(track.treasures)
+    )
+      fail();
     const tasks = getModules(lang).flatMap((m) => m.tasks);
     for (const [id, r] of Object.entries(track.answers)) {
       const t = tasks.find((t) => t.id === id);
       if (
         !t ||
-        !r ||
+        !onlyKeys(r, [
+          "draft",
+          "attempts",
+          "hints",
+          "hintOpened",
+          "toolEvents",
+        ]) ||
         !Array.isArray(r.attempts) ||
         r.attempts.length > 5000 ||
-        !r.attempts.every((a) => attempt(a) && validValue(t, a.value)) ||
-        !validValue(t, r.draft) ||
+        !r.attempts.every(
+          (a) => validAttempt(a) && validTaskValue(t, a.value),
+        ) ||
+        !validTaskValue(t, r.draft) ||
         typeof r.hintOpened !== "boolean" ||
-        !Number.isInteger(r.hints) ||
+        !Number.isSafeInteger(r.hints) ||
         r.hints < 0 ||
         !Array.isArray(r.toolEvents) ||
         r.toolEvents.length > 10000 ||
         !r.toolEvents.every(
           (e) =>
-            e &&
+            onlyKeys(e, eventKeys) &&
             text(e.at, 40) &&
             text(e.input, 1000) &&
             text(e.output, 50000) &&
@@ -698,24 +794,30 @@ export function validateBackup(data) {
           evaluateTask(t, a.value).status !== a.status
         )
           fail();
-      clean.tracks[lang].answers[id] = structuredClone(r);
+      clean.tracks[lang].answers[id] = {
+        draft: copyTaskValue(t, r.draft),
+        attempts: r.attempts.map((a) => copyAttempt(a, t)),
+        hints: r.hints,
+        hintOpened: r.hintOpened,
+        toolEvents: r.toolEvents.map((e) => pick(e, eventKeys)),
+      };
     }
     for (const [key, r] of Object.entries(track.treasures)) {
       if (
         !Object.hasOwn(TREASURES, key) ||
-        !r ||
+        !onlyKeys(r, ["attempts"]) ||
         !Array.isArray(r.attempts) ||
         r.attempts.length > 5000 ||
         !r.attempts.every(
           (a) =>
-            attempt(a) &&
-            Number.isInteger(Number(a.value)) &&
-            Number(a.value) >= 0 &&
-            Number(a.value) < TREASURES[key].options.length,
+            validAttempt(a) &&
+            indexValue(a.value, TREASURES[key].options.length),
         )
       )
         fail();
-      clean.tracks[lang].treasures[key] = structuredClone(r);
+      clean.tracks[lang].treasures[key] = {
+        attempts: r.attempts.map((a) => copyAttempt(a)),
+      };
     }
   }
   return clean;
