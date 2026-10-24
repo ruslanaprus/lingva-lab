@@ -6,6 +6,7 @@ import { extname, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
 import { LANGUAGES, getModules } from "../course.js";
+import { checkActivityReports } from "./browser-activity.mjs";
 const { chromium } = await import(
   process.env.PLAYWRIGHT_MODULE
     ? pathToFileURL(process.env.PLAYWRIGHT_MODULE).href
@@ -206,7 +207,8 @@ try {
     const reportText = await readFile(output + "/report.html", "utf8");
     assert.match(reportText, /Практику розділу пройдено/);
     assert.match(reportText, /Спроба 3/);
-    assert.match(reportText, /1\. working\//);
+    assert.match(reportText, /Варіант №1 \(індекс 0\): working\//);
+    assert.match(reportText, /Активний час/);
     assert.match(reportText, /потребують перевірки викладачем/);
     assert.match(reportText, /Підказок на момент подання: 1/);
     await go("portfolio");
@@ -281,6 +283,7 @@ try {
     await page.locator("#reference-search").fill("TextGrid");
     assert.ok((await page.locator(".glossary-item:visible").count()) >= 1);
     assert.ok((await page.locator(".glossary-item:visible").count()) < 10);
+    await checkActivityReports(browser, base, output);
   }
   // Desktop, tablet and mobile layouts cover every page and the most demanding lab controls.
   for (const width of [320, 390, 768, 1024, 1440]) {

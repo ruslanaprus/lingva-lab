@@ -118,6 +118,15 @@ button svg {
   font-size: 12px;
   line-height: 1.65;
 }
+.activity-meter {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-block: 18px;
+}
+.option-number {
+  color: var(--muted);
+}
 .sr-only {
   position: absolute;
   width: 1px;

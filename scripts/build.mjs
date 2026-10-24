@@ -9,6 +9,7 @@ for (const file of [
   "app.js",
   "course.js",
   "engine.js",
+  "activity.js",
   "regex-worker.js",
   "_headers",
 ])

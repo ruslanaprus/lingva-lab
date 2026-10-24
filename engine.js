@@ -7,9 +7,9 @@ export const freshState = () => ({
   student: "",
   group: "",
   tracks: {
-    de: { answers: {}, treasures: {} },
-    fr: { answers: {}, treasures: {} },
-    en: { answers: {}, treasures: {} },
+    de: { answers: {}, treasures: {}, activity: {} },
+    fr: { answers: {}, treasures: {}, activity: {} },
+    en: { answers: {}, treasures: {}, activity: {} },
   },
 });
 export const normalized = (value) =>
@@ -145,7 +145,11 @@ export function evaluateTask(task, value, regexResult) {
   });
   const fail = (feedback) => ({ status: "failed", feedback });
   if (["choice", "unicode", "wave"].includes(task.type))
-    return Number(value) === task.answer && value !== null && value !== ""
+    return (task.multiple
+      ? validTaskValue(task, value) && Array.isArray(value) &&
+        value.length === task.answer.length &&
+        task.answer.every((index) => value.some((v) => Number(v) === index))
+      : Number(value) === task.answer && value !== null && value !== "")
       ? pass()
       : fail(
           "Перегляньте обраний варіант. " +
@@ -282,6 +286,7 @@ export function recordAttempt(track, task, value, result) {
     status: result.status,
     feedback: result.feedback,
     hints: r.hints,
+    ...(task.options ? { selectedOptions: selectionDetails(task, value) } : {}),
   });
   return {
     record: r,
@@ -582,7 +587,9 @@ const indexValue = (value, count) =>
   Number.isSafeInteger(Number(value)) &&
   Number(value) >= 0 &&
   Number(value) < count;
-const attemptKeys = ["at", "value", "status", "feedback", "hints"];
+const attemptKeys = ["at", "value", "status", "feedback", "hints", "selectedOptions"];
+const selectionKeys = ["index", "number", "value"];
+const activityKeys = ["firstVisitedAt", "lastVisitedAt", "visits", "pageMs", "visibleMs", "activeMs"];
 const eventKeys = ["at", "input", "output", "ok"];
 const commandKeys = ["input", "ok", "action", "target", "pattern"];
 const commitKeys = ["text", "message", "at"];
@@ -618,7 +625,11 @@ const validCommit = (c) =>
 function validTaskValue(task, value) {
   if (value === null) return true;
   if (["choice", "unicode", "wave"].includes(task.type))
-    return indexValue(value, task.options.length);
+    return task.multiple
+      ? Array.isArray(value) && value.length <= task.options.length &&
+        value.every((v) => indexValue(v, task.options.length)) &&
+        new Set(value.map(Number)).size === value.length
+      : indexValue(value, task.options.length);
   if (["exact", "json", "wer"].includes(task.type)) return text(value, 10000);
   const keys = valueKeys[task.type];
   if (!keys || !onlyKeys(value, keys)) return false;
@@ -668,6 +679,7 @@ function validTaskValue(task, value) {
 }
 function copyTaskValue(task, value) {
   if (value === null || typeof value !== "object") return value;
+  if (task.multiple && Array.isArray(value)) return [...value];
   const clean = pick(value, valueKeys[task.type]);
   if (task.type === "git") {
     clean.history = value.history.map((c) => pick(c, commitKeys));
@@ -689,6 +701,7 @@ function copyTaskValue(task, value) {
 export function formatTaskValue(task, value) {
   if (value === null || value === undefined) return "—";
   if (!task || !validTaskValue(task, value)) return "Некоректні дані відповіді";
+  if (task.options) return formatSelections(selectionDetails(task, value));
   if (typeof value !== "object") return String(value);
   if (task.type === "terminal")
     return value.commands
@@ -714,6 +727,36 @@ export function formatTaskValue(task, value) {
         `${labels[key]}: ${typeof value[key] === "boolean" ? (value[key] ? "так" : "ні") : value[key]}`,
     )
     .join("\n\n");
+}
+
+// Preserve the option wording at submission time, independently of later drafts.
+export function selectionDetails(task, value) {
+  if (!task?.options || value === null || value === undefined) return [];
+  const values = task.multiple && Array.isArray(value) ? value : [value];
+  return values.filter((v) => indexValue(v, task.options.length)).map((v) => ({
+    index: Number(v),
+    number: Number(v) + 1,
+    value: task.options[Number(v)],
+  }));
+}
+function formatSelections(selections) {
+  return selections.length
+    ? selections.map((s) => `Варіант №${s.number} (індекс ${s.index}): ${s.value}`).join("\n")
+    : "Жодного варіанта не обрано";
+}
+export function formatAttemptValue(task, attempt) {
+  if (!task || !validSelections(task, attempt)) return "Некоректні дані відповіді";
+  return task.options
+    ? formatSelections(attempt.selectedOptions ?? selectionDetails(task, attempt.value))
+    : formatTaskValue(task, attempt.value);
+}
+function validSelections(task, attempt) {
+  if (attempt.selectedOptions === undefined) return true;
+  if (!task.options || !Array.isArray(attempt.selectedOptions)) return false;
+  const expected = selectionDetails(task, attempt.value);
+  return attempt.selectedOptions.length === expected.length &&
+    attempt.selectedOptions.every((s, i) => onlyKeys(s, selectionKeys) &&
+      s.index === expected[i].index && s.number === s.index + 1 && text(s.value, 10000));
 }
 
 export function validateBackup(data) {
@@ -744,16 +787,35 @@ export function validateBackup(data) {
   const copyAttempt = (a, task) => ({
     ...pick(a, attemptKeys),
     value: task ? copyTaskValue(task, a.value) : a.value,
+    ...(a.selectedOptions !== undefined
+      ? { selectedOptions: a.selectedOptions.map((s) => pick(s, selectionKeys)) }
+      : {}),
   });
   for (const lang of Object.keys(LANGUAGES)) {
     const track = data.tracks[lang];
     if (
-      !onlyKeys(track, ["answers", "treasures"]) ||
+      !onlyKeys(track, ["answers", "treasures", "activity"]) ||
       !object(track.answers) ||
       !object(track.treasures)
     )
       fail();
     const tasks = getModules(lang).flatMap((m) => m.tasks);
+    // Missing timing in an older backup means "not measured", never invented time.
+    if (track.activity !== undefined) {
+      if (!object(track.activity)) fail();
+      for (const [id, timing] of Object.entries(track.activity)) {
+        if (!getModules(lang).some((m) => String(m.id) === id) ||
+            !onlyKeys(timing, activityKeys) ||
+            ![timing.firstVisitedAt, timing.lastVisitedAt].every((v) =>
+              text(v, 40) && Number.isFinite(Date.parse(v))) ||
+            Date.parse(timing.lastVisitedAt) < Date.parse(timing.firstVisitedAt) ||
+            !Number.isSafeInteger(timing.visits) || timing.visits < 1 ||
+            ![timing.pageMs, timing.visibleMs, timing.activeMs].every((v) =>
+              Number.isSafeInteger(v) && v >= 0) ||
+            timing.activeMs > timing.visibleMs || timing.visibleMs > timing.pageMs) fail();
+        clean.tracks[lang].activity[id] = pick(timing, activityKeys);
+      }
+    }
     for (const [id, r] of Object.entries(track.answers)) {
       const t = tasks.find((t) => t.id === id);
       if (
@@ -768,7 +830,7 @@ export function validateBackup(data) {
         !Array.isArray(r.attempts) ||
         r.attempts.length > 5000 ||
         !r.attempts.every(
-          (a) => validAttempt(a) && validTaskValue(t, a.value),
+          (a) => validAttempt(a) && validTaskValue(t, a.value) && validSelections(t, a),
         ) ||
         !validTaskValue(t, r.draft) ||
         typeof r.hintOpened !== "boolean" ||
@@ -811,7 +873,8 @@ export function validateBackup(data) {
         !r.attempts.every(
           (a) =>
             validAttempt(a) &&
-            indexValue(a.value, TREASURES[key].options.length),
+            indexValue(a.value, TREASURES[key].options.length) &&
+            validSelections(TREASURES[key], a),
         )
       )
         fail();

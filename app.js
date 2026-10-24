@@ -24,8 +24,11 @@ import {
   runGit,
   validateBackup,
   formatTaskValue,
+  formatAttemptValue,
+  selectionDetails,
   exportTextGrid,
 } from "./engine.js";
+import { PageActivityClock, activitySummary, formatDuration } from "./activity.js";
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -68,6 +71,48 @@ const taskById = (id) =>
     .flatMap((m) => m.tasks)
     .find((t) => t.id === id);
 const currentRoute = () => location.hash.slice(1) || "map";
+const activityClock = new PageActivityClock();
+
+function checkpointActivity({ syncRoute = false, interacted = false, leaving = false } = {}) {
+  let key = activityClock.key;
+  if (leaving) key = null;
+  else if (syncRoute) {
+    const [page, id] = currentRoute().split("/");
+    key = state.activeLanguage && page === "lab" && moduleById(id) && $(".lab-layout")
+      ? `${language()}/${Number(id)}` : null;
+  }
+  const sample = activityClock.sample({
+    key,
+    visible: document.visibilityState === "visible",
+    focused: document.hasFocus(),
+    interacted,
+  });
+  const at = now();
+  if (sample.key) {
+    const [lang, id] = sample.key.split("/");
+    const record = state.tracks[lang].activity[id];
+    if (record) {
+      record.pageMs += sample.pageMs;
+      record.visibleMs += sample.visibleMs;
+      record.activeMs += sample.activeMs;
+      record.lastVisitedAt = new Date(Math.max(Date.parse(record.lastVisitedAt), Date.parse(at))).toISOString();
+    }
+  }
+  if (sample.enteredKey) {
+    const [lang, id] = sample.enteredKey.split("/");
+    const record = state.tracks[lang].activity[id] ??= {
+      firstVisitedAt: at, lastVisitedAt: at, visits: 0,
+      pageMs: 0, visibleMs: 0, activeMs: 0,
+    };
+    record.visits++;
+    record.lastVisitedAt = new Date(Math.max(Date.parse(record.lastVisitedAt), Date.parse(at))).toISOString();
+  }
+  const display = $("#activity-time");
+  if (display && activityClock.key) {
+    const [lang, id] = activityClock.key.split("/");
+    display.textContent = formatDuration(state.tracks[lang].activity[id]?.activeMs ?? 0);
+  }
+}
 
 function toast(message) {
   $("#toast").textContent = message;
@@ -77,6 +122,7 @@ function toast(message) {
 }
 function save() {
   clearTimeout(saveTimer);
+  checkpointActivity();
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     storageAvailable = true;
@@ -92,7 +138,19 @@ function scheduleSave() {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(save, 220);
 }
-window.addEventListener("pagehide", () => save());
+window.addEventListener("pagehide", () => {
+  checkpointActivity({ leaving: true });
+  save();
+});
+window.addEventListener("pageshow", () => checkpointActivity({ syncRoute: true }));
+document.addEventListener("visibilitychange", save);
+window.addEventListener("focus", save);
+window.addEventListener("blur", save);
+for (const event of ["pointerdown", "keydown", "input", "wheel", "touchstart", "touchmove"])
+  document.addEventListener(event, (e) => {
+    if (e.isTrusted) checkpointActivity({ interacted: true });
+  }, { capture: true, passive: true });
+setInterval(() => { if (activityClock.key) save(); }, 10_000);
 function updateHeader() {
   const stats = state.activeLanguage
     ? trackStats(language(), track())
@@ -160,7 +218,7 @@ $("#profile-form").addEventListener("submit", (e) => {
 $("#help-button").addEventListener("click", () =>
   showInfo(
     "Як працює практикум",
-    `<ol><li>Оберіть німецьку, французьку або англійську. Матеріали та прогрес кожної траєкторії незалежні.</li><li>У кожному розділі є 4 завдання з автоматичною перевіркою та 1 прикладна робота для викладача. Читайте теорію, досліджуйте тренажери й виправляйте помилки.</li><li>Кожна перевірка записує відповідь, час, результат і кількість підказок. Повторні подання зберігаються; попередній успіх залишається в історії.</li><li>За перше успішне завдання — 40 XP; за подання практичної роботи — 30 XP; за прихований виклик — 60 XP. Повторення не збільшує XP. XP не є оцінкою.</li><li>Розділ завершено після 4 успішних перевірок і подання прикладної роботи. Якість цієї роботи оцінює викладач.</li><li>Завантажте HTML-звіт і передайте його разом з артефактами. Для PDF відкрийте звіт і скористайтеся друком браузера → «Зберегти як PDF».</li><li>У портфоліо експортуйте резервну копію JSON. Прогрес локальний: інший браузер або пристрій потребує імпорту. Серверного кабінету викладача у цій версії немає.</li></ol><p class="micro muted">Навчальні приклади створено для цього практикуму; вони не є репрезентативним корпусом. Команди виконуються в симуляторах. Зовнішні STT, TTS і ШІ автоматично не викликаються.</p>`,
+    `<ol><li>Оберіть німецьку, французьку або англійську. Матеріали та прогрес кожної траєкторії незалежні.</li><li>У кожному розділі є 4 завдання з автоматичною перевіркою та 1 прикладна робота для викладача. Читайте теорію, досліджуйте тренажери й виправляйте помилки.</li><li>Кожна перевірка зберігає введений текст без виправлень або номери й тексти обраних варіантів, час подання, результат і кількість підказок. Звіт також показує час у розділі; активний час враховує видиму вкладку у фокусі та паузу після 2 хв без взаємодії. Повторні подання зберігаються; попередній успіх залишається в історії.</li><li>За перше успішне завдання — 40 XP; за подання практичної роботи — 30 XP; за прихований виклик — 60 XP. Повторення не збільшує XP. XP не є оцінкою.</li><li>Розділ завершено після 4 успішних перевірок і подання прикладної роботи. Якість цієї роботи оцінює викладач.</li><li>Завантажте HTML-звіт і передайте його разом з артефактами. Для PDF відкрийте звіт і скористайтеся друком браузера → «Зберегти як PDF».</li><li>У портфоліо експортуйте резервну копію JSON. Прогрес локальний: інший браузер або пристрій потребує імпорту. Серверного кабінету викладача у цій версії немає.</li></ol><p class="micro muted">Навчальні приклади створено для цього практикуму; вони не є репрезентативним корпусом. Команди виконуються в симуляторах. Зовнішні STT, TTS і ШІ автоматично не викликаються.</p>`,
   ),
 );
 function showInfo(title, html) {
@@ -201,6 +259,7 @@ function render({ keepScroll = false } = {}) {
     main.innerHTML = renderMap();
   }
   updateHeader();
+  checkpointActivity({ syncRoute: true });
   drawWaves();
   updateWer();
   if (keepScroll) window.scrollTo(0, oldY);
@@ -312,7 +371,7 @@ function moduleCard(m) {
 function renderLab(m) {
   const s = sectionStats(m, track());
   return `<div class="page"><div class="page-title"><div><p class="mono breadcrumb"><a href="#map">КАРТА КУРСУ</a> / РОЗДІЛ ${pad(m.id)} / ${LANGUAGES[language()].native}</p><h1>${m.title}<span class="orange">.</span></h1></div><p>${m.short}<br><span class="mono muted">${m.time} ХВ · 5 ЗАВДАНЬ · 190 XP</span></p></div>
- <div class="lab-layout"><aside class="lab-sidebar" aria-label="У цьому розділі"><p class="sidebar-title mono">ПОЛЬОВИЙ МАРШРУТ / ${pad(m.id)}</p><nav class="task-nav">${m.tasks.map((t, i) => `<a href="#task-${t.id}" data-scroll-task="${t.id}"><span class="mono">${pad(i + 1)} ${taskStatus(track().answers[t.id]) === "passed" ? "✓" : taskStatus(track().answers[t.id]) === "submitted" ? "↗" : "·"}</span>${t.title}</a>`).join("")}</nav><div class="sidebar-meter"><p class="mono"><span>ВИКОНАНО</span><span>${s.done} / 5</span></p><div class="meter"><i style="width:${s.done * 20}%"></i></div><p class="mono"><span>СПРОБИ ${s.attempts}</span><span>ПОМИЛКИ ${s.errors}</span></p></div><div class="sidebar-controls"><button class="button small dark" data-action="report" data-module="${m.id}">${s.complete ? "Звіт розділу" : "Чернетка звіту"} <span>↓</span></button><button class="button small" data-action="materials" data-module="${m.id}">Матеріали <span>↓</span></button></div><p class="sidebar-disclaimer">Звіт містить історію спроб. Прикладна робота очікує оцінювання викладачем.</p></aside>
+ <div class="lab-layout"><aside class="lab-sidebar" aria-label="У цьому розділі"><p class="sidebar-title mono">ПОЛЬОВИЙ МАРШРУТ / ${pad(m.id)}</p><nav class="task-nav">${m.tasks.map((t, i) => `<a href="#task-${t.id}" data-scroll-task="${t.id}"><span class="mono">${pad(i + 1)} ${taskStatus(track().answers[t.id]) === "passed" ? "✓" : taskStatus(track().answers[t.id]) === "submitted" ? "↗" : "·"}</span>${t.title}</a>`).join("")}</nav><div class="sidebar-meter"><p class="mono"><span>ВИКОНАНО</span><span>${s.done} / 5</span></p><div class="meter"><i style="width:${s.done * 20}%"></i></div><p class="mono"><span>СПРОБИ ${s.attempts}</span><span>ПОМИЛКИ ${s.errors}</span></p></div><p class="mono activity-meter">АКТИВНИЙ ЧАС <span id="activity-time">${formatDuration(track().activity[m.id]?.activeMs ?? 0)}</span></p><div class="sidebar-controls"><button class="button small dark" data-action="report" data-module="${m.id}">${s.complete ? "Звіт розділу" : "Чернетка звіту"} <span>↓</span></button><button class="button small" data-action="materials" data-module="${m.id}">Матеріали <span>↓</span></button></div><p class="sidebar-disclaimer">Зберігаємо подані відповіді та час у цьому розділі. Активний час зупиняється у фоні, поза фокусом або після 2 хв без взаємодії. Читання без взаємодії довше 2 хв рахується лише в загальному часі. Прикладну роботу оцінює викладач.</p></aside>
  <div class="lab-content"><div class="lab-intro"><div><p class="mono">НАВІЩО ЦЕ ФІЛОЛОГУ</p><h2>Реальна задача</h2><p>${esc(m.case)}</p></div><div><p class="mono">ПІСЛЯ ЦЬОГО РОЗДІЛУ</p><h2>Що ви зможете</h2><p>${esc(m.outcome)}</p></div></div>
  <details class="theory" open><summary class="mono">ПЕРЕД ПОЧАТКОМ / ТЕОРІЯ ТА ДЖЕРЕЛА</summary><div class="theory-body">${esc(m.theory)}<div class="term-chips">${m.terms.map((t) => `<button class="term-chip" data-term="${esc(t)}">${esc(t)} ↗</button>`).join("")}</div><ul class="sources-list">${m.sources.map((key) => `<li><a href="${SOURCES[key].url}" target="_blank" rel="noopener noreferrer">${esc(SOURCES[key].title)} ↗</a></li>`).join("")}</ul></div></details>
  ${m.treasure ? `<p class="treasure-clue mono">${m.treasure === "archive" ? "В архівах інколи трапляються листи з іншого століття." : m.treasure === "unicode" ? "Не всі двійники — той самий символ." : "Ідеальний результат може приховувати пропущене."} <button class="treasure-trigger" data-treasure="${m.treasure}" aria-label="Дослідити примітку: прихований виклик">◇</button></p><div id="treasure-slot"></div>` : ""}
@@ -324,10 +383,11 @@ function renderTask(t, index) {
   const r = track().answers[t.id],
     status = taskStatus(r),
     latest = r?.attempts.at(-1);
-  return `<article class="task-card ${status}" id="task-${t.id}" data-task="${t.id}"><div class="task-top mono"><span>ЗАВДАННЯ ${pad(index + 1)} / ${t.type === "portfolio" ? "ПРИКЛАДНА РОБОТА" : "ДОСЛІДНИЦЬКА ПРАКТИКА"} · ${t.xp} XP</span><span class="task-status ${status}">${labels[status]}</span></div><h2>${esc(t.title)}</h2><p class="task-prompt">${esc(t.prompt)}</p><div class="task-input">${taskInput(t, r?.draft)}</div><div class="task-actions"><button class="button dark" data-check="${t.id}">${t.type === "portfolio" ? (status === "submitted" ? "Подати нову версію" : "Подати роботу") : status === "passed" ? "Перевірити ще раз" : "Перевірити відповідь"} <span>↗</span></button><button class="hint-button" data-hint="${t.id}" aria-expanded="${!!r?.hintOpened}">Підказка${r?.hints ? " · використано" : ""}</button></div>${r?.hintOpened ? `<div class="hint-content">${esc(t.hint)}</div>` : ""}${latest ? `<div class="feedback ${latest.status}" role="status"><b>${labels[latest.status]}.</b> ${esc(latest.feedback)}${status === "passed" && latest.status === "failed" ? "<p>Попередній успіх збережено; ця нова спроба потребує правки.</p>" : ""}</div>` : ""}<p class="attempt-meta mono">СПРОБИ ${r?.attempts.length || 0} · ПОМИЛКИ ${r?.attempts.filter((a) => a.status === "failed").length || 0} · ПОВТОРНІ ПОДАННЯ ${Math.max(0, (r?.attempts.length || 0) - 1)}${r?.toolEvents.length ? " · ПОМИЛКИ КОМАНД " + r.toolEvents.filter((e) => !e.ok).length : ""}</p>${r?.attempts.length ? `<details class="history"><summary>Історія відповідей (${r.attempts.length})</summary><ol>${r.attempts.map((a) => `<li>${date(a.at)} · ${labels[a.status]} · підказки ${a.hints}<pre>${esc(formatTaskValue(t, a.value))}</pre></li>`).join("")}</ol></details>` : ""}</article>`;
+  return `<article class="task-card ${status}" id="task-${t.id}" data-task="${t.id}"><div class="task-top mono"><span>ЗАВДАННЯ ${pad(index + 1)} / ${t.type === "portfolio" ? "ПРИКЛАДНА РОБОТА" : "ДОСЛІДНИЦЬКА ПРАКТИКА"} · ${t.xp} XP</span><span class="task-status ${status}">${labels[status]}</span></div><h2>${esc(t.title)}</h2><p class="task-prompt">${esc(t.prompt)}</p><div class="task-input">${taskInput(t, r?.draft)}</div><div class="task-actions"><button class="button dark" data-check="${t.id}">${t.type === "portfolio" ? (status === "submitted" ? "Подати нову версію" : "Подати роботу") : status === "passed" ? "Перевірити ще раз" : "Перевірити відповідь"} <span>↗</span></button><button class="hint-button" data-hint="${t.id}" aria-expanded="${!!r?.hintOpened}">Підказка${r?.hints ? " · використано" : ""}</button></div>${r?.hintOpened ? `<div class="hint-content">${esc(t.hint)}</div>` : ""}${latest ? `<div class="feedback ${latest.status}" role="status"><b>${labels[latest.status]}.</b> ${esc(latest.feedback)}${status === "passed" && latest.status === "failed" ? "<p>Попередній успіх збережено; ця нова спроба потребує правки.</p>" : ""}</div>` : ""}<p class="attempt-meta mono">СПРОБИ ${r?.attempts.length || 0} · ПОМИЛКИ ${r?.attempts.filter((a) => a.status === "failed").length || 0} · ПОВТОРНІ ПОДАННЯ ${Math.max(0, (r?.attempts.length || 0) - 1)}${r?.toolEvents.length ? " · ПОМИЛКИ КОМАНД " + r.toolEvents.filter((e) => !e.ok).length : ""}</p>${r?.attempts.length ? `<details class="history"><summary>Історія відповідей (${r.attempts.length})</summary><ol>${r.attempts.map((a) => `<li>${date(a.at)} · ${labels[a.status]} · підказки ${a.hints}<pre><code>${esc(formatAttemptValue(t, a))}</code></pre></li>`).join("")}</ol></details>` : ""}</article>`;
 }
 function optionsInput(t, value) {
-  return `<fieldset class="options" style="border:0;padding:0;margin:0"><legend class="sr-only">${esc(t.title)}</legend>${t.options.map((option, i) => `<label class="option"><input type="radio" name="answer-${t.id}" value="${i}" ${value !== null && value !== undefined && String(value) === String(i) ? "checked" : ""}><span>${esc(option)}</span></label>`).join("")}</fieldset>`;
+  const selected = t.multiple && Array.isArray(value) ? value.map(String) : [String(value)];
+  return `<fieldset class="options" style="border:0;padding:0;margin:0"><legend class="sr-only">${esc(t.title)}</legend>${t.multiple ? '<p class="micro muted">Оберіть усі відповідні варіанти.</p>' : ""}${t.options.map((option, i) => `<label class="option"><input type="${t.multiple ? "checkbox" : "radio"}" name="answer-${t.id}" value="${i}" ${selected.includes(String(i)) ? "checked" : ""}><span><span class="option-number mono">${i + 1}.</span> ${esc(option)}</span></label>`).join("")}</fieldset>`;
 }
 function taskInput(t, value) {
   const id = t.id,
@@ -395,7 +455,9 @@ function readValue(t) {
   const root = $(`[data-task="${t.id}"]`),
     r = track().answers[t.id];
   if (["choice", "unicode", "wave"].includes(t.type))
-    return $(`input[name="answer-${t.id}"]:checked`, root)?.value ?? null;
+    return t.multiple
+      ? $$(`input[name="answer-${t.id}"]:checked`, root).map((input) => input.value)
+      : $(`input[name="answer-${t.id}"]:checked`, root)?.value ?? null;
   if (["exact", "json", "wer"].includes(t.type))
     return $("[data-answer]", root).value;
   if (["regex", "replace"].includes(t.type))
@@ -666,8 +728,8 @@ function renderRegexResult(t, result) {
 function executeCommand(id) {
   const t = taskById(id),
     input = $(`[data-command="${id}"]`),
-    command = input.value.trim();
-  if (!command) return;
+    command = input.value;
+  if (!command.trim()) return;
   const r = answerRecord(track(), id);
   let output, ok;
   if (t.type === "git") {
@@ -813,6 +875,7 @@ function checkTreasure(key) {
       ? t.explain
       : "Поверніться до означень: тут є методологічна пастка.",
     hints: 0,
+    selectedOptions: selectionDetails(t, input.value),
   });
   save();
   $("#treasure-slot").innerHTML = renderTreasure(key);
@@ -822,7 +885,7 @@ function checkTreasure(key) {
 function renderPortfolio() {
   const s = trackStats(language(), track());
   return `<div class="page"><div class="page-title"><div><p class="mono eyebrow">${LANGUAGES[language()].native} / ${esc(state.student || "ВАШ ДОСЛІДНИЦЬКИЙ ЩОДЕННИК")}</p><h1>Робота залишає<br><span class="orange">слід.</span></h1></div><p>Ваші результати, історія рішень і матеріали для викладача.</p></div><div class="stats-grid"><div class="stat-block"><strong>${s.xp}<span class="orange">.</span></strong><span class="mono">XP / ДОСЛІДНИЦЬКИЙ ДОСВІД</span></div><div class="stat-block"><strong>${pad(s.sections)}<small> / 12</small></strong><span class="mono">РОЗДІЛІВ ЗАВЕРШЕНО</span></div><div class="stat-block"><strong>${s.passed}<small> / 48</small></strong><span class="mono">АВТОМАТИЧНО ПЕРЕВІРЕНО</span></div><div class="stat-block"><strong>${s.submitted}<small> / 12</small></strong><span class="mono">РОБІТ ДЛЯ ВИКЛАДАЧА</span></div></div><p class="local-notice mono">СПРОБИ ${s.attempts} · ПОМИЛКИ ПЕРЕВІРКИ ${s.errors} · ПОМИЛКИ КОМАНД ${s.commandErrors} · ПОВТОРНІ ПОДАННЯ ${s.resubmissions} · ПІДКАЗКИ ${s.hints}</p>
- <div class="portfolio-grid"><section><h2>Звіти розділів</h2><p class="micro muted" style="margin-bottom:20px">HTML-звіт містить відповіді й історію. Для PDF відкрийте його та оберіть «Друк → Зберегти як PDF». JSON — структуровані дані одного розділу.</p>${modules()
+ <div class="portfolio-grid"><section><h2>Звіти розділів</h2><p class="micro muted" style="margin-bottom:20px">HTML-звіт містить введені відповіді, номери й тексти обраних варіантів, історію та час у розділі. Для PDF відкрийте його та оберіть «Друк → Зберегти як PDF». JSON — структуровані дані одного розділу.</p>${modules()
    .map((m) => {
      const ms = sectionStats(m, track());
      return `<div class="report-row"><div><h3><span class="orange">${pad(m.id)} /</span> ${m.title}</h3><p class="mono">${ms.done}/5 · ${ms.complete ? "ЗАВЕРШЕНО · РОБОТА ОЧІКУЄ ОЦІНЮВАННЯ" : ms.attempts ? "У ПРОЦЕСІ · ЧЕРНЕТКА" : "ЩЕ НЕ РОЗПОЧАТО"}</p></div><div class="report-actions"><button class="button small" data-action="report" data-module="${m.id}">HTML ↓</button><button class="button small" data-action="report-json" data-module="${m.id}">JSON ↓</button></div></div>`;
@@ -890,6 +953,7 @@ function reportData(id) {
     group: state.group,
     module: { id: m.id, title: m.title, outcome: m.outcome, case: m.case },
     summary: ms,
+    activity: activitySummary(track().activity[id]),
     completion: ms.complete
       ? "Практику розділу пройдено; прикладна робота очікує оцінювання"
       : "Незавершена чернетка",
@@ -897,19 +961,34 @@ function reportData(id) {
       id: t.id,
       title: t.title,
       type: t.type,
+      options: t.options || null,
+      multiple: !!t.multiple,
       prompt: t.prompt,
       rubric: t.rubric || null,
       status: taskStatus(track().answers[t.id]),
-      record: track().answers[t.id] || null,
+      record: reportRecord(t, track().answers[t.id]),
     })),
     treasure: m.treasure
       ? {
           title: TREASURES[m.treasure].title,
-          record: track().treasures[m.treasure] || null,
+          options: TREASURES[m.treasure].options,
+          record: reportRecord(TREASURES[m.treasure], track().treasures[m.treasure]),
         }
       : null,
     sources: m.sources.map((key) => SOURCES[key]),
-    note: "Локальний навчальний звіт. Автоматичні результати й наявність артефактів не засвідчені сервером; потребують перевірки викладачем.",
+    note: "Локальний навчальний звіт. Автоматичні результати й наявність артефактів не засвідчені сервером; потребують перевірки викладачем. Час є приблизним показником активності у браузері та не доводить самостійність роботи.",
+  };
+}
+function reportRecord(task, record) {
+  if (!record) return null;
+  return {
+    ...record,
+    attempts: record.attempts.map((attempt) => ({
+      ...attempt,
+      ...(task.options ? {
+        selectedOptions: attempt.selectedOptions ?? selectionDetails(task, attempt.value),
+      } : {}),
+    })),
   };
 }
 function generateReport(id, format = "html") {
@@ -925,14 +1004,39 @@ function generateReport(id, format = "html") {
       : "Чернетку звіту завантажено. Розділ ще не завершено.",
   );
 }
-function reportHtml(d) {
-  return `<!doctype html><html lang="uk"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Звіт ${pad(d.module.id)} — ${esc(d.student || "lingva.lab")}</title><style>body{font:15px/1.65 Arial,sans-serif;max-width:960px;padding:35px;margin:auto;color:#171713;background:#faf9f3}h1,h2{line-height:1.15;letter-spacing:-.03em}h1{font-size:40px}h2{font-size:25px;border-top:1px solid;padding-top:20px}h3{font-size:17px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#eae8dc;padding:15px;font-size:12px}small{color:#626256}.status{font-weight:bold;color:#b93b1b}table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #ccc;text-align:left;padding:8px}article{margin:30px 0}.attempt{border-left:2px solid #aaa;padding-left:15px;margin:20px 0}.note{padding:15px;background:#eae8dc}@media print{body{padding:0;font-size:11px;background:white}h1{font-size:28px}.attempt{break-inside:avoid}a{color:inherit}}</style><body><p>LINGVA.LAB / DIGITAL TOOLS FOR LINGUISTS</p><h1>${pad(d.module.id)} / ${esc(d.module.title)}</h1><p class="status">${esc(d.completion)}</p><table><tr><th>Студент/ка</th><td>${esc(d.student || "Не вказано")}</td><th>Група</th><td>${esc(d.group || "Не вказано")}</td></tr><tr><th>Мова</th><td>${esc(d.languageName)}</td><th>Створено</th><td>${date(d.generatedAt)}</td></tr><tr><th>Перевірено</th><td>${d.summary.passed}/4</td><th>Подано для викладача</th><td>${d.summary.submitted}/1</td></tr><tr><th>Спроби / помилки</th><td>${d.summary.attempts} / ${d.summary.errors}</td><th>Повторні подання</th><td>${d.tasks.reduce((n, t) => n + Math.max(0, (t.record?.attempts.length || 0) - 1), 0)}</td></tr></table><p class="note">${esc(d.note)} Для PDF: Друк у браузері → Зберегти як PDF. Прикладні артефакти передаються разом зі звітом окремо.</p><h2>Мета та застосування</h2><p>${esc(d.module.outcome)}</p><p>${esc(d.module.case)}</p>${d.tasks.map((t) => `<article><h2>${esc(t.id)} / ${esc(t.title)}</h2><p class="status">${labels[t.status]}</p><p>${esc(t.prompt)}</p>${t.rubric ? `<h3>Критерії ручного оцінювання</h3><ul>${t.rubric.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>` : ""}<p>Підказки: ${t.record?.hints || 0}. Спроби: ${t.record?.attempts.length || 0}. Помилки: ${t.record?.attempts.filter((a) => a.status === "failed").length || 0}. Повторні подання: ${Math.max(0, (t.record?.attempts.length || 0) - 1)}.</p>${t.record?.attempts.map((a, i) => `<div class="attempt"><h3>Спроба ${i + 1} · ${date(a.at)} · ${labels[a.status]}</h3><p>Підказок на момент подання: ${a.hints}.</p><pre>${esc(formatReportValue(t, a.value))}</pre><p>${esc(a.feedback)}</p></div>`).join("") || "<p>Спроб ще немає.</p>"}${t.record?.draft !== null && t.record?.draft !== undefined ? `<details><summary>Поточна чернетка</summary><pre>${esc(formatReportValue(t, t.record.draft))}</pre></details>` : ""}${t.record?.toolEvents.length ? `<h3>Журнал команд (${t.record.toolEvents.filter((e) => !e.ok).length} помилок)</h3>${t.record.toolEvents.map((e) => `<pre>${date(e.at)} · ${e.ok ? "Успіх" : "Помилка"}\n$ ${esc(e.input)}\n${esc(e.output)}</pre>`).join("")}` : ""}</article>`).join("")}${d.treasure ? `<h2>Прихований виклик / ${esc(d.treasure.title)}</h2>${d.treasure.record?.attempts.map((a, i) => `<p>Спроба ${i + 1}, ${date(a.at)}: варіант ${Number(a.value) + 1}; ${labels[a.status]}. ${esc(a.feedback)}</p>`).join("") || "<p>Не подано.</p>"}` : ""}<h2>Джерела</h2><ul>${d.sources.map((s) => `<li><a href="${s.url}">${esc(s.title)}</a></li>`).join("")}</ul></body></html>`;
+function reportActivityHtml(activity) {
+  if (!activity.tracked)
+    return '<h2>Час у розділі</h2><p>Час ще не вимірювався. Для попередніх спроб тривалість невідома; її не відновлюємо з часових позначок подань.</p>';
+  return `<h2>Час у розділі</h2>
+    <table><tr><th>Усього на сторінці</th><td>${formatDuration(activity.pageMs)}</td></tr>
+    <tr><th>Видима вкладка у фокусі</th><td>${formatDuration(activity.visibleMs)}</td></tr>
+    <tr><th>Активний час</th><td>${formatDuration(activity.activeMs)}</td></tr>
+    <tr><th>Без взаємодії у видимій вкладці</th><td>${formatDuration(activity.idleMs)}</td></tr>
+    <tr><th>У фоні або поза фокусом</th><td>${formatDuration(activity.awayMs)}</td></tr>
+    <tr><th>Відвідування розділу</th><td>${activity.visits}</td></tr>
+    <tr><th>Початок обліку</th><td>${date(activity.firstVisitedAt)}</td></tr>
+    <tr><th>Остання присутність</th><td>${date(activity.lastVisitedAt)}</td></tr></table>
+    <p class="note">Активний час: вкладка видима, вікно у фокусі, від відкриття розділу або останньої взаємодії минуло не більше 2 хв. Клавіатура, натискання, прокручування колесом і дотики поновлюють активність. Після повернення до вкладки відлік поновлюється. Тривале читання без взаємодії потрапляє в загальний час, але після 2 хв не додає активного часу. Закритий браузер і час між відвідуваннями не враховуються. Це приблизні локальні вимірювання, а не доказ самостійної роботи.</p>`;
 }
-function formatReportValue(t, value) {
-  const task = taskById(t.id);
-  if (task?.options && value !== null && value !== undefined)
-    return `${Number(value) + 1}. ${task.options[Number(value)] ?? "Невідомий варіант"}`;
-  return formatTaskValue(task, value);
+function reportHtml(d) {
+  return `<!doctype html><html lang="uk"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Звіт ${pad(d.module.id)} — ${esc(d.student || "lingva.lab")}</title>
+  <style>body{font:15px/1.65 Arial,sans-serif;max-width:960px;padding:35px;margin:auto;color:#171713;background:#faf9f3}h1,h2{line-height:1.15;letter-spacing:-.03em}h1{font-size:40px}h2{font-size:25px;border-top:1px solid;padding-top:20px}h3{font-size:17px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#eae8dc;padding:15px;font-size:12px}small{color:#626256}.status{font-weight:bold;color:#b93b1b}table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #ccc;text-align:left;padding:8px}article{margin:30px 0}.attempt{border-left:2px solid #aaa;padding-left:15px;margin:20px 0}.note{padding:15px;background:#eae8dc}@media print{body{padding:0;font-size:11px;background:white}h1{font-size:28px}.attempt{break-inside:avoid}a{color:inherit}}</style>
+  <body><p>LINGVA.LAB / DIGITAL TOOLS FOR LINGUISTS</p><h1>${pad(d.module.id)} / ${esc(d.module.title)}</h1><p class="status">${esc(d.completion)}</p>
+  <table><tr><th>Студент/ка</th><td>${esc(d.student || "Не вказано")}</td><th>Група</th><td>${esc(d.group || "Не вказано")}</td></tr>
+  <tr><th>Мова</th><td>${esc(d.languageName)}</td><th>Створено</th><td>${date(d.generatedAt)}</td></tr>
+  <tr><th>Перевірено</th><td>${d.summary.passed}/4</td><th>Подано для викладача</th><td>${d.summary.submitted}/1</td></tr>
+  <tr><th>Спроби / помилки</th><td>${d.summary.attempts} / ${d.summary.errors}</td><th>Повторні подання</th><td>${d.tasks.reduce((n, t) => n + Math.max(0, (t.record?.attempts.length || 0) - 1), 0)}</td></tr></table>
+  <p class="note">${esc(d.note)} Для PDF: Друк у браузері → Зберегти як PDF. Прикладні артефакти передаються разом зі звітом окремо. Номери варіантів починаються з 1; технічні індекси — з 0. Введений текст збережено без виправлення пробілів, регістру чи правопису.</p>
+  ${reportActivityHtml(d.activity)}
+  <h2>Мета та застосування</h2><p>${esc(d.module.outcome)}</p><p>${esc(d.module.case)}</p>
+  ${d.tasks.map((t) => `<article><h2>${esc(t.id)} / ${esc(t.title)}</h2><p class="status">${labels[t.status]}</p><p>${esc(t.prompt)}</p>
+    ${t.rubric ? `<h3>Критерії ручного оцінювання</h3><ul>${t.rubric.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>` : ""}
+    <p>Підказки: ${t.record?.hints || 0}. Спроби: ${t.record?.attempts.length || 0}. Помилки: ${t.record?.attempts.filter((a) => a.status === "failed").length || 0}. Повторні подання: ${Math.max(0, (t.record?.attempts.length || 0) - 1)}.</p>
+    ${t.record?.attempts.map((a, i) => `<div class="attempt"><h3>Спроба ${i + 1} · ${date(a.at)} · ${labels[a.status]}</h3><p>Підказок на момент подання: ${a.hints}.</p><pre><code>${esc(formatAttemptValue(t, a))}</code></pre><p>${esc(a.feedback)}</p></div>`).join("") || "<p>Спроб ще немає.</p>"}
+    ${t.record?.draft !== null && t.record?.draft !== undefined ? `<details><summary>Поточна чернетка</summary><pre><code>${esc(formatTaskValue(t, t.record.draft))}</code></pre></details>` : ""}
+    ${t.record?.toolEvents.length ? `<h3>Журнал команд (${t.record.toolEvents.filter((e) => !e.ok).length} помилок)</h3>${t.record.toolEvents.map((e) => `<pre>${date(e.at)} · ${e.ok ? "Успіх" : "Помилка"}\n$ ${esc(e.input)}\n${esc(e.output)}</pre>`).join("")}` : ""}</article>`).join("")}
+  ${d.treasure ? `<h2>Прихований виклик / ${esc(d.treasure.title)}</h2>${d.treasure.record?.attempts.map((a, i) => `<div class="attempt"><h3>Спроба ${i + 1} · ${date(a.at)} · ${labels[a.status]}</h3><pre><code>${esc(formatAttemptValue(d.treasure, a))}</code></pre><p>${esc(a.feedback)}</p></div>`).join("") || "<p>Не подано.</p>"}` : ""}
+  <h2>Джерела</h2><ul>${d.sources.map((s) => `<li><a href="${s.url}">${esc(s.title)}</a></li>`).join("")}</ul></body></html>`;
 }
 function downloadMaterials(id) {
   const l = LANGUAGES[language()],
@@ -1014,6 +1118,7 @@ document.addEventListener("change", async (e) => {
         "application/json",
       );
     $("#confirm-import").onclick = () => {
+      checkpointActivity({ leaving: true });
       state = imported;
       save();
       $("#info-dialog").close();
