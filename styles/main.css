@@ -2534,3 +2534,61 @@ dialog li + li {
     display: none;
   }
 }
+/* Descriptions of future chapters stay distinct from assessed practice. */
+.chapter-overview {
+  border: 1px solid var(--line);
+  padding: clamp(20px, 3vw, 36px);
+  margin: 28px 0;
+}
+.chapter-overview p {
+  line-height: 1.7;
+}
+.outline-stages {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin: 28px 0;
+}
+.outline-stages h3,
+.outline-example h3 {
+  margin-bottom: 10px;
+}
+.outline-example {
+  border-left: 3px solid var(--accent);
+  padding: 8px 0 8px 20px;
+  margin: 24px 0;
+}
+.outline-note {
+  color: var(--muted);
+  font-size: 14px;
+}
+.outline-related {
+  border-top: 1px solid var(--line);
+  margin-top: 24px;
+  padding-top: 16px;
+}
+.outline-related a {
+  display: block;
+  padding: 8px 0;
+  overflow-wrap: anywhere;
+}
+.outline-sources li {
+  margin: 16px 0;
+}
+.outline-sources li p {
+  color: var(--muted);
+  margin-top: 6px;
+}
+.module-card.planned {
+  background: transparent;
+}
+.catalog-notice {
+  margin: 20px 0;
+  line-height: 1.7;
+}
+@media (max-width: 900px) {
+  .outline-stages {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}

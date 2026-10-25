@@ -1,5 +1,6 @@
 import { checkWorkspaceWorkshop } from "./browser-workspace.mjs";
 import { checkDocumentWorkshop } from "./browser-documents.mjs";
+import { checkCourseOutline } from "./browser-outline.mjs";
 import { portfolioAnswer } from "./helpers/answers.mjs";
 // Browser QA runs against dist/ using the development-only Playwright dependency.
 // PLAYWRIGHT_MODULE can optionally point to another installed Playwright module.
@@ -8,7 +9,7 @@ import { readFile, mkdir } from "node:fs/promises";
 import { extname, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
-import { LANGUAGES, TREASURES } from "../content/registry.js";
+import { LANGUAGES, TREASURES, practiceChapters } from "../content/registry.js";
 import { foundationChapters as getModules } from "./helpers/course.mjs";
 import { checkActivityReports } from "./browser-activity.mjs";
 import { checkChapterFeedback } from "./browser-feedback.mjs";
@@ -107,6 +108,7 @@ try {
     );
     // Complete one whole language through actual controls, including all interactive tools.
     for (const m of getModules("de")) {
+      if (m.status === "planned") continue;
       await go("lab/" + m.id);
       for (const t of m.tasks) {
         if (t.id === "workspace-original-storage") continue;
@@ -191,7 +193,7 @@ try {
       console.log("Module " + m.id + " passed.");
     }
     assert.equal(await page.locator("#xp-label").textContent(), `${completeXP} XP`);
-    const chapterCount = getModules("de").length;
+    const chapterCount = practiceChapters("de-foundations").length;
     assert.equal(
       await page.locator("#progress-label").textContent(),
       `${chapterCount} / ${chapterCount}`,
@@ -296,6 +298,7 @@ try {
     await checkActivityReports(browser, base, output);
     await checkWorkspaceWorkshop(browser, base, output);
     await checkDocumentWorkshop(browser, base, output);
+    await checkCourseOutline(browser, base, output);
   }
   // Desktop, tablet and mobile layouts cover every page and the most demanding lab controls.
   for (const width of [320, 390, 768, 1024, 1440]) {

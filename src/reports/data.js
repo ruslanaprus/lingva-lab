@@ -24,6 +24,8 @@ function reportRecord(task, record) {
 export function createReportData({ state, course, track, chapterId }) {
   const chapter = course.chapters.find((chapter) => chapter.id === chapterId);
   if (!chapter) throw new Error("Unknown chapter for report");
+  if (chapter.status === "planned")
+    throw new Error("This chapter has no assessed exercises yet");
   const summary = sectionStats(chapter, track);
   const taskRow = (task, retired = false) => ({
     id: task.id,

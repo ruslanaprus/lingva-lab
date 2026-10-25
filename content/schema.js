@@ -48,13 +48,19 @@ export function validateCourse(course, sources = {}, challenges = {}) {
       !positive(chapter.revision) ||
       typeof chapter.required !== "boolean" ||
       !Array.isArray(chapter.tasks) ||
-      !chapter.tasks.length
+      (chapter.status !== undefined && chapter.status !== "planned") ||
+      (chapter.status === "planned"
+        ? chapter.required ||
+          chapter.tasks.length !== 0 ||
+          chapter.workshop ||
+          chapter.treasure
+        : !chapter.tasks.length)
     )
       fail("invalid or duplicate chapter");
     chapterIds.add(chapter.id);
     if (
       !Number.isFinite(chapter.time) ||
-      chapter.time <= 0 ||
+      (chapter.status === "planned" ? chapter.time !== 0 : chapter.time <= 0) ||
       !Array.isArray(chapter.terms) ||
       chapter.terms.some((term) => typeof term !== "string")
     )
@@ -128,7 +134,26 @@ export function validateCourse(course, sources = {}, challenges = {}) {
       )
         fail(`${task.id}: missing portfolio rubric`);
     }
-    if (!chapter.tasks.some((task) => task.required))
+    if (chapter.overview) {
+      for (const key of [
+        "purpose",
+        "foundations",
+        "practice",
+        "application",
+        "example",
+        "note",
+      ])
+        if (typeof chapter.overview[key] !== "string" || !chapter.overview[key].trim())
+          fail(`${chapter.id}: missing overview ${key}`);
+      if (
+        !Array.isArray(chapter.overview.related) ||
+        chapter.overview.related.some((id) => !validId(id))
+      )
+        fail(`${chapter.id}: invalid related chapters`);
+    }
+    if (chapter.status === "planned" && !chapter.overview)
+      fail(`${chapter.id}: planned chapter needs an overview`);
+    if (chapter.status !== "planned" && !chapter.tasks.some((task) => task.required))
       fail(`${chapter.id}: chapter must have a required exercise`);
     if (chapter.workshop) validateWorkshop(chapter, sources, validId);
   }
