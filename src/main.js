@@ -6,6 +6,7 @@ import {
   getExercise,
   GLOSSARY,
   SOURCES,
+  practiceChapters,
 } from "../content/registry.js";
 import {
   freshState,
@@ -15,8 +16,8 @@ import {
 } from "./persistence/state.js";
 import {
   answerRecord,
-  sectionStats,
   trackStats,
+  nextPracticeChapter,
   badges,
   recordAttempt,
   recordTreasureAttempt,
@@ -223,13 +224,12 @@ setInterval(() => {
 function updateHeader() {
   const stats = state.activePathId
     ? trackStats(course(), track())
-    : { xp: 0, sections: 0 };
+    : { xp: 0, sections: 0, sectionTotal: practiceChapters(course()).length };
   $("#language-label").textContent = state.activePathId
     ? `${language().toUpperCase()} / ${LANGUAGES[language()].native}${course().level === "foundations" ? "" : " · " + t("level." + course().level)} ↗`
     : t("profile.choosePath") + " ↗";
   $("#xp-label").textContent = stats.xp + " XP";
-  $("#progress-label").textContent =
-    pad(stats.sections) + " / " + course().chapters.length;
+  $("#progress-label").textContent = pad(stats.sections) + " / " + stats.sectionTotal;
   $("#storage-label").textContent = storageAvailable
     ? t("storage.saved")
     : t("storage.unavailable");
@@ -237,7 +237,7 @@ function updateHeader() {
   $('[data-nav="lab"]').href = "#lab/" + next.id;
 }
 function nextModule() {
-  return modules().find((m) => !sectionStats(m, track()).complete) || modules().at(-1);
+  return nextPracticeChapter(course(), track()) || modules()[0];
 }
 function showProfile(selected = state.activePathId) {
   const form = $("#profile-form");

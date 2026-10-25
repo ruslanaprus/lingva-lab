@@ -14,8 +14,14 @@ for (const path of Object.values(PATHS)) {
       `${path.id}: unknown milestone chapter`,
     );
   }
+  for (const chapter of path.chapters)
+    for (const id of chapter.overview?.related ?? [])
+      assert.ok(
+        path.chapters.some((item) => item.id === id),
+        `${chapter.id}: unknown related chapter ${id}`,
+      );
   console.log(
-    `${path.id}: ${path.chapters.length} chapters, ${path.chapters.flatMap((chapter) => chapter.tasks).length} exercises`,
+    `${path.id}: ${path.chapters.length} chapters (${path.chapters.filter((chapter) => chapter.status === "planned").length} descriptions), ${path.chapters.flatMap((chapter) => chapter.tasks).length} exercises`,
   );
 }
 for (const source of Object.values(SOURCES))

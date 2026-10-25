@@ -56,13 +56,18 @@ export function createMapView(context = {}) {
    )}</div><p class="micro muted">Український інтерфейс.<br>${Object.keys(PATHS).length} незалежні траєкторії.</p></div>
  <div class="section-heading"><h2>Маршрут дослідження<span class="orange">.</span></h2><p class="mono">${countLabel("chapter", ms.length)} · ${countLabel("task", stats.total)}<br>І СКАРБИ МІЖ РЯДКАМИ</p></div>
  <section class="continue-panel"><div class="continue-number">${pad(chapterNumber(pathId(), next.id))}</div><div><div class="mono">${stats.done ? "ПРОДОВЖУЄМО ЕКСПЕДИЦІЮ" : "ПОЧНІТЬ З ОСНОВ"} / ${next.category}</div><h3>${next.title}</h3><p>${next.short} ${next.time} хв орієнтовно.</p></div><a class="button light" href="#lab/${next.id}">${stats.done ? "Продовжити" : "До лабораторії"} <span>↗</span></a></section>
- <div class="module-filters mono" role="group" aria-label="Фільтр розділів"><button class="filter ${filter() === "all" ? "active" : ""}" data-filter="all" aria-pressed="${filter() === "all"}">Усі / ${ms.length}</button><button class="filter ${filter() === "new" ? "active" : ""}" data-filter="new" aria-pressed="${filter() === "new"}">Попереду</button><button class="filter ${filter() === "progress" ? "active" : ""}" data-filter="progress" aria-pressed="${filter() === "progress"}">У процесі</button><button class="filter ${filter() === "complete" ? "active" : ""}" data-filter="complete" aria-pressed="${filter() === "complete"}">Завершені</button></div>
+ <p class="catalog-notice">У програмі ${countLabel("chapter", ms.length)}: ${stats.sectionTotal} із наявними вправами та ${stats.plannedTotal} з описами майбутніх тем. Прогрес і звіти стосуються наявної практики; описи можна читати вже зараз.</p>
+ <div class="module-filters mono" role="group" aria-label="Фільтр розділів"><button class="filter ${filter() === "all" ? "active" : ""}" data-filter="all" aria-pressed="${filter() === "all"}">Усі / ${ms.length}</button><button class="filter ${filter() === "planned" ? "active" : ""}" data-filter="planned" aria-pressed="${filter() === "planned"}">Описи / ${stats.plannedTotal}</button><button class="filter ${filter() === "new" ? "active" : ""}" data-filter="new" aria-pressed="${filter() === "new"}">Попереду</button><button class="filter ${filter() === "progress" ? "active" : ""}" data-filter="progress" aria-pressed="${filter() === "progress"}">У процесі</button><button class="filter ${filter() === "complete" ? "active" : ""}" data-filter="complete" aria-pressed="${filter() === "complete"}">Завершені</button></div>
  <div class="module-grid">${ms
    .filter((m) => {
      const s = sectionStats(m, track());
      return (
        filter() === "all" ||
-       (filter() === "new" && s.done === 0 && s.attempts === 0) ||
+       (filter() === "planned" && m.status === "planned") ||
+       (filter() === "new" &&
+         m.status !== "planned" &&
+         s.done === 0 &&
+         s.attempts === 0) ||
        (filter() === "progress" && !s.complete && (s.done > 0 || s.attempts > 0)) ||
        (filter() === "complete" && s.complete)
      );
@@ -73,7 +78,11 @@ export function createMapView(context = {}) {
      const s = sectionStats(m, track());
      return (
        filter() === "all" ||
-       (filter() === "new" && s.done === 0 && s.attempts === 0) ||
+       (filter() === "planned" && m.status === "planned") ||
+       (filter() === "new" &&
+         m.status !== "planned" &&
+         s.done === 0 &&
+         s.attempts === 0) ||
        (filter() === "progress" && !s.complete && (s.done > 0 || s.attempts > 0)) ||
        (filter() === "complete" && s.complete)
      );
@@ -87,7 +96,7 @@ export function createMapView(context = {}) {
 
   function moduleCard(m) {
     const s = sectionStats(m, track());
-    return `<a class="module-card" href="#lab/${m.id}"><div class="module-card-head mono"><span class="number">${pad(chapterNumber(pathId(), m.id))} / <span class="${s.complete || s.done || s.attempts ? "card-state" : "category"}">${s.complete ? "ЗАВЕРШЕНО" : s.done || s.attempts ? "У ПРОЦЕСІ" : m.category}</span></span><span>${m.time} ХВ</span></div><h3>${m.title}</h3><p>${m.short}</p><div class="module-card-bottom">${m.workshop ? `<div class="workshop-card-progress"><span class="mono">${s.requiredDone}/${s.requiredTotal} ОБОВ’ЯЗКОВИХ</span><progress value="${s.requiredDone}" max="${s.requiredTotal}" aria-label="Виконано ${s.requiredDone} з ${s.requiredTotal} обов’язкових завдань"></progress></div>` : `<div class="task-dots" aria-label="${s.requiredDone} із ${s.requiredTotal} обов’язкових завдань виконано">${m.tasks.map((t) => `<i class="${taskStatus(track().answers[t.id], t)}"></i>`).join("")}</div>`}<span class="card-arrow" aria-hidden="true">↗</span></div></a>`;
+    return `<a class="module-card${m.status === "planned" ? " planned" : ""}" href="#lab/${m.id}" data-chapter-status="${m.status === "planned" ? "planned" : "practice"}"><div class="module-card-head mono"><span class="number">${pad(chapterNumber(pathId(), m.id))} / <span class="${s.complete || s.done || s.attempts ? "card-state" : "category"}">${m.status === "planned" ? "ОПИС" : s.complete ? "ЗАВЕРШЕНО" : s.done || s.attempts ? "У ПРОЦЕСІ" : m.category}</span></span><span>${m.status === "planned" ? "ОПИС" : `${m.time} ХВ`}</span></div><h3>${m.title}</h3><p>${m.short}</p><div class="module-card-bottom">${m.status === "planned" ? '<span class="mono muted">ВПРАВИ ГОТУЮТЬСЯ</span>' : m.workshop ? `<div class="workshop-card-progress"><span class="mono">${s.requiredDone}/${s.requiredTotal} ОБОВ’ЯЗКОВИХ</span><progress value="${s.requiredDone}" max="${s.requiredTotal}" aria-label="Виконано ${s.requiredDone} з ${s.requiredTotal} обов’язкових завдань"></progress></div>` : `<div class="task-dots" aria-label="${s.requiredDone} із ${s.requiredTotal} обов’язкових завдань виконано">${m.tasks.map((t) => `<i class="${taskStatus(track().answers[t.id], t)}"></i>`).join("")}</div>`}<span class="card-arrow" aria-hidden="true">↗</span></div></a>`;
   }
   return { renderMap, moduleCard };
 }

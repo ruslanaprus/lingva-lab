@@ -1,4 +1,59 @@
 export const SOURCES = {
+  "google-search": {
+    title: "Google — Як уточнювати пошукові запити",
+    url: "https://support.google.com/websearch/answer/2466433?hl=uk",
+    note: "Точні фрази, site:, виключення, тип файла й часові обмеження. Довідка сервісу; результати живого пошуку можуть змінюватися.",
+  },
+  zotero: {
+    title: "Zotero — Quick Start Guide",
+    url: "https://www.zotero.org/support/quick_start_guide",
+    note: "Збирання джерел, нотатки та бібліографічні дані. Англійською; використання Zotero в курсі добровільне.",
+  },
+  dwds: {
+    title: "BBAW — Digitales Wörterbuch der deutschen Sprache",
+    url: "https://www.bbaw.de/forschung/digitales-woerterbuch-der-deutschen-sprache",
+    note: "Опис німецького лексичного ресурсу DWDS та його даних. Німецькою.",
+  },
+  cnrtl: {
+    title: "CNRTL — Portail lexical",
+    url: "https://www.cnrtl.fr/definition/",
+    note: "Лексичний портал для французької; звертайте увагу на дату джерел, позначки й окремі значення. Французькою.",
+  },
+  cambridge: {
+    title: "Cambridge Dictionary — English dictionary",
+    url: "https://dictionary.cambridge.org/dictionary/english/",
+    note: "Англійські словникові статті зі значеннями, прикладами й позначками. Англійською.",
+  },
+  reverso: {
+    title: "Reverso Context — About",
+    url: "https://context.reverso.net/translation/about",
+    note: "Опис контекстних перекладних прикладів і перевірки вирівнювання. Англійською; це ресурс для критичного зіставлення.",
+  },
+  antconc: {
+    title: "Laurence Anthony — AntConc",
+    url: "https://www.laurenceanthony.net/software/antconc/",
+    note: "Офіційна сторінка інструмента конкордансів і аналізу текстів. Англійською; для описів курсу встановлення не потрібне.",
+  },
+  "word-sketch": {
+    title: "Sketch Engine — Word Sketch lesson",
+    url: "https://www.sketchengine.eu/quick-start-guide/word-sketch-lesson/",
+    note: "Зв’язок узагальнень сполучуваності з прикладами. Англійською; платний акаунт для читання опису курсу не потрібний.",
+  },
+  ipa: {
+    title: "International Phonetic Association — IPA Chart",
+    url: "https://www.internationalphoneticassociation.org/content/ipa-chart",
+    note: "Офіційна фонетична таблиця. Спочатку використовуємо символи, потрібні для обраної мови.",
+  },
+  textgrid: {
+    title: "Praat manual — TextGrid",
+    url: "https://www.fon.hum.uva.nl/praat/manual/TextGrid.html",
+    note: "Інтервальні та точкові рівні анотації. Англійською.",
+  },
+  "unicode-encodings": {
+    title: "Unicode Consortium — UTF-8, UTF-16, UTF-32 & BOM",
+    url: "https://www.unicode.org/faq/utf_bom.html",
+    note: "Кодування, символи й кодові одиниці. Англійською; базові пояснення ASCII та UTF-8 є в описі розділу.",
+  },
   "word-headings": {
     title: "Microsoft Word — Add a heading",
     url: "https://support.microsoft.com/en-us/word/add-a-heading",

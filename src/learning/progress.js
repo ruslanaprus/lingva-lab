@@ -1,4 +1,9 @@
-import { getPath, getExercise, TREASURES } from "../../content/registry.js";
+import {
+  getPath,
+  getExercise,
+  practiceChapters,
+  TREASURES,
+} from "../../content/registry.js";
 import { now } from "../shared/values.js";
 import { selectionDetails } from "./values.js";
 import { GRADER_VERSION } from "../version.js";
@@ -103,7 +108,9 @@ export function trackStats(path, track) {
     portfolioTotal: tasks.filter((task) => task.type === "portfolio").length,
     sections: course.chapters.filter((chapter) => sectionStats(chapter, track).complete)
       .length,
-    sectionTotal: course.chapters.length,
+    sectionTotal: practiceChapters(course).length,
+    plannedTotal: course.chapters.filter((chapter) => chapter.status === "planned")
+      .length,
     complete:
       requiredChapters.length > 0 &&
       requiredChapters.every((chapter) => sectionStats(chapter, track).complete),
@@ -119,6 +126,14 @@ export function trackStats(path, track) {
       0,
     ),
   };
+}
+export function nextPracticeChapter(course, track) {
+  const chapters = practiceChapters(course);
+  return (
+    chapters.find((chapter) => !sectionStats(chapter, track).complete) ||
+    chapters.at(-1) ||
+    null
+  );
 }
 export function badges(path, track) {
   const course = typeof path === "string" ? getPath(path) : path;

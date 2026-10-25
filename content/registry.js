@@ -50,6 +50,10 @@ export const getPath = (id) => {
   return PATHS[id];
 };
 export const getChapters = (id) => getPath(id).chapters;
+export const practiceChapters = (course) =>
+  (typeof course === "string" ? getPath(course) : course).chapters.filter(
+    (chapter) => chapter.status !== "planned",
+  );
 export const getPathTasks = (id) => getChapters(id).flatMap((chapter) => chapter.tasks);
 export const getChapter = (pathId, chapterId) =>
   getChapters(pathId).find((chapter) => chapter.id === chapterId);

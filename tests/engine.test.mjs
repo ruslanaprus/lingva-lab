@@ -101,7 +101,7 @@ for (const lang of Object.keys(LANGUAGES))
         );
         recordAttempt(track, t, v, evaluated);
       }
-      assert.equal(sectionStats(m, track).complete, true);
+      assert.equal(sectionStats(m, track).complete, m.status !== "planned");
     }
     const stats = trackStats(`${lang}-foundations`, track);
     assert.equal(
