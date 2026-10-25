@@ -1,13 +1,15 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { FEEDBACK_STORAGE_KEY } from "../src/features/feedback-model.js";
+import { nextChapter } from "../content/registry.js";
 
 export async function checkChapterFeedback(page, go, output) {
   await go("lab/workspace");
   const xp = await page.locator("#xp-label").textContent();
   const panel = () => page.locator('[data-chapter-feedback="workspace"]');
   assert.equal(await panel().evaluate((el) => el.open), false);
-  assert.ok(await page.locator('.lab-end a[href="#lab/data-formats"]').isVisible());
+  const next = nextChapter("de-foundations", "workspace");
+  assert.ok(await page.locator(`.lab-end a[href="#lab/${next.id}"]`).isVisible());
   await panel().locator("summary").click();
   await panel()
     .getByRole("button", { name: "Зберегти на пристрої", exact: true })

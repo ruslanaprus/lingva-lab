@@ -16,6 +16,9 @@ export function validateWorkshop(chapter, sources, validId) {
   )
     fail("invalid workshop plan");
   const stages = new Map();
+  for (const key of ["title", "exampleLabel", "fallbackGuidance"])
+    if (workshop[key] !== undefined && !strings([workshop[key]]))
+      fail(`invalid workshop ${key}`);
   for (const stage of workshop.stages) {
     if (
       !validId(stage.id) ||
@@ -53,6 +56,9 @@ export function validateWorkshop(chapter, sources, validId) {
     if (task.prompt.length + lessonText(reading).length + 32 > 20000)
       fail(`${task.id}: reading exceeds the historical prompt limit`);
     const submission = task.submission;
+    for (const key of ["title", "methodPlaceholder"])
+      if (submission?.[key] !== undefined && !strings([submission[key]]))
+        fail(`${task.id}: invalid submission ${key}`);
     if (
       submission &&
       (task.type !== "portfolio" ||

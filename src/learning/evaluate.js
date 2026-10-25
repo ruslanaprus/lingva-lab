@@ -120,6 +120,7 @@ export function evaluateTask(task, value, regexResult) {
           "Гіпотеза ще відрізняється від еталона. Перевірте пропуски, заміни й додані слова.",
         );
   if (task.type === "portfolio") {
+    const documentTitle = task.submission?.title || "README";
     const minimumMethod = task.submission?.minimumMethodLength ?? 120;
     const minimumReflection = task.submission?.minimumReflectionLength ?? 100;
     if (
@@ -130,7 +131,7 @@ export function evaluateTask(task, value, regexResult) {
       !value.confirm
     )
       return fail(
-        `Для подання вкажіть артефакт (від 5 символів), ${task.submission ? "повний текст README" : "метод і результати"} (від ${minimumMethod}), обмеження та висновок (від ${minimumReflection}), і підтвердьте самоперевірку.`,
+        `Для подання вкажіть артефакт (від 5 символів), ${task.submission ? `повний текст документа «${documentTitle}»` : "метод і результати"} (від ${minimumMethod}), обмеження та висновок (від ${minimumReflection}), і підтвердьте самоперевірку.`,
       );
     if (task.submission?.sections) {
       const headings = value.method
@@ -148,11 +149,11 @@ export function evaluateTask(task, value, regexResult) {
       );
       if (missing.length)
         return fail(
-          `У README бракує заголовків зі шаблону: ${missing.join("; ")}. Додайте кожну частину окремим рядком і заповніть її фактами.`,
+          `У документі «${documentTitle}» бракує заголовків зі шаблону: ${missing.join("; ")}. Додайте кожну частину окремим рядком і заповніть її фактами.`,
         );
       if (value.method.includes("[Замініть цей рядок"))
         return fail(
-          "У README залишилися підказки шаблону. Замініть їх конкретною інформацією про вашу колекцію.",
+          `У документі «${documentTitle}» залишилися підказки шаблону. Замініть їх конкретною інформацією про вашу роботу.`,
         );
     }
     return {

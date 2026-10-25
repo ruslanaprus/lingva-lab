@@ -1,0 +1,91 @@
+// Development-only: export the actual course text for editorial review.
+// node scripts/export-chapter-review.mjs de-foundations academic-documents > docs/chapter-two-review.md
+import { getPath, SOURCES, TREASURES } from "../content/registry.js";
+const [pathId, chapterId] = process.argv.slice(2);
+const course = getPath(pathId),
+  chapter = course.chapters.find((c) => c.id === chapterId);
+if (!chapter) throw new Error("Unknown chapter");
+const lines = [
+  `# ${chapter.title}: текст для перегляду`,
+  "",
+  `Згенеровано з матеріалів маршруту ${course.title}. Українські пояснення спільні; мовні приклади тут — ${course.language}. Інші варіанти: content/tracks/fr/documents.js та content/tracks/en/documents.js.`,
+  "",
+  `Текст сайту редагується у \`content/shared/chapters/${chapter.id}.js\` та \`content/shared/chapters/${chapter.id}/\`. Зміни лише в цьому файлі для перегляду не змінюють текст на сайті.`,
+  "",
+  "Оновити після редагування: `node scripts/export-chapter-review.mjs de-foundations academic-documents > docs/chapter-two-review.md`, потім Prettier.",
+  "",
+  `${chapter.time} хв обов’язкової роботи; час є оцінкою, не перевіреною тривалістю для кожного студента.`,
+  "",
+  chapter.case,
+  "",
+  chapter.theory,
+  "",
+  chapter.workshop.guidance,
+  "",
+  "## План",
+  "",
+];
+for (const stage of chapter.workshop.stages) {
+  const tasks = chapter.tasks.filter((t) => t.stage === stage.id);
+  lines.push(
+    `- ${stage.title}: ${tasks.reduce((n, t) => n + t.minutes, 0)} хв${stage.optional ? "; добровільно" : ""}.`,
+  );
+}
+let previous;
+for (const [i, task] of chapter.tasks.entries()) {
+  if (task.stage !== previous) {
+    const stage = chapter.workshop.stages.find((s) => s.id === task.stage);
+    lines.push("", `## ${stage.title}`, "", stage.goal);
+    previous = stage.id;
+  }
+  lines.push(
+    "",
+    `### ${i + 1}. ${task.title}`,
+    "",
+    `${task.minutes} хв · ${task.required ? "обов’язкова" : "добровільна"} · ${task.type === "portfolio" ? "прикладне подання" : "коротка перевірка"}`,
+    "",
+    `**${task.lesson.title}**`,
+    "",
+    task.lesson.paragraphs.join("\n\n"),
+  );
+  if (task.lesson.example) lines.push("", "```text", task.lesson.example, "```");
+  if (task.lesson.steps.length)
+    lines.push("", ...task.lesson.steps.map((s, n) => `${n + 1}. ${s}`));
+  lines.push("", "**Завдання:** " + task.prompt);
+  if (task.options)
+    lines.push(
+      "",
+      ...task.options.map((v, n) => `${n + 1}. ${v}`),
+      "",
+      `**Ключ для редакторського перегляду:** ${task.multiple ? task.answer.map((n) => n + 1).join(", ") : task.answer + 1}. ${task.explain}`,
+    );
+  if (task.rubric) lines.push("", "Критерії:", "", ...task.rubric.map((r) => "- " + r));
+}
+lines.push("", "## Матеріали набору", "");
+for (const file of [...chapter.workshop.files, ...chapter.workshop.documents])
+  lines.push(`### ${file.name}`, "", "```text", file.content, "```", "");
+if (chapter.treasure) {
+  const treasure = TREASURES[chapter.treasure];
+  lines.push(
+    "",
+    "## Прихована знахідка (добровільно)",
+    "",
+    treasure.title,
+    "",
+    treasure.prompt,
+    "",
+    ...treasure.options.map((v, i) => `${i + 1}. ${v}`),
+    "",
+    `Ключ для перегляду: ${treasure.answer + 1}. ${treasure.explain}`,
+  );
+}
+lines.push("", "## Джерела й довідка", "");
+const sourceKeys = new Set([
+  ...chapter.sources,
+  ...chapter.tasks.flatMap((t) => t.lesson?.sources || []),
+]);
+for (const key of sourceKeys) {
+  const source = SOURCES[key];
+  lines.push(`- [${source.title}](${source.url}). ${source.note}`);
+}
+console.log(lines.join("\n"));

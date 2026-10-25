@@ -1,6 +1,7 @@
 import { foundationAssessment } from "../../shared/assessment.js";
 import { foundationMilestones } from "../../shared/milestones.js";
 import chapter1 from "../../shared/chapters/workspace.js";
+import academicDocuments from "../../shared/chapters/academic-documents.js";
 import chapter2 from "../../shared/chapters/data-formats.js";
 import chapter3 from "../../shared/chapters/unicode.js";
 import chapter4 from "../../shared/chapters/terminal-navigation.js";
@@ -18,12 +19,13 @@ export default {
   id: "en-foundations",
   language: "en",
   level: "foundations",
-  revision: 2,
+  revision: 3,
   milestones: foundationMilestones,
   assessment: foundationAssessment,
   title: "Англійська / Основи",
   chapters: [
     chapter1,
+    academicDocuments,
     chapter2,
     chapter3,
     chapter4,

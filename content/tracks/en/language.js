@@ -1,5 +1,7 @@
+import documents from "./documents.js";
 // Language material only: application behavior is shared.
 export default {
+  documents,
   code: "en",
   name: "Англійська",
   native: "English",

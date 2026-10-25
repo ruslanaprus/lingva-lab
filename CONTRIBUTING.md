@@ -17,7 +17,7 @@ pnpm install --frozen-lockfile
 
 ## Де змінювати матеріали
 
-- Приклади певної мови: `content/tracks/fr/language.js`, `de/language.js` або `en/language.js`.
+- Приклади певної мови: `content/tracks/fr/language.js`, `de/language.js` або `en/language.js`. Матеріали академічного документа — у `content/tracks/<мова>/documents.js`.
 - Порядок і склад розділів: `content/tracks/<мова>/foundations.js`. Кожен маршрут має власний список.
 - Спільний дизайн вправ: `content/shared/chapters/`. Зміна тут може вплинути на всі маршрути, які використовують цей розділ.
 - Назви кнопок та інший текст інтерфейсу: `src/i18n/uk.js`. Англійського інтерфейсу наразі немає.

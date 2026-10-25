@@ -76,7 +76,7 @@ export const workspaceStages = [
   },
   {
     id: "repair",
-    title: "Відремонтувати пояснення",
+    title: "Виправити пояснення",
     goal: "Знайти прогалини в чужій інструкції та написати конкретні виправлення.",
   },
   {
@@ -92,18 +92,4 @@ export const workspaceStages = [
   },
 ];
 
-export const activity = (task, stage, minutes, lesson, extra = {}) => ({
-  ...task,
-  stage,
-  minutes,
-  lesson,
-  ...extra,
-});
-
-export const lesson = (title, paragraphs, example, steps = [], sources = []) => ({
-  title,
-  paragraphs,
-  ...(example ? { example } : {}),
-  steps,
-  sources,
-});
+export { activity, lesson } from "../../workshop.js";
