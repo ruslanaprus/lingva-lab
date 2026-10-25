@@ -506,7 +506,7 @@ $("#main").addEventListener("click", async (e) => {
     if (task?.submission?.downloadName) {
       download(task.submission.downloadName, readValue(task).method);
       toast(
-        "Поточний текст README завантажено. Перевірте назву, місце й повторне відкриття файла.",
+        `Поточний текст ${task.submission.title || "README"} завантажено. Перевірте назву, місце й повторне відкриття файла.`,
       );
     }
     return;
@@ -770,7 +770,7 @@ function downloadMaterials(id) {
     m = moduleById(id);
   let content, name;
   if (m.workshop) {
-    download(`workspace-case-${language()}.zip`, zipFiles(m.workshop.files));
+    download(`${m.id}-case-${language()}.zip`, zipFiles(m.workshop.files));
     toast(
       "Набір завантажено. Розпакуйте його в окрему папку; тексти також доступні в розділі на сторінці.",
     );

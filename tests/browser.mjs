@@ -1,4 +1,5 @@
 import { checkWorkspaceWorkshop } from "./browser-workspace.mjs";
+import { checkDocumentWorkshop } from "./browser-documents.mjs";
 import { portfolioAnswer } from "./helpers/answers.mjs";
 // Browser QA runs against dist/ using the development-only Playwright dependency.
 // PLAYWRIGHT_MODULE can optionally point to another installed Playwright module.
@@ -74,7 +75,7 @@ try {
   });
   await page.goto(base);
   await page.locator(".module-card").first().waitFor();
-  assert.equal(await page.locator(".module-card").count(), 12);
+  assert.equal(await page.locator(".module-card").count(), getModules("de").length);
   console.log("Course map loaded.");
   await page.screenshot({ path: output + "/map-desktop.png", fullPage: true });
   await page.getByRole("button", { name: "DE Німецька" }).click();
@@ -190,7 +191,11 @@ try {
       console.log("Module " + m.id + " passed.");
     }
     assert.equal(await page.locator("#xp-label").textContent(), `${completeXP} XP`);
-    assert.equal(await page.locator("#progress-label").textContent(), "12 / 12");
+    const chapterCount = getModules("de").length;
+    assert.equal(
+      await page.locator("#progress-label").textContent(),
+      `${chapterCount} / ${chapterCount}`,
+    );
     await go("lab/unicode");
     await page.locator("[data-treasure=unicode]").click();
     await page.locator('[name=treasure-unicode][value="1"]').check();
@@ -290,6 +295,7 @@ try {
     assert.ok((await page.locator(".glossary-item:visible").count()) < 10);
     await checkActivityReports(browser, base, output);
     await checkWorkspaceWorkshop(browser, base, output);
+    await checkDocumentWorkshop(browser, base, output);
   }
   // Desktop, tablet and mobile layouts cover every page and the most demanding lab controls.
   for (const width of [320, 390, 768, 1024, 1440]) {

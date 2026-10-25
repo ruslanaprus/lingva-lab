@@ -1,5 +1,12 @@
 export const foundationMilestones = [
   {
+    id: "academic-editor",
+    name: "Уважний співредактор",
+    mark: "¶",
+    description: "Завершено обов’язкову майстерню академічного документа й співпраці",
+    chapterIds: ["academic-documents"],
+  },
+  {
     id: "organized-data",
     name: "Архітектор даних",
     mark: "{ }",

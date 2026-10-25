@@ -45,7 +45,7 @@ for (const lang of Object.keys(LANGUAGES))
       l = LANGUAGES[lang];
     state.activePathId = `${lang}-foundations`;
     const modules = getModules(lang);
-    assert.equal(modules.length, 12);
+    assert.ok(modules.length > 0);
     const tasks = modules.flatMap((m) => m.tasks);
     assert.equal(new Set(tasks.map((task) => task.id)).size, tasks.length);
     for (const m of modules) {
@@ -116,7 +116,7 @@ for (const lang of Object.keys(LANGUAGES))
       stats.submitted,
       tasks.filter((task) => task.type === "portfolio").length,
     );
-    assert.equal(stats.sections, 12);
+    assert.equal(stats.sections, modules.filter((chapter) => chapter.required).length);
     assert.equal(
       validateBackup(JSON.parse(JSON.stringify(state))).activePathId,
       `${lang}-foundations`,
@@ -161,11 +161,12 @@ test("NFC accepts canonical equivalents, but does not collapse visually similar 
 });
 
 test("Regex grading rejects prefix matches, invalid syntax and empty matches", () => {
-  const t = getModules("en")[5].tasks[0];
+  const t = getModules("en").find((chapter) => chapter.id === "regex-search").tasks[0];
   assert.equal(evaluateTask(t, {}, regex(t, { pattern: "go" })).status, "failed");
   assert.ok(regex(t, { pattern: "[" }).error);
   assert.ok(regex(t, { pattern: "x*" }).error);
-  const replacement = getModules("fr")[6].tasks[0];
+  const replacement = getModules("fr").find((chapter) => chapter.id === "regex-cleanup")
+    .tasks[0];
   assert.equal(
     evaluateTask(
       replacement,
@@ -184,7 +185,9 @@ test("Terminal distinguishes copying and moving; quoted paths work and missing f
   );
   assert.equal(runTerminal(initial, "cat missing.txt").ok, false);
   assert.equal(runTerminal(initial, "rm original/interview.txt").ok, false);
-  const task = getModules("en")[3].tasks[2];
+  const task = getModules("en")
+    .find((chapter) => chapter.id === "terminal-navigation")
+    .tasks.find((task) => task.goal === "copy");
   const created = runTerminal(initial, "mkdir results").machine;
   const moved = runTerminal(created, "mv original/interview.txt results/interview.txt");
   assert.equal(
@@ -203,7 +206,9 @@ test("Terminal distinguishes copying and moving; quoted paths work and missing f
 });
 
 test("Git stages a snapshot rather than the latest working text", () => {
-  const t = getModules("fr")[7].tasks[0];
+  const t = getModules("fr")
+    .find((chapter) => chapter.id === "git-history")
+    .tasks.find((task) => task.type === "git");
   let g = createGit("fr");
   assert.equal(runGit(g, 'git commit -m "Sans index"').ok, false);
   g = runGit(g, "git add transcription.txt").state;

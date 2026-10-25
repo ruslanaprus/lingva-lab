@@ -1,4 +1,54 @@
 export const SOURCES = {
+  "word-headings": {
+    title: "Microsoft Word — Add a heading",
+    url: "https://support.microsoft.com/en-us/word/add-a-heading",
+    note: "Застосування стилів заголовків. Додаткове читання англійською; основні кроки пояснено українською у вправі.",
+  },
+  "word-contents": {
+    title: "Microsoft Word — Insert a table of contents",
+    url: "https://support.microsoft.com/en-us/word/training/insert-a-table-of-contents",
+    note: "Автоматичний зміст на основі заголовків і його оновлення. Англійською.",
+  },
+  "word-footnotes": {
+    title: "Microsoft Word — Add footnotes and endnotes",
+    url: "https://support.microsoft.com/en-us/word/add-footnotes-and-endnotes",
+    note: "Зноски та зв’язок із основним текстом. Англійською.",
+  },
+  "word-changes": {
+    title: "Microsoft Word — Accept or reject tracked changes",
+    url: "https://support.microsoft.com/en-us/word/accept-or-reject-tracked-changes-in-word",
+    note: "Прийняття й відхилення змін; приховування розмітки не видаляє правок. Англійською.",
+  },
+  "word-feedback": {
+    title: "Microsoft Word — Give and receive feedback",
+    url: "https://support.microsoft.com/en-us/word/give-and-receive-feedback-in-word",
+    note: "Коментарі, відповіді та пропозиції. Англійською.",
+  },
+  "docs-suggestions": {
+    title: "Google Документи — Як запропонувати зміни",
+    url: "https://support.google.com/docs/answer/6033474?hl=uk",
+    note: "Режим пропонування та розгляд правок. Українською.",
+  },
+  "docs-sharing": {
+    title: "Google Диск — Як ділитися файлами",
+    url: "https://support.google.com/docs/answer/2494822?hl=uk",
+    note: "Ролі читача, коментатора й редактора та доступ до документа. Українською.",
+  },
+  "docs-history": {
+    title: "Google Документи — Як переглянути зміни у файлі",
+    url: "https://support.google.com/docs/answer/190843?hl=uk",
+    note: "Історія та попередні версії; потрібні відповідні права доступу. Українською.",
+  },
+  "docs-pages": {
+    title: "Google Docs — Pages or pageless",
+    url: "https://support.google.com/docs/answer/11528737?hl=uk",
+    note: "Режим сторінок для номерів, колонтитулів і макета. Доступна українська локалізація.",
+  },
+  "writer-changes": {
+    title: "LibreOffice Writer — Record Changes",
+    url: "https://help.libreoffice.org/latest/en-US/text/shared/01/02230100.html",
+    note: "Локальна робота з відстеженням змін у Writer. Англійською; українські орієнтири є у наборі.",
+  },
   memory: {
     title: "Intel — What Is Computer and Laptop RAM?",
     url: "https://www.intel.com/content/www/us/en/tech-tips-and-tricks/computer-ram.html",
