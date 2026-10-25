@@ -10,6 +10,8 @@ const lines = [
   "",
   `Згенеровано з матеріалів маршруту ${course.title}. Українські пояснення спільні; мовні приклади тут — ${course.language}. Інші варіанти: content/tracks/fr/documents.js та content/tracks/en/documents.js.`,
   "",
+  `Текст сайту редагується у \`content/shared/chapters/${chapter.id}.js\` та \`content/shared/chapters/${chapter.id}/\`. Зміни лише в цьому файлі для перегляду не змінюють текст на сайті.`,
+  "",
   "Оновити після редагування: `node scripts/export-chapter-review.mjs de-foundations academic-documents > docs/chapter-two-review.md`, потім Prettier.",
   "",
   `${chapter.time} хв обов’язкової роботи; час є оцінкою, не перевіреною тривалістю для кожного студента.`,
