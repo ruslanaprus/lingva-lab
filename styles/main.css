@@ -817,6 +817,157 @@ main:focus {
 .task-input {
   margin-top: 20px;
 }
+
+/* Scaffolded workshops currently used by chapter one. */
+.workshop-card-progress {
+  min-width: 0;
+  width: calc(100% - 38px);
+}
+.workshop-card-progress .mono {
+  display: block;
+  font-size: 9px;
+  color: var(--muted);
+}
+.workshop-card-progress progress {
+  width: 100%;
+  height: 4px;
+  accent-color: var(--green);
+}
+.workshop-intro {
+  border: 1px solid var(--ink);
+  padding: clamp(16px, 3vw, 30px);
+  margin: 28px 0 38px;
+  min-width: 0;
+}
+.workshop-intro h2,
+.workshop-stage h2 {
+  margin: 12px 0;
+  font-size: 27px;
+  line-height: 1.2;
+}
+.workshop-intro p,
+.workshop-stage p {
+  line-height: 1.7;
+}
+.workshop-plan {
+  padding-left: 23px;
+  margin: 22px 0;
+}
+.workshop-plan li {
+  padding: 8px 0;
+  line-height: 1.5;
+}
+.workshop-plan li > span {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+}
+.workshop-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+}
+.workshop-downloads button {
+  white-space: normal;
+  text-align: left;
+}
+.workshop-files {
+  border-top: 1px solid var(--line);
+  padding: 13px 0;
+}
+.workshop-files summary {
+  cursor: pointer;
+  line-height: 1.5;
+  font-size: 13px;
+}
+.workshop-files > details {
+  margin-top: 10px;
+}
+.workshop-files pre,
+.lesson-example {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: 12px/1.7 var(--mono);
+  padding: 16px;
+  background: var(--white);
+  max-width: 100%;
+}
+.workshop-files pre {
+  margin-top: 12px;
+}
+.workshop-stage {
+  margin: 42px 0 22px;
+  border-left: 3px solid var(--accent);
+  padding-left: 18px;
+}
+.task-lesson {
+  padding: clamp(15px, 2vw, 24px);
+  background: var(--white);
+  margin: 20px 0;
+  min-width: 0;
+}
+.task-lesson h3 {
+  font-size: 18px;
+  line-height: 1.4;
+  margin: 10px 0 14px;
+}
+.task-lesson p {
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 12px 0;
+}
+.task-lesson .lesson-label {
+  font-size: 9px;
+  color: var(--muted);
+}
+.lesson-example {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  margin: 16px 0;
+}
+.lesson-steps {
+  padding-left: 22px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.lesson-steps li {
+  margin: 8px 0;
+}
+.lesson-sources {
+  padding-left: 18px;
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.lesson-sources span {
+  display: block;
+}
+.workshop-sidebar .task-nav {
+  max-height: 43vh;
+  overflow-y: auto;
+}
+.workshop-sidebar .task-nav a {
+  font-size: 12px;
+}
+.workshop-sidebar .task-nav small {
+  display: block;
+  color: var(--muted);
+  font: 10px/1.6 var(--mono);
+  margin-top: 4px;
+}
+.workshop-sidebar + .lab-content .task-top {
+  flex-wrap: wrap;
+}
+.workshop-sidebar + .lab-content .portfolio-fields textarea[data-portfolio="method"] {
+  min-height: 190px;
+}
+@media (max-width: 1000px) {
+  .workshop-sidebar .task-nav {
+    max-height: none;
+    overflow-y: hidden;
+  }
+}
 .options {
   display: grid;
   gap: 8px;

@@ -1,3 +1,4 @@
+import { validateWorkshop } from "./workshop-schema.js";
 /**
  * @typedef {Object} Exercise
  * @property {string} id Permanent identity; never generated from display order.
@@ -129,6 +130,7 @@ export function validateCourse(course, sources = {}, challenges = {}) {
     }
     if (!chapter.tasks.some((task) => task.required))
       fail(`${chapter.id}: chapter must have a required exercise`);
+    if (chapter.workshop) validateWorkshop(chapter, sources, validId);
   }
   if (
     course.assessment &&

@@ -47,6 +47,7 @@ import { renderRegexResult } from "./ui/exercises/regex.js";
 import { updateWer } from "./ui/exercises/wer.js";
 import { drawWaves } from "./ui/exercises/audio.js";
 import { signalWav } from "./tools/audio.js";
+import { zipFiles } from "./tools/zip.js";
 import { reportHtml } from "./reports/html.js";
 import { createReportData } from "./reports/data.js";
 import { createMapView } from "./ui/pages/map.js";
@@ -304,7 +305,7 @@ $("#profile-form").addEventListener("submit", (e) => {
 $("#help-button").addEventListener("click", () =>
   showInfo(
     "Як працює практикум",
-    `<ol><li>Оберіть німецьку, французьку або англійську. Матеріали та прогрес кожної траєкторії незалежні.</li><li>У розділах є автоматично перевірювані завдання та прикладні роботи для викладача. Необов’язкові вправи позначені окремо. Читайте теорію, досліджуйте тренажери й виправляйте помилки.</li><li>Кожна перевірка зберігає введений текст без виправлень або номери й тексти обраних варіантів, час подання, результат і кількість підказок. Звіт також показує час у розділі; активний час враховує видиму вкладку у фокусі та паузу після 2 хв без взаємодії. Повторні подання зберігаються; попередній успіх залишається в історії.</li><li>За перше успішне завдання — 40 XP; за подання практичної роботи — 30 XP; за прихований виклик — 60 XP. Повторення не збільшує XP. XP не є оцінкою.</li><li>Розділ завершено після виконання всіх його обов’язкових завдань. Якість цієї роботи оцінює викладач.</li><li>Завантажте HTML-звіт і передайте його разом з артефактами. Для PDF відкрийте звіт і скористайтеся друком браузера → «Зберегти як PDF».</li><li>У портфоліо експортуйте резервну копію JSON. Прогрес локальний: інший браузер або пристрій потребує імпорту. Серверного кабінету викладача у цій версії немає.</li></ol><p class="micro muted">Навчальні приклади створено для цього практикуму; вони не є репрезентативним корпусом. Команди виконуються в симуляторах. Зовнішні STT, TTS і ШІ автоматично не викликаються.</p>`,
+    `<ol><li>Оберіть німецьку, французьку або англійську. Матеріали та прогрес кожної траєкторії незалежні.</li><li>У розділах є автоматично перевірювані завдання та прикладні роботи для викладача. Необов’язкові вправи позначені окремо. Читайте теорію, досліджуйте тренажери й виправляйте помилки.</li><li>Кожна перевірка зберігає введений текст без виправлень або номери й тексти обраних варіантів, час подання, результат і кількість підказок. Звіт також показує час у розділі; активний час враховує видиму вкладку у фокусі та паузу після 2 хв без взаємодії. Повторні подання зберігаються; попередній успіх залишається в історії.</li><li>Кількість XP указана біля кожного завдання; за прихований виклик — 60 XP. XP за один ID завдання нараховуються лише один раз. Подання практичної роботи очікує перевірки. XP не є оцінкою.</li><li>Розділ завершено після виконання всіх його обов’язкових завдань. Якість цієї роботи оцінює викладач.</li><li>Завантажте HTML-звіт і передайте його разом з артефактами. Для PDF відкрийте звіт і скористайтеся друком браузера → «Зберегти як PDF».</li><li>У портфоліо експортуйте резервну копію JSON. Прогрес локальний: інший браузер або пристрій потребує імпорту. Серверного кабінету викладача у цій версії немає.</li></ol><p class="micro muted">Навчальні приклади створено для цього практикуму; вони не є репрезентативним корпусом. Команди виконуються в симуляторах. Зовнішні STT, TTS і ШІ автоматично не викликаються.</p>`,
   ),
 );
 function showInfo(title, html) {
@@ -500,6 +501,23 @@ $("#main").addEventListener("keydown", (e) => {
 $("#main").addEventListener("click", async (e) => {
   const b = e.target.closest("button,a");
   if (!b) return;
+  if (b.dataset.downloadMethod) {
+    const task = taskById(b.dataset.downloadMethod);
+    if (task?.submission?.downloadName) {
+      download(task.submission.downloadName, readValue(task).method);
+      toast(
+        "Поточний текст README завантажено. Перевірте назву, місце й повторне відкриття файла.",
+      );
+    }
+    return;
+  }
+  if (b.dataset.workshopDocument) {
+    const document = moduleById(b.dataset.module)?.workshop?.documents.find(
+      (document) => document.id === b.dataset.workshopDocument,
+    );
+    if (document) download(document.name, document.content);
+    return;
+  }
   if (b.hasAttribute("data-download-feedback")) {
     handleChapterFeedback(b.closest("[data-feedback-form]"), true);
     return;
@@ -751,6 +769,13 @@ function downloadMaterials(id) {
   const l = LANGUAGES[language()],
     m = moduleById(id);
   let content, name;
+  if (m.workshop) {
+    download(`workspace-case-${language()}.zip`, zipFiles(m.workshop.files));
+    toast(
+      "Набір завантажено. Розпакуйте його в окрему папку; тексти також доступні в розділі на сторінці.",
+    );
+    return;
+  }
   if (m.materials === "academic") {
     name = "academic-text.txt";
     content = l.academic + "\n\n" + l.special;
