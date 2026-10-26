@@ -2592,3 +2592,51 @@ dialog li + li {
     gap: 16px;
   }
 }
+/* Chapter-three inspection tools stay within the task card on narrow screens. */
+.encoding-diagram {
+  margin: 24px 0;
+  padding: 18px;
+  border: 1px solid var(--line, #ccc);
+}
+.encoding-diagram figcaption {
+  font-weight: 700;
+}
+.encoding-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding-left: 24px;
+}
+.encoding-flow li {
+  padding-right: 12px;
+}
+.encoding-flow b {
+  display: block;
+}
+.formats-preview {
+  margin-top: 16px;
+}
+.formats-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.formats-table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.formats-table-wrap caption {
+  text-align: left;
+  padding: 8px 0;
+}
+.formats-table-wrap th,
+.formats-table-wrap td {
+  border: 1px solid var(--line, #ccc);
+  text-align: left;
+  vertical-align: top;
+  padding: 8px;
+}
+.formats-table-wrap td code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

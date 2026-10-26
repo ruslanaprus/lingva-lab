@@ -111,6 +111,27 @@ export function validateCourse(course, sources = {}, challenges = {}) {
       }
       if (task.type === "exact" && !["string", "number"].includes(typeof task.answer))
         fail(`${task.id}: missing answer`);
+      if (
+        task.checker !== undefined &&
+        (task.type !== "exact" ||
+          task.checker !== "csv" ||
+          !Array.isArray(task.expectedRows) ||
+          !task.expectedRows.length ||
+          task.expectedRows.length > 200 ||
+          task.expectedRows.some(
+            (row) =>
+              !Array.isArray(row) ||
+              !row.length ||
+              row.length > 100 ||
+              row.some((field) => typeof field !== "string"),
+          ))
+      )
+        fail(`${task.id}: invalid CSV checking contract`);
+      if (
+        task.inspector !== undefined &&
+        (task.type !== "exact" || task.inspector !== "characters")
+      )
+        fail(`${task.id}: invalid character inspector`);
       if (task.type === "json" && (!task.expected || typeof task.expected !== "object"))
         fail(`${task.id}: missing JSON expectation`);
       if (["regex", "replace"].includes(task.type) && typeof task.corpus !== "string")

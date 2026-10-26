@@ -28,7 +28,7 @@ ID: `academic-documents` · вправи доступні (32)
 
 ## 3. Що містить файл: формати, символи й кодування
 
-ID: `data-formats` · вправи доступні (5)
+ID: `data-formats` · вправи доступні (41)
 
 **Практичне призначення.** Вибирати придатний формат для тексту, запису, словника та передачі дослідження.
 
@@ -42,7 +42,7 @@ ID: `data-formats` · вправи доступні (5)
 
 **Межі та зв’язки.** JSON і XML тут потрібні для розпізнавання записів, ключів/атрибутів, тегів і вкладення. Наявну вправу написання JSON збережено як необов’язкову. Перед CSV: прямі лапки " — U+0022 з ASCII; типографічні « » не є CSV-обмежувачами. Кодування не є шрифтом, а перейменування не конвертує файл.
 
-Джерела: [RFC 4180 — CSV](https://www.rfc-editor.org/rfc/rfc4180), [MDN — Working with JSON](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/JSON), [Unicode Consortium — UTF-8, UTF-16, UTF-32 & BOM](https://www.unicode.org/faq/utf_bom.html).
+Джерела: [Unicode Consortium — UTF-8, UTF-16, UTF-32 & BOM](https://www.unicode.org/faq/utf_bom.html), [Unicode — General Punctuation](https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-6/), [RFC 4180 — CSV](https://www.rfc-editor.org/rfc/rfc4180), [MDN — Working with JSON](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/JSON), [W3C — Extensible Markup Language (XML)](https://www.w3.org/XML/), [Microsoft Excel — Import or export text files](https://support.microsoft.com/en-us/excel/get-started/import-or-export-text-txt-or-csv-files), [LibreOffice Calc — Text Import](https://help.libreoffice.org/latest/en-US/text/shared/00/00000208.html).
 
 ## 4. Багатомовне введення й типографіка
 

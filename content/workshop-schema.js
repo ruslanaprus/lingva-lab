@@ -50,6 +50,7 @@ export function validateWorkshop(chapter, sources, validId) {
       !strings(reading.steps) ||
       !Array.isArray(reading.sources) ||
       reading.sources.some((key) => !Object.hasOwn(sources, key)) ||
+      (reading.diagram !== undefined && reading.diagram !== "encoding") ||
       (reading.example !== undefined && typeof reading.example !== "string")
     )
       fail(`${task.id}: invalid reading or source`);
@@ -107,7 +108,8 @@ export function validateWorkshop(chapter, sources, validId) {
       Array.from(file.name).some((char) => char.codePointAt(0) < 32) ||
       file.name.split("/").some((part) => !part || part === ".." || part === ".") ||
       names.has(file.name) ||
-      typeof file.content !== "string"
+      typeof file.content !== "string" ||
+      (file.encoding !== undefined && !["utf8", "utf16le"].includes(file.encoding))
     )
       fail("invalid or duplicate material");
     names.add(file.name);

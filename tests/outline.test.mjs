@@ -64,7 +64,10 @@ for (const language of ["de", "fr", "en"]) {
     assert.equal(stats.sections, 13);
     assert.equal(stats.sectionTotal, 13);
     assert.equal(stats.plannedTotal, 19);
-    assert.equal(stats.done, 112);
+    assert.equal(
+      stats.done,
+      course.chapters.flatMap((c) => c.tasks).filter((t) => t.required).length,
+    );
     assert.ok(!track.answers["data-formats-dictionary-json"]);
     assert.ok(
       badges(course, track).find((b) => b.name === "Цифровий лінгвіст").unlocked,

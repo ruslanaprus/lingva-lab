@@ -1,10 +1,11 @@
-// A small UTF-8 ZIP writer using stored entries (no compression or runtime packages).
+import { encodeText } from "./encoding.js";
+// UTF-8 filenames; file content defaults to UTF-8, with explicit UTF-16LE support.
 export function zipFiles(files) {
   if (!Array.isArray(files) || files.length > 1000)
     throw new Error("Invalid ZIP files");
   const encoder = new TextEncoder(),
     names = new Set();
-  const entries = files.map(({ name, content }) => {
+  const entries = files.map(({ name, content, encoding = "utf8" }) => {
     if (
       typeof name !== "string" ||
       !name ||
@@ -17,7 +18,7 @@ export function zipFiles(files) {
       throw new Error("Invalid ZIP entry");
     names.add(name);
     const filename = encoder.encode(name),
-      bytes = encoder.encode(content);
+      bytes = encodeText(content, encoding);
     if (filename.length > 65535 || bytes.length > 1000000)
       throw new Error("ZIP entry too large");
     let crc = 0xffffffff;

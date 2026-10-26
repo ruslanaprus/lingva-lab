@@ -44,6 +44,9 @@ export function createExerciseView(context = {}) {
         .join(
           "",
         )}</div><p class="unicode-normalized">Після NFC: <b>${esc(l.accent.normalize("NFC"))}</b> = <b>${esc(l.nfd.normalize("NFC"))}</b>. Візуальна подібність сама по собі не доводить еквівалентність.</p></div></div><div style="margin-top:18px">${optionsInput(t, value)}</div>`;
+    // HTML removes the first newline in a textarea; a sentinel preserves raw drafts.
+    if (t.type === "exact" && (t.checker === "csv" || t.inspector === "characters"))
+      return `<label class="input-label" for="answer-${id}">${t.checker === "csv" ? "Ваш CSV (роздільник — кома)" : "Введіть або вставте символи"}</label><textarea id="answer-${id}" data-answer="${id}" class="code-input" maxlength="10000" spellcheck="false" autocorrect="off" autocapitalize="off">${"\n"}${esc(value || "")}</textarea><button class="button small" ${t.checker === "csv" ? `data-csv-preview="${id}"` : `data-inspect-characters="${id}"`}>${t.checker === "csv" ? "Розібрати CSV без подання" : "Показати символи й байти"} ↗</button><div class="formats-preview" data-format-output="${id}" role="status" aria-live="polite"></div>`;
     if (t.type === "exact")
       return `<label class="input-label" for="answer-${id}">${t.numeric ? "Числова відповідь" : "Ваша відповідь"}</label><${t.answer.length > 75 ? "textarea" : "input"} ${t.answer.length > 75 ? "" : 'type="text"'} id="answer-${id}" data-answer="${id}" class="${t.numeric ? "" : "code-input"}" maxlength="10000" ${t.numeric ? 'inputmode="decimal"' : ""} ${t.answer.length > 75 ? "" : `value="${esc(value || "")}"`} autocomplete="off" spellcheck="false">${t.answer.length > 75 ? esc(value || "") : ""}${t.answer.length > 75 ? "</textarea>" : ""}`;
     if (t.type === "json")

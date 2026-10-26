@@ -1,4 +1,24 @@
 export const SOURCES = {
+  "unicode-punctuation": {
+    title: "Unicode — General Punctuation",
+    url: "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-6/",
+    note: "Кодові точки й різні символи пунктуації, зокрема прямі та типографічні лапки. Англійською; таблиці — для довідки, не для заучування.",
+  },
+  "csv-import": {
+    title: "Microsoft Excel — Import or export text files",
+    url: "https://support.microsoft.com/en-us/excel/get-started/import-or-export-text-txt-or-csv-files",
+    note: "Імпорт тексту/CSV, вибір роздільника й експорт. Англійською; команди залежать від версії програми.",
+  },
+  "calc-import": {
+    title: "LibreOffice Calc — Text Import",
+    url: "https://help.libreoffice.org/latest/en-US/text/shared/00/00000208.html",
+    note: "Кодування, роздільник, текстове обрамлення та типи стовпців у вікні імпорту. Англійською.",
+  },
+  xml: {
+    title: "W3C — Extensible Markup Language (XML)",
+    url: "https://www.w3.org/XML/",
+    note: "Призначення XML та посилання на специфікації. Англійською; потрібні лише розпізнавання елементів, атрибутів і вкладення.",
+  },
   "google-search": {
     title: "Google — Як уточнювати пошукові запити",
     url: "https://support.google.com/websearch/answer/2466433?hl=uk",

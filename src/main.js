@@ -1,3 +1,4 @@
+import { renderCharacterInspection, renderCsvPreview } from "./ui/exercises/formats.js";
 import {
   LANGUAGES,
   PATHS,
@@ -501,6 +502,15 @@ $("#main").addEventListener("keydown", (e) => {
 $("#main").addEventListener("click", async (e) => {
   const b = e.target.closest("button,a");
   if (!b) return;
+  if (b.dataset.csvPreview || b.dataset.inspectCharacters) {
+    const id = b.dataset.csvPreview || b.dataset.inspectCharacters;
+    const task = taskById(id);
+    if (task)
+      $(`[data-format-output="${id}"]`).innerHTML = b.dataset.csvPreview
+        ? renderCsvPreview(readValue(task))
+        : renderCharacterInspection(readValue(task));
+    return;
+  }
   if (b.dataset.downloadMethod) {
     const task = taskById(b.dataset.downloadMethod);
     if (task?.submission?.downloadName) {
