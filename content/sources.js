@@ -1,4 +1,14 @@
 export const SOURCES = {
+  "chrome-console": {
+    title: "Google Chrome DevTools – Console",
+    url: "https://developer.chrome.com/docs/devtools/console/reference#open-console",
+    note: "Необов’язковий спосіб перевірки через консоль браузера. Англійською; основна вправа використовує інспектор на самому сайті.",
+  },
+  "js-code-point": {
+    title: "MDN – String.prototype.codePointAt()",
+    url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/codePointAt",
+    note: "Що повертає codePointAt(0): першу кодову точку, а не аналіз усього слова. Англійською; писати програму для вправи не потрібно.",
+  },
   "elan-eaf": {
     title: "ELAN – EAF Annotation Format",
     url: "https://www.mpi.nl/tools/elan/EAF_Annotation_Format_3.0_and_ELAN.pdf",
