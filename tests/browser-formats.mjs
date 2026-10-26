@@ -15,9 +15,11 @@ export async function checkFormatWorkshop(browser, base, output) {
     state.activePathId = course.id;
     const final = chapter.tasks.find((t) => t.id === "data-formats-portfolio"),
       csv = chapter.tasks.find((t) => t.id === "data-formats-csv-quoted-field"),
-      inspector = chapter.tasks.find((t) => t.inspector);
+      inspector = chapter.tasks.find(
+        (t) => t.id === "data-formats-straight-quote-input",
+      );
     for (const task of chapter.tasks.filter(
-      (t) => t.required && ![final.id, csv.id, inspector.id].includes(t.id),
+      (t) => t.required && ![final.id, csv.id].includes(t.id) && !t.inspector,
     )) {
       const value =
         task.type === "portfolio" ? portfolioAnswer(task, code) : task.answer;
@@ -60,11 +62,11 @@ export async function checkFormatWorkshop(browser, base, output) {
     try {
       await page.goto(`${base}/#lab/data-formats`);
       await page.locator(".workshop-intro").waitFor();
-      assert.equal(await page.locator(".task-lesson").count(), 41);
+      assert.equal(await page.locator(".task-lesson").count(), 46);
       assert.equal(await page.locator(".workshop-stage").count(), 9);
       assert.match(
         await page.locator(".workshop-intro").textContent(),
-        /155 ХВ \+ 23 ХВ/,
+        /172 ХВ \+ 23 ХВ/,
       );
       assert.equal(await page.locator("[data-chapter-feedback]").count(), 0);
       const pack = await download(
@@ -83,6 +85,39 @@ export async function checkFormatWorkshop(browser, base, output) {
           )
         ).body.toString(),
         /Імпорт та експорт/,
+      );
+      const pointTask = chapter.tasks.find(
+          (t) => t.id === "data-formats-inspect-letter",
+        ),
+        point = page.locator(`#task-${pointTask.id}`);
+      await point.locator("[data-answer]").fill("А");
+      await point.locator("[data-inspect-characters]").click();
+      await waitForDraft(pointTask.id, "А");
+      assert.match(
+        await point.locator("[data-format-output]").textContent(),
+        /U\+0410/,
+      );
+      assert.equal(
+        (await saved()).paths[course.id].answers[pointTask.id].attempts.length,
+        0,
+      );
+      await point.locator("[data-check]").click();
+      await point.locator(".feedback.failed").waitFor();
+      await point.locator("[data-answer]").fill("A");
+      await point.locator("[data-inspect-characters]").click();
+      assert.match(
+        await point.locator("[data-format-output]").textContent(),
+        /U\+0041/,
+      );
+      await point.locator("[data-check]").click();
+      await point.locator(".feedback.passed").waitFor();
+      const spaceMark = page
+        .locator("#task-data-formats-character-parts .symbol-glyph")
+        .filter({ hasText: "␠" });
+      assert.ok(
+        await spaceMark.evaluate(
+          (el) => parseFloat(getComputedStyle(el).fontSize) >= 32,
+        ),
       );
       const symbols = page.locator(`#task-${inspector.id}`);
       await symbols.locator("[data-answer]").fill(inspector.answer);
@@ -215,6 +250,9 @@ export async function checkFormatWorkshop(browser, base, output) {
             await page
               .locator(".encoding-diagram")
               .screenshot({ path: `${output}/formats-encoding-${width}.png` });
+            await page
+              .locator("#task-data-formats-character-parts .symbol-samples")
+              .screenshot({ path: `${output}/formats-symbols-${width}.png` });
           }
         }
       }

@@ -1,11 +1,11 @@
-import { renderEncodingDiagram } from "./formats.js";
+import { renderEncodingDiagram, renderSymbolExamples } from "./formats.js";
 import { SOURCES } from "../../../content/registry.js";
 import { esc, pad } from "../../shared/format.js";
 import { taskStatus } from "../../learning/progress.js";
 
 export function renderLesson(lesson) {
   if (!lesson) return "";
-  return `<section class="task-lesson" aria-label="Пояснення й опори"><p class="mono lesson-label">ПРОЧИТАЙТЕ → СПРОБУЙТЕ → ПЕРЕВІРТЕ</p><h3>${esc(lesson.title)}</h3>${lesson.paragraphs.map((text) => `<p>${esc(text)}</p>`).join("")}${lesson.diagram === "encoding" ? renderEncodingDiagram() : ""}${lesson.example ? `<pre class="lesson-example"><code>${esc(lesson.example)}</code></pre>` : ""}${lesson.steps.length ? `<ol class="lesson-steps">${lesson.steps.map((step) => `<li>${esc(step)}</li>`).join("")}</ol>` : ""}${lesson.sources.length ? `<p class="micro muted">Де перечитати докладніше:</p><ul class="lesson-sources">${lesson.sources.map((key) => `<li><a href="${SOURCES[key].url}" target="_blank" rel="noopener noreferrer">${esc(SOURCES[key].title)} ↗</a> <span class="micro muted">${esc(SOURCES[key].note)}</span></li>`).join("")}</ul>` : ""}</section>`;
+  return `<section class="task-lesson" aria-label="Пояснення й опори"><p class="mono lesson-label">ПРОЧИТАЙТЕ → СПРОБУЙТЕ → ПЕРЕВІРТЕ</p><h3>${esc(lesson.title)}</h3>${lesson.paragraphs.map((text) => `<p>${esc(text)}</p>`).join("")}${renderSymbolExamples(lesson.symbols)}${lesson.diagram === "encoding" ? renderEncodingDiagram() : ""}${lesson.example ? `<pre class="lesson-example"><code>${esc(lesson.example)}</code></pre>` : ""}${lesson.steps.length ? `<ol class="lesson-steps">${lesson.steps.map((step) => `<li>${esc(step)}</li>`).join("")}</ol>` : ""}${lesson.sources.length ? `<p class="micro muted">Де перечитати докладніше:</p><ul class="lesson-sources">${lesson.sources.map((key) => `<li><a href="${SOURCES[key].url}" target="_blank" rel="noopener noreferrer">${esc(SOURCES[key].title)} ↗</a> <span class="micro muted">${esc(SOURCES[key].note)}</span></li>`).join("")}</ul>` : ""}</section>`;
 }
 
 export function renderWorkshopIntro(chapter) {

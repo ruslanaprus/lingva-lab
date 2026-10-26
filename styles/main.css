@@ -2593,6 +2593,45 @@ dialog li + li {
   }
 }
 /* Chapter-three inspection tools stay within the task card on narrow screens. */
+.symbol-samples {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 110px), 1fr));
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+.symbol-samples li {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  padding: 12px;
+  min-width: 0;
+}
+.symbol-glyph {
+  display: block;
+  font-family: var(--sans);
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.symbol-label {
+  display: block;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.space-glyph {
+  font-size: 64px;
+  line-height: 0.9;
+}
+[data-task^="data-formats-"]
+  .option
+  input[name="answer-data-formats-straight-quote-recognition"]
+  + span {
+  font-size: 30px;
+}
 .encoding-diagram {
   margin: 24px 0;
   padding: 18px;

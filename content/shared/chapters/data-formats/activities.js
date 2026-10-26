@@ -10,6 +10,7 @@ function assemble(task, c) {
     c.sources || [],
   );
   if (c.diagram) reading.diagram = c.diagram;
+  if (c.symbols) reading.symbols = c.symbols;
   return activity(task, c.stage, c.minutes, reading, {
     required: c.required !== false,
     revision: c.revision || 1,

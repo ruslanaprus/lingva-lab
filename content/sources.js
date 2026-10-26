@@ -1,21 +1,66 @@
 export const SOURCES = {
+  "elan-eaf": {
+    title: "ELAN – EAF Annotation Format",
+    url: "https://www.mpi.nl/tools/elan/EAF_Annotation_Format_3.0_and_ELAN.pdf",
+    note: "Офіційний опис XML-структури .eaf. PDF англійською; тут потрібно лише впізнати призначення файла анотації.",
+  },
+  "elan-media": {
+    title: "ELAN – Media Files and Annotation Files",
+    url: "https://www.mpi.nl/tools/elan/docs/manual/Sec_Media_Files_and_Annotation_Files.html",
+    note: "Анотації, часові зв’язки та окремі медіафайли. Англійською; приклад пояснює, навіщо передавати узгоджений набір файлів.",
+  },
+  "ascii-uk": {
+    title: "Українська Вікіпедія – ASCII",
+    url: "https://uk.wikipedia.org/wiki/ASCII",
+    note: "Вступ українською й таблиця кодів. Розрізняйте базовий ASCII (128 позицій) і різні історичні розширення.",
+  },
+  "code-point-uk": {
+    title: "Українська Вікіпедія – Кодова точка",
+    url: "https://uk.wikipedia.org/wiki/Кодова_точка",
+    note: "Пояснення терміна українською. Для точних визначень кодових одиниць і діапазонів є також першоджерело Unicode.",
+  },
+  "unicode-code-points": {
+    title: "Unicode – Characters, Encoding and Encoding Forms",
+    url: "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-3/",
+    note: "Первинне джерело: кодові точки, кодові одиниці, UTF-8 і UTF-16. Англійською; у вправах є пояснення без заучування формул.",
+  },
+  "utf8-standard": {
+    title: "RFC 3629 – UTF-8",
+    url: "https://www.rfc-editor.org/rfc/rfc3629",
+    note: "Правило перетворення допустимих номерів Unicode на послідовності від одного до чотирьох байтів. Англійською; достатньо розглянути готовий приклад у вправі.",
+  },
+  "anki-import": {
+    title: "Anki – Importing Text Files",
+    url: "https://docs.ankiweb.net/manual/importing/text-files",
+    note: "Імпорт полів із текстових файлів: UTF-8, роздільник, обрамлення й попередній перегляд. Англійською; встановлювати Anki для цього розділу не обов’язково.",
+  },
+  "languagetool-json": {
+    title: "LanguageTool – HTTP API",
+    url: "https://languagetool.org/http-api/swagger-ui/",
+    note: "Структура відповіді з масивом matches, поясненнями та replacements. Англійською; аналізуємо підготовлений фрагмент, запити й ключі API не потрібні.",
+  },
+  "tei-dictionaries": {
+    title: "TEI Guidelines – Dictionaries",
+    url: "https://tei-c.org/release/doc/tei-p5-doc/en/html/DI.html",
+    note: "XML-розмітка словників: entry, form, orth, sense, def. Англійською; читання структури без написання розмітки.",
+  },
   "unicode-punctuation": {
-    title: "Unicode — General Punctuation",
+    title: "Unicode – General Punctuation",
     url: "https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-6/",
-    note: "Кодові точки й різні символи пунктуації, зокрема прямі та типографічні лапки. Англійською; таблиці — для довідки, не для заучування.",
+    note: "Кодові точки й різні символи пунктуації, зокрема прямі та типографічні лапки. Англійською; таблиці – для довідки, не для заучування.",
   },
   "csv-import": {
-    title: "Microsoft Excel — Import or export text files",
+    title: "Microsoft Excel – Import or export text files",
     url: "https://support.microsoft.com/en-us/excel/get-started/import-or-export-text-txt-or-csv-files",
     note: "Імпорт тексту/CSV, вибір роздільника й експорт. Англійською; команди залежать від версії програми.",
   },
   "calc-import": {
-    title: "LibreOffice Calc — Text Import",
+    title: "LibreOffice Calc – Text Import",
     url: "https://help.libreoffice.org/latest/en-US/text/shared/00/00000208.html",
     note: "Кодування, роздільник, текстове обрамлення та типи стовпців у вікні імпорту. Англійською.",
   },
   xml: {
-    title: "W3C — Extensible Markup Language (XML)",
+    title: "W3C – Extensible Markup Language (XML)",
     url: "https://www.w3.org/XML/",
     note: "Призначення XML та посилання на специфікації. Англійською; потрібні лише розпізнавання елементів, атрибутів і вкладення.",
   },
@@ -50,7 +95,7 @@ export const SOURCES = {
     note: "Опис контекстних перекладних прикладів і перевірки вирівнювання. Англійською; це ресурс для критичного зіставлення.",
   },
   antconc: {
-    title: "Laurence Anthony — AntConc",
+    title: "Laurence Anthony – AntConc",
     url: "https://www.laurenceanthony.net/software/antconc/",
     note: "Офіційна сторінка інструмента конкордансів і аналізу текстів. Англійською; для описів курсу встановлення не потрібне.",
   },
@@ -60,7 +105,7 @@ export const SOURCES = {
     note: "Зв’язок узагальнень сполучуваності з прикладами. Англійською; платний акаунт для читання опису курсу не потрібний.",
   },
   ipa: {
-    title: "International Phonetic Association — IPA Chart",
+    title: "International Phonetic Association – IPA Chart",
     url: "https://www.internationalphoneticassociation.org/content/ipa-chart",
     note: "Офіційна фонетична таблиця. Спочатку використовуємо символи, потрібні для обраної мови.",
   },
@@ -70,7 +115,7 @@ export const SOURCES = {
     note: "Інтервальні та точкові рівні анотації. Англійською.",
   },
   "unicode-encodings": {
-    title: "Unicode Consortium — UTF-8, UTF-16, UTF-32 & BOM",
+    title: "Unicode Consortium – UTF-8, UTF-16, UTF-32 & BOM",
     url: "https://www.unicode.org/faq/utf_bom.html",
     note: "Кодування, символи й кодові одиниці. Англійською; базові пояснення ASCII та UTF-8 є в описі розділу.",
   },
@@ -185,12 +230,12 @@ export const SOURCES = {
     note: "Різниця між орфографічним токеном і синтаксичним словом. Англійською.",
   },
   csv: {
-    title: "RFC 4180 — CSV",
+    title: "RFC 4180 – CSV",
     url: "https://www.rfc-editor.org/rfc/rfc4180",
     note: "Рядки, роздільники й екранування лапок у CSV. Англійською.",
   },
   json: {
-    title: "MDN — Working with JSON",
+    title: "MDN – Working with JSON",
     url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/JSON",
     note: "Об’єкти, ключі та значення. Англійською.",
   },

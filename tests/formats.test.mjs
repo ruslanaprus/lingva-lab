@@ -32,6 +32,7 @@ import { feedbackModule } from "../src/features/feedback-model.js";
 import {
   renderCsvPreview,
   renderCharacterInspection,
+  renderSymbolExamples,
 } from "../src/ui/exercises/formats.js";
 import { portfolioAnswer } from "./helpers/answers.mjs";
 
@@ -83,12 +84,12 @@ test("CSV interchange agrees with Python's independent CSV implementation", () =
 });
 
 for (const code of ["de", "fr", "en"]) {
-  test(`${code}: character prerequisites precede CSV; reading and external practice form a 155-minute route`, () => {
+  test(`${code}: character prerequisites precede CSV; reading and external practice form a 172-minute route`, () => {
     const chapter = getPath(`${code}-foundations`).chapters[2];
     assert.equal(chapter.id, "data-formats");
-    assert.equal(chapter.tasks.length, 41);
-    assert.equal(chapter.tasks.filter((t) => t.required).length, 38);
-    assert.equal(chapter.time, 155);
+    assert.equal(chapter.tasks.length, 46);
+    assert.equal(chapter.tasks.filter((t) => t.required).length, 43);
+    assert.equal(chapter.time, 172);
     assert.equal(
       chapter.tasks.filter((t) => !t.required).reduce((s, t) => s + t.minutes, 0),
       23,
@@ -96,8 +97,13 @@ for (const code of ["de", "fr", "en"]) {
     assert.ok(chapter.tasks.every((t) => t.lesson.paragraphs.length >= 2));
     const order = [
       "character-parts",
+      "code-point",
+      "inspect-letter",
       "ascii-sort",
       "unicode-utf8",
+      "utf8-bytes",
+      "ipa-basics",
+      "glyph-vs-character",
       "straight-quote-recognition",
       "straight-quote-input",
       "autoquotes-observation",
@@ -284,6 +290,15 @@ test("CSV preview and character inspector escape content, and content contracts 
   }
   assert.match(renderCharacterInspection('"é"'), /U\+0022/);
   assert.match(renderCharacterInspection('"é"'), /C3 A9/);
+  const glyphs = renderSymbolExamples([
+    { text: "<img src=x>", label: "<script>alert(1)</script>" },
+  ]);
+  assert.ok(!glyphs.includes("<img src=x>"));
+  assert.ok(!glyphs.includes("<script>"));
+  assert.ok(glyphs.includes("&lt;script&gt;"));
+  const space = renderCharacterInspection(" ");
+  assert.match(space, /U\+0020/);
+  assert.ok(space.includes("␠"));
   for (const mutate of [
     (c) => {
       c.chapters[2].tasks.find((t) => t.checker).expectedRows = [[null]];
@@ -300,11 +315,41 @@ test("CSV preview and character inspector escape content, and content contracts 
     (c) => {
       c.chapters[2].tasks.find((t) => t.lesson.diagram).lesson.diagram = "unknown";
     },
+    (c) => {
+      c.chapters[2].tasks.find((t) => t.lesson.symbols).lesson.symbols = [
+        { text: null, label: "Пробіл" },
+      ];
+    },
   ]) {
     const course = structuredClone(getPath("de-foundations"));
     mutate(course);
     assert.throws(() => validateCourse(course, SOURCES, TREASURES));
   }
+});
+
+test("Enlarged symbol explanations survive historical snapshots and reports", () => {
+  const course = getPath("de-foundations"),
+    task = structuredClone(course.chapters[2].tasks.find((t) => t.lesson.symbols)),
+    state = freshState(),
+    track = state.paths[course.id];
+  task.lesson.symbols = [{ text: "<x>", label: "Позначка <script> не виконується" }];
+  recordAttempt(track, task, task.answer, evaluateTask(task, task.answer));
+  const restored = validateBackup(JSON.parse(JSON.stringify(state)));
+  assert.ok(
+    restored.paths[course.id].answers[task.id].attempts[0].definition.prompt.includes(
+      "<x>: Позначка <script>",
+    ),
+  );
+  const html = reportHtml(
+    createReportData({
+      state: restored,
+      course,
+      track: restored.paths[course.id],
+      chapterId: "data-formats",
+    }),
+  );
+  assert.ok(html.includes("&lt;x&gt;"));
+  assert.ok(!html.includes("<script>"));
 });
 
 test("French material can change without German changes; format treasure records choices and rewards once", () => {

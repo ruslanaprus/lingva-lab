@@ -52,6 +52,13 @@ for (const [i, task] of chapter.tasks.entries()) {
     task.lesson.paragraphs.join("\n\n"),
   );
   if (task.lesson.example) lines.push("", "```text", task.lesson.example, "```");
+  if (task.lesson.symbols)
+    lines.push(
+      "",
+      "Символи для порівняння (на сайті збільшені):",
+      "",
+      ...task.lesson.symbols.map((symbol) => `- ${symbol.text}: ${symbol.label}`),
+    );
   if (task.lesson.diagram === "encoding")
     lines.push(
       "",
