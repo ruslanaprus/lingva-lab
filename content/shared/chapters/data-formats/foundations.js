@@ -145,8 +145,7 @@ export function foundationTasks(l) {
       stage: "characters",
       minutes: 3,
       title: "UTF-8 – не єдине кодування Unicode",
-      prompt:
-        "Той самий українсько-французький текст збережено у UTF-8 та UTF-16LE. Що може бути правильним?",
+      prompt: `Той самий ${l.formats.bilingualLabel} текст збережено у UTF-8 та UTF-16LE. Що може бути правильним?`,
       options: [
         "Лише UTF-8 здатне зберегти кирилицю",
         "У двох файлах обов’язково однакові байти",

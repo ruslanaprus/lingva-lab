@@ -2626,6 +2626,12 @@ dialog li + li {
   font-size: 64px;
   line-height: 0.9;
 }
+.inline-space-glyph {
+  font-family: var(--sans);
+  font-size: 24px;
+  margin-inline-end: 0.25em;
+  vertical-align: middle;
+}
 [data-task^="data-formats-"]
   .option
   input[name="answer-data-formats-straight-quote-recognition"]
