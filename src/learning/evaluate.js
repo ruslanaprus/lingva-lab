@@ -1,6 +1,7 @@
 import { normalized } from "../shared/values.js";
 import { wer } from "../tools/text.js";
 import { validTaskValue } from "./values.js";
+import { parseCsv } from "../tools/csv.js";
 export function evaluateTask(task, value, regexResult) {
   const pass = (feedback) => ({
     status: "passed",
@@ -24,6 +25,29 @@ export function evaluateTask(task, value, regexResult) {
               : "Скористайтеся спостереженням у тренажері."),
         );
   if (task.type === "exact") {
+    if (task.checker === "csv") {
+      try {
+        const rows = parseCsv(value);
+        const same =
+          rows.length === task.expectedRows.length &&
+          rows.every(
+            (row, i) =>
+              row.length === task.expectedRows[i].length &&
+              row.every(
+                (field, j) =>
+                  field.replace(/\r\n/g, "\n") ===
+                  task.expectedRows[i][j].replace(/\r\n/g, "\n"),
+              ),
+          );
+        return same
+          ? pass()
+          : fail(
+              "CSV прочитано, але кількість записів, полів або їхні значення відрізняються від умови. Пробіли є частиною значення; типографічні лапки не обрамлюють поле.",
+            );
+      } catch (error) {
+        return fail(error.message);
+      }
+    }
     const ok = task.numeric
       ? String(value).trim() !== "" &&
         Number.isFinite(Number(String(value).replace(",", "."))) &&

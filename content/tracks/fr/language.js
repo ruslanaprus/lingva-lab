@@ -1,7 +1,9 @@
+import formats from "./formats.js";
 import outline from "./outline.js";
 import documents from "./documents.js";
 // Language material only: application behavior is shared.
 export default {
+  formats,
   outline,
   documents,
   code: "fr",

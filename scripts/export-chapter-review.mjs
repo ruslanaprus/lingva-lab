@@ -5,14 +5,17 @@ const [pathId, chapterId] = process.argv.slice(2);
 const course = getPath(pathId),
   chapter = course.chapters.find((c) => c.id === chapterId);
 if (!chapter) throw new Error("Unknown chapter");
+const exampleFile = chapterId === "data-formats" ? "formats" : "documents";
+const reviewFile =
+  chapterId === "data-formats" ? "chapter-three-review.md" : "chapter-two-review.md";
 const lines = [
   `# ${chapter.title}: текст для перегляду`,
   "",
-  `Згенеровано з матеріалів маршруту ${course.title}. Українські пояснення спільні; мовні приклади тут — ${course.language}. Інші варіанти: content/tracks/fr/documents.js та content/tracks/en/documents.js.`,
+  `Згенеровано з матеріалів маршруту ${course.title}. Українські пояснення спільні; мовні приклади тут — ${course.language}. Інші варіанти: content/tracks/fr/${exampleFile}.js та content/tracks/en/${exampleFile}.js.`,
   "",
   `Текст сайту редагується у \`content/shared/chapters/${chapter.id}.js\` та \`content/shared/chapters/${chapter.id}/\`. Зміни лише в цьому файлі для перегляду не змінюють текст на сайті.`,
   "",
-  "Оновити після редагування: `node scripts/export-chapter-review.mjs de-foundations academic-documents > docs/chapter-two-review.md`, потім Prettier.",
+  `Оновити після редагування: \`node scripts/export-chapter-review.mjs ${pathId} ${chapterId} > docs/${reviewFile}\`, потім Prettier.`,
   "",
   `${chapter.time} хв обов’язкової роботи; час є оцінкою, не перевіреною тривалістю для кожного студента.`,
   "",
@@ -49,6 +52,18 @@ for (const [i, task] of chapter.tasks.entries()) {
     task.lesson.paragraphs.join("\n\n"),
   );
   if (task.lesson.example) lines.push("", "```text", task.lesson.example, "```");
+  if (task.lesson.symbols)
+    lines.push(
+      "",
+      "Символи для порівняння (на сайті збільшені):",
+      "",
+      ...task.lesson.symbols.map((symbol) => `- ${symbol.text}: ${symbol.label}`),
+    );
+  if (task.lesson.diagram === "encoding")
+    lines.push(
+      "",
+      "Схема на сайті: символ é → кодова точка U+00E9 → байти UTF-8 C3 A9 → файл. Під час читання: байти → декодування → символ → гліф шрифту. Таблиця порівнює A, é та я у UTF-8 і UTF-16LE.",
+    );
   if (task.lesson.steps.length)
     lines.push("", ...task.lesson.steps.map((s, n) => `${n + 1}. ${s}`));
   lines.push("", "**Завдання:** " + task.prompt);

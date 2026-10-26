@@ -136,8 +136,11 @@ export async function checkActivityReports(browser, base, output) {
       [{ index: 0, number: 1, value: "working/ — тут його відредагую" }],
     );
     const textReport = JSON.parse(await downloadReport("data-formats", "json"));
-    assert.equal(textReport.tasks[2].record.attempts[0].value, typed);
-    assert.equal(textReport.tasks[2].record.attempts[0].status, "failed");
+    const jsonTaskIndex = textReport.tasks.findIndex(
+      (task) => task.id === "data-formats-dictionary-json",
+    );
+    assert.equal(textReport.tasks[jsonTaskIndex].record.attempts[0].value, typed);
+    assert.equal(textReport.tasks[jsonTaskIndex].record.attempts[0].status, "failed");
     const html = await downloadReport("data-formats", "html");
     assert.ok(html.includes("&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;"));
     assert.ok(!html.includes("<script>alert("));
@@ -148,8 +151,8 @@ export async function checkActivityReports(browser, base, output) {
     assert.equal(
       await reportPage
         .locator("article")
-        .nth(2)
-        .locator(".attempt pre code")
+        .nth(jsonTaskIndex)
+        .locator(".attempt > pre > code")
         .first()
         .textContent(),
       typed,

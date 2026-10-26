@@ -4,6 +4,7 @@ export function lessonText(lesson) {
   return [
     lesson.title,
     ...lesson.paragraphs,
+    ...(lesson.symbols || []).map((symbol) => `${symbol.text}: ${symbol.label}`),
     lesson.example,
     ...lesson.steps.map((step, index) => `${index + 1}. ${step}`),
   ]

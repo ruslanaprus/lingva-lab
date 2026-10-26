@@ -28,13 +28,13 @@ ID: `academic-documents` · вправи доступні (32)
 
 ## 3. Що містить файл: формати, символи й кодування
 
-ID: `data-formats` · вправи доступні (5)
+ID: `data-formats` · вправи доступні (46)
 
 **Практичне призначення.** Вибирати придатний формат для тексту, запису, словника та передачі дослідження.
 
-**Основи.** Текстові, графічні, звукові й форматовані документи; розширення та справжній вміст; символ і його зображення. ASCII охоплює 128 кодів: базові латинські літери, цифри, знаки й керувальні коди. Діакритика, кирилиця та IPA потребують ширшого набору символів; UTF-8 може їх подати.
+**Основи.** Текстові, графічні, звукові й форматовані документи; розширення та справжній вміст. Символи й пробіли → кодові точки та інспектор → ASCII → Unicode і байти UTF-8 → кодові одиниці → основи IPA та гліфи. Прості українські пояснення передують термінам у завданнях.
 
-**Практика.** Порівняти той самий список слів у TXT, CSV і форматованому документі; розпізнати ASCII та не-ASCII; відрізнити неправильне декодування від відсутнього гліфа.
+**Практика.** Порівняти той самий список слів у TXT, CSV і форматованому документі; розпізнати ASCII та не-ASCII; прочитати кодові точки й готове перетворення é на UTF-8; відрізнити неправильне декодування від відсутнього гліфа. Побачити реальне застосування в Anki, AntConc, LanguageTool, TEI та ELAN.
 
 **Застосування.** Обґрунтувати формати для шести дослідницьких ситуацій і діагностувати колекцію з хибними розширеннями, нечитабельними символами або непридатними копіями.
 
@@ -42,7 +42,7 @@ ID: `data-formats` · вправи доступні (5)
 
 **Межі та зв’язки.** JSON і XML тут потрібні для розпізнавання записів, ключів/атрибутів, тегів і вкладення. Наявну вправу написання JSON збережено як необов’язкову. Перед CSV: прямі лапки " — U+0022 з ASCII; типографічні « » не є CSV-обмежувачами. Кодування не є шрифтом, а перейменування не конвертує файл.
 
-Джерела: [RFC 4180 — CSV](https://www.rfc-editor.org/rfc/rfc4180), [MDN — Working with JSON](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/JSON), [Unicode Consortium — UTF-8, UTF-16, UTF-32 & BOM](https://www.unicode.org/faq/utf_bom.html).
+Джерела: [Українська Вікіпедія – ASCII](https://uk.wikipedia.org/wiki/ASCII), [Українська Вікіпедія – Кодова точка](https://uk.wikipedia.org/wiki/Кодова_точка), [Unicode – Characters, Encoding and Encoding Forms](https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-3/), [RFC 3629 – UTF-8](https://www.rfc-editor.org/rfc/rfc3629), [International Phonetic Association – IPA Chart](https://www.internationalphoneticassociation.org/content/ipa-chart), [Anki – Importing Text Files](https://docs.ankiweb.net/manual/importing/text-files), [LanguageTool – HTTP API](https://languagetool.org/http-api/swagger-ui/), [TEI Guidelines – Dictionaries](https://tei-c.org/release/doc/tei-p5-doc/en/html/DI.html), [ELAN – EAF Annotation Format](https://www.mpi.nl/tools/elan/EAF_Annotation_Format_3.0_and_ELAN.pdf), [ELAN – Media Files and Annotation Files](https://www.mpi.nl/tools/elan/docs/manual/Sec_Media_Files_and_Annotation_Files.html), [Unicode Consortium – UTF-8, UTF-16, UTF-32 & BOM](https://www.unicode.org/faq/utf_bom.html), [Unicode – General Punctuation](https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-6/), [RFC 4180 – CSV](https://www.rfc-editor.org/rfc/rfc4180), [MDN – Working with JSON](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/JSON), [W3C – Extensible Markup Language (XML)](https://www.w3.org/XML/), [Microsoft Excel – Import or export text files](https://support.microsoft.com/en-us/excel/get-started/import-or-export-text-txt-or-csv-files), [LibreOffice Calc – Text Import](https://help.libreoffice.org/latest/en-US/text/shared/00/00000208.html).
 
 ## 4. Багатомовне введення й типографіка
 
@@ -78,7 +78,7 @@ ID: `spreadsheets` · опис, вправи готуються
 
 **Межі та зв’язки.** План передбачає таблиці в доступному редакторі. SQL, програмування та добування даних не потрібні.
 
-Джерела: [RFC 4180 — CSV](https://www.rfc-editor.org/rfc/rfc4180).
+Джерела: [RFC 4180 – CSV](https://www.rfc-editor.org/rfc/rfc4180).
 
 ## 6. Пошук інформації
 
@@ -186,7 +186,7 @@ ID: `corpus-foundations` · опис, вправи готуються
 
 **Межі та зв’язки.** Мінікорпус може бути достатньо малим для ручного перегляду. Основна складність — добір, походження, дозволи та межі висновків.
 
-Джерела: [DataONE — Describe the overall organization of your dataset](https://dataoneorg.github.io/Education/bestpractices/describe-the-overall), [Laurence Anthony — AntConc](https://www.laurenceanthony.net/software/antconc/).
+Джерела: [DataONE — Describe the overall organization of your dataset](https://dataoneorg.github.io/Education/bestpractices/describe-the-overall), [Laurence Anthony – AntConc](https://www.laurenceanthony.net/software/antconc/).
 
 ## 12. Командний рядок: навігація
 
@@ -240,7 +240,7 @@ ID: `concordance` · опис, вправи готуються
 
 **Межі та зв’язки.** Можливий маршрут через AntConc або підготовлені браузерні дані. CQL у цій частині не потрібний. Командний пошук у сусідньому практикумі збережено як окремий інструмент.
 
-Джерела: [Laurence Anthony — AntConc](https://www.laurenceanthony.net/software/antconc/).
+Джерела: [Laurence Anthony – AntConc](https://www.laurenceanthony.net/software/antconc/).
 
 ## 15. Частотність і мовні закономірності
 
@@ -466,7 +466,7 @@ ID: `ipa-transcription` · опис, вправи готуються
 
 **Межі та зв’язки.** Починаємо із символів, потрібних для обраної мови. Різні мовні різновиди й рівні деталізації можуть давати різні обґрунтовані транскрипції; опорою є офіційна IPA-таблиця.
 
-Джерела: [International Phonetic Association — IPA Chart](https://www.internationalphoneticassociation.org/content/ipa-chart).
+Джерела: [International Phonetic Association – IPA Chart](https://www.internationalphoneticassociation.org/content/ipa-chart).
 
 ## 28. Звук як дослідницькі дані
 

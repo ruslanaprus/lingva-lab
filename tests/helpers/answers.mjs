@@ -9,6 +9,10 @@ const editorialLog = readFileSync(
   new URL("../fixtures/editorial-log.txt", import.meta.url),
   "utf8",
 );
+const formatAudit = readFileSync(
+  new URL("../fixtures/format-audit.txt", import.meta.url),
+  "utf8",
+);
 export function portfolioAnswer(task, language = "de") {
   const material = LANGUAGES[language];
   return {
@@ -24,7 +28,9 @@ export function portfolioAnswer(task, language = "de") {
             .replaceAll("{{LANGUAGE}}", material.native)
         : task.id === "academic-documents-portfolio"
           ? editorialLog
-          : "Я описую джерела, інструменти та дослідницьке питання. Вказую точні параметри аналізу, називаю отримані результати і спосіб їх незалежної перевірки. Це навчальний опис, а наявність зовнішнього артефакту потребує перевірки викладачем.",
+          : task.id === "data-formats-portfolio"
+            ? formatAudit
+            : "Я описую джерела, інструменти та дослідницьке питання. Вказую точні параметри аналізу, називаю отримані результати і спосіб їх незалежної перевірки. Це навчальний опис, а наявність зовнішнього артефакту потребує перевірки викладачем.",
     reflection:
       "Висновки обмежені малим навчальним набором і не поширюються на всіх носіїв мови. Потрібно окремо звірити фактичні файли, інвентар і спосіб відновлення. Якщо дію ще не виконано, вона залишається планом; я не видаю припущення за перевірений результат.",
     confirm: true,

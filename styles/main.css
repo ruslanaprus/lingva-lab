@@ -2592,3 +2592,96 @@ dialog li + li {
     gap: 16px;
   }
 }
+/* Chapter-three inspection tools stay within the task card on narrow screens. */
+.symbol-samples {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 110px), 1fr));
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+.symbol-samples li {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  padding: 12px;
+  min-width: 0;
+}
+.symbol-glyph {
+  display: block;
+  font-family: var(--sans);
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.symbol-label {
+  display: block;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.space-glyph {
+  font-size: 64px;
+  line-height: 0.9;
+}
+.inline-space-glyph {
+  font-family: var(--sans);
+  font-size: 24px;
+  margin-inline-end: 0.25em;
+  vertical-align: middle;
+}
+[data-task^="data-formats-"]
+  .option
+  input[name="answer-data-formats-straight-quote-recognition"]
+  + span {
+  font-size: 30px;
+}
+.encoding-diagram {
+  margin: 24px 0;
+  padding: 18px;
+  border: 1px solid var(--line, #ccc);
+}
+.encoding-diagram figcaption {
+  font-weight: 700;
+}
+.encoding-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding-left: 24px;
+}
+.encoding-flow li {
+  padding-right: 12px;
+}
+.encoding-flow b {
+  display: block;
+}
+.formats-preview {
+  margin-top: 16px;
+}
+.formats-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.formats-table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.formats-table-wrap caption {
+  text-align: left;
+  padding: 8px 0;
+}
+.formats-table-wrap th,
+.formats-table-wrap td {
+  border: 1px solid var(--line, #ccc);
+  text-align: left;
+  vertical-align: top;
+  padding: 8px;
+}
+.formats-table-wrap td code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

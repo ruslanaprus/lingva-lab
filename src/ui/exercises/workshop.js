@@ -1,10 +1,18 @@
+import { renderEncodingDiagram, renderSymbolExamples } from "./formats.js";
 import { SOURCES } from "../../../content/registry.js";
 import { esc, pad } from "../../shared/format.js";
 import { taskStatus } from "../../learning/progress.js";
 
+function renderExample(text) {
+  return esc(text).replaceAll(
+    "␠",
+    '<span class="space-glyph inline-space-glyph" aria-label="Позначка пробілу">␠</span>',
+  );
+}
+
 export function renderLesson(lesson) {
   if (!lesson) return "";
-  return `<section class="task-lesson" aria-label="Пояснення й опори"><p class="mono lesson-label">ПРОЧИТАЙТЕ → СПРОБУЙТЕ → ПЕРЕВІРТЕ</p><h3>${esc(lesson.title)}</h3>${lesson.paragraphs.map((text) => `<p>${esc(text)}</p>`).join("")}${lesson.example ? `<pre class="lesson-example"><code>${esc(lesson.example)}</code></pre>` : ""}${lesson.steps.length ? `<ol class="lesson-steps">${lesson.steps.map((step) => `<li>${esc(step)}</li>`).join("")}</ol>` : ""}${lesson.sources.length ? `<p class="micro muted">Де перечитати докладніше:</p><ul class="lesson-sources">${lesson.sources.map((key) => `<li><a href="${SOURCES[key].url}" target="_blank" rel="noopener noreferrer">${esc(SOURCES[key].title)} ↗</a> <span class="micro muted">${esc(SOURCES[key].note)}</span></li>`).join("")}</ul>` : ""}</section>`;
+  return `<section class="task-lesson" aria-label="Пояснення й опори"><p class="mono lesson-label">ПРОЧИТАЙТЕ → СПРОБУЙТЕ → ПЕРЕВІРТЕ</p><h3>${esc(lesson.title)}</h3>${lesson.paragraphs.map((text) => `<p>${esc(text)}</p>`).join("")}${renderSymbolExamples(lesson.symbols)}${lesson.diagram === "encoding" ? renderEncodingDiagram() : ""}${lesson.example ? `<pre class="lesson-example"><code>${renderExample(lesson.example)}</code></pre>` : ""}${lesson.steps.length ? `<ol class="lesson-steps">${lesson.steps.map((step) => `<li>${esc(step)}</li>`).join("")}</ol>` : ""}${lesson.sources.length ? `<p class="micro muted">Де перечитати докладніше:</p><ul class="lesson-sources">${lesson.sources.map((key) => `<li><a href="${SOURCES[key].url}" target="_blank" rel="noopener noreferrer">${esc(SOURCES[key].title)} ↗</a> <span class="micro muted">${esc(SOURCES[key].note)}</span></li>`).join("")}</ul>` : ""}</section>`;
 }
 
 export function renderWorkshopIntro(chapter) {
@@ -19,7 +27,7 @@ export function renderWorkshopIntro(chapter) {
     })
     .join(
       "",
-    )}</ol><div class="workshop-downloads"><button class="button small dark" data-action="materials" data-module="${chapter.id}">Навчальний набір ZIP ↓</button>${chapter.workshop.documents.map((document) => `<button class="button small" data-workshop-document="${document.id}" data-module="${chapter.id}">${esc(document.label)} ↓</button>`).join("")}</div><details class="workshop-files"><summary>Переглянути файли набору (${chapter.workshop.files.length}) без завантаження</summary><p class="micro muted">${esc(chapter.workshop.fallbackGuidance || "Це той самий набір. Якщо розпакування недоступне, скопіюйте тексти у власний нотатник і явно позначте план файлових дій.")}</p>${chapter.workshop.files.map((file) => `<details><summary>${esc(file.name)}</summary><pre><code>${esc(file.content)}</code></pre></details>`).join("")}</details><details class="workshop-files"><summary>${esc(chapter.workshop.exampleLabel || "Прочитати повний приклад README (інша колекція)")}</summary><pre><code>${esc(chapter.workshop.documents.find((document) => document.id === "example").content)}</code></pre></details></section>`;
+    )}</ol><div class="workshop-downloads"><button class="button small dark" data-action="materials" data-module="${chapter.id}">Навчальний набір ZIP ↓</button>${chapter.workshop.documents.map((document) => `<button class="button small" data-workshop-document="${document.id}" data-module="${chapter.id}">${esc(document.label)} ↓</button>`).join("")}</div><details class="workshop-files"><summary>Переглянути файли набору (${chapter.workshop.files.length}) без завантаження</summary><p class="micro muted">${esc(chapter.workshop.fallbackGuidance || "Це той самий набір. Якщо розпакування недоступне, скопіюйте тексти у власний нотатник і явно позначте план файлових дій.")}</p>${chapter.workshop.files.map((file) => `<details><summary>${esc(file.name)}${file.encoding === "utf16le" ? " · UTF-16LE з BOM" : ""}</summary>${file.encoding === "utf16le" ? "<p>У ZIP цей файл закодовано UTF-16LE з початковою міткою BOM; нижче показано декодований текст.</p>" : ""}<pre><code>${esc(file.content)}</code></pre></details>`).join("")}</details><details class="workshop-files"><summary>${esc(chapter.workshop.exampleLabel || "Прочитати повний приклад README (інша колекція)")}</summary><pre><code>${esc(chapter.workshop.documents.find((document) => document.id === "example").content)}</code></pre></details></section>`;
 }
 
 export function renderWorkshopNavigation(chapter, track) {

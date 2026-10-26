@@ -50,11 +50,26 @@ export function validateWorkshop(chapter, sources, validId) {
       !strings(reading.steps) ||
       !Array.isArray(reading.sources) ||
       reading.sources.some((key) => !Object.hasOwn(sources, key)) ||
+      (reading.diagram !== undefined && reading.diagram !== "encoding") ||
       (reading.example !== undefined && typeof reading.example !== "string")
     )
       fail(`${task.id}: invalid reading or source`);
     if (task.prompt.length + lessonText(reading).length + 32 > 20000)
       fail(`${task.id}: reading exceeds the historical prompt limit`);
+    if (
+      reading.symbols !== undefined &&
+      (!Array.isArray(reading.symbols) ||
+        !reading.symbols.length ||
+        reading.symbols.length > 16 ||
+        reading.symbols.some(
+          (symbol) =>
+            !symbol ||
+            !strings([symbol.text, symbol.label]) ||
+            symbol.text.length > 32 ||
+            symbol.label.length > 200,
+        ))
+    )
+      fail(`${task.id}: invalid symbol examples`);
     const submission = task.submission;
     for (const key of ["title", "methodPlaceholder"])
       if (submission?.[key] !== undefined && !strings([submission[key]]))
@@ -107,7 +122,8 @@ export function validateWorkshop(chapter, sources, validId) {
       Array.from(file.name).some((char) => char.codePointAt(0) < 32) ||
       file.name.split("/").some((part) => !part || part === ".." || part === ".") ||
       names.has(file.name) ||
-      typeof file.content !== "string"
+      typeof file.content !== "string" ||
+      (file.encoding !== undefined && !["utf8", "utf16le"].includes(file.encoding))
     )
       fail("invalid or duplicate material");
     names.add(file.name);

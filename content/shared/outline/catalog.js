@@ -151,16 +151,6 @@ function withOverview(base, description) {
       sources: [...new Set([...chapter.sources, ...(sources || [])])],
       overview: { ...overview, example: example(l) },
     };
-    if (chapter.id === "data-formats") {
-      result.revision = chapter.revision + 1;
-      result.outcome = description.purpose;
-      result.theory = `${description.foundations} ${description.note} ${chapter.theory}`;
-      result.tasks = chapter.tasks.map((task) =>
-        task.id === "data-formats-dictionary-json"
-          ? { ...task, required: false }
-          : task,
-      );
-    }
     return result;
   };
 }
