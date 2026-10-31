@@ -112,7 +112,17 @@ export function validateCourse(course, sources = {}, challenges = {}) {
       if (task.type === "exact" && !["string", "number"].includes(typeof task.answer))
         fail(`${task.id}: missing answer`);
       if (
+        task.checker === "unicode" &&
+        (task.type !== "exact" ||
+          typeof task.answer !== "string" ||
+          !["NFC", "none"].includes(task.normalization))
+      )
+        fail(`${task.id}: invalid Unicode checking contract`);
+      if (task.normalization !== undefined && task.checker !== "unicode")
+        fail(`${task.id}: normalization requires a Unicode checker`);
+      if (
         task.checker !== undefined &&
+        task.checker !== "unicode" &&
         (task.type !== "exact" ||
           task.checker !== "csv" ||
           !Array.isArray(task.expectedRows) ||
@@ -129,9 +139,29 @@ export function validateCourse(course, sources = {}, challenges = {}) {
         fail(`${task.id}: invalid CSV checking contract`);
       if (
         task.inspector !== undefined &&
-        (task.type !== "exact" || task.inspector !== "characters")
+        (task.type !== "exact" ||
+          !["characters", "typography"].includes(task.inspector))
       )
         fail(`${task.id}: invalid character inspector`);
+      if (
+        task.palette !== undefined &&
+        (task.inspector !== "typography" ||
+          !Array.isArray(task.palette) ||
+          task.palette.length > 24 ||
+          new Set(task.palette).size !== task.palette.length ||
+          task.palette.some(
+            (symbol) => typeof symbol !== "string" || Array.from(symbol).length !== 1,
+          ))
+      )
+        fail(`${task.id}: invalid symbol palette`);
+      if (
+        task.probe !== undefined &&
+        (task.inspector !== "typography" ||
+          typeof task.probe !== "string" ||
+          !task.probe.length ||
+          task.probe.length > 100)
+      )
+        fail(`${task.id}: invalid literal search probe`);
       if (task.type === "json" && (!task.expected || typeof task.expected !== "object"))
         fail(`${task.id}: missing JSON expectation`);
       if (["regex", "replace"].includes(task.type) && typeof task.corpus !== "string")
