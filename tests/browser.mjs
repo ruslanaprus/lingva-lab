@@ -114,6 +114,12 @@ try {
     for (const m of getModules("de")) {
       if (m.status === "planned") continue;
       await go("lab/" + m.id);
+      if (m.id === "text-search") {
+        await page.locator('[data-term="Конвеєр (пайп)"]').click();
+        await page.locator("#info-dialog[open]").waitFor();
+        assert.equal(await page.locator("#info-title").textContent(), "Конвеєр (пайп)");
+        await page.locator("#info-dialog [data-close]").click();
+      }
       for (const t of m.tasks) {
         if (t.id === "workspace-original-storage") continue;
         const article = page.locator(`[data-task="${t.id}"]`);
