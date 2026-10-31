@@ -1,4 +1,69 @@
 export const SOURCES = {
+  "windows-input-uk": {
+    title: "Microsoft – мова та розкладка клавіатури у Windows (українською)",
+    url: "https://support.microsoft.com/uk-ua/windows/hardware/input-devices/manage-the-language-and-keyboard-input-layout-settings-in-windows",
+    note: "Джерела вводу й мова інтерфейсу виконують різні функції; назви меню залежать від версії.",
+  },
+  "office-language-uk": {
+    title: "Microsoft Office – мова меню та перевірки правопису (українською)",
+    url: "https://support.microsoft.com/uk-ua/office/languages/change-the-language-office-uses-in-its-menus-and-proofing-tools",
+    note: "Налаштування редагування та мовної перевірки окремо від інтерфейсу.",
+  },
+  "mac-accents-uk": {
+    title: "Apple – введення діакритичних символів на Mac (українською)",
+    url: "https://support.apple.com/uk-ua/guide/mac-help/mh27474/mac",
+    note: "Утримання клавіші, послідовності та переглядач символів; доступність залежить від розкладки й програми.",
+  },
+  "diacritics-uk": {
+    title: "Українська Вікіпедія – Діакритичний знак",
+    url: "https://uk.wikipedia.org/wiki/Діакритичний_знак",
+    note: "Додатковий вступ українською. Технічні правила послідовностей перевіряємо за Unicode.",
+  },
+  "nbsp-uk": {
+    title: "Українська Вікіпедія – Нерозривний пробіл",
+    url: "https://uk.wikipedia.org/wiki/Нерозривний_пробіл",
+    note: "Призначення нерозривних проміжків; конкретний тип пробілу в майстерні задає бриф.",
+  },
+  "ipa-uk": {
+    title: "Українська Вікіпедія – Міжнародний фонетичний алфавіт",
+    url: "https://uk.wikipedia.org/wiki/Міжнародний_фонетичний_алфавіт",
+    note: "Український вступ до МФА; точні символи звіряємо з офіційною IPA-таблицею.",
+  },
+  "unicode-normalization": {
+    title: "Unicode – UAX #15: Normalization Forms",
+    url: "https://www.unicode.org/reports/tr15/",
+    note: "Першоджерело для NFC/NFD та суміснісних форм. Англійською; читання алгоритму не є вимогою.",
+  },
+  "unicode-norm-faq": {
+    title: "Unicode – запитання про нормалізацію",
+    url: "https://www.unicode.org/faq/normalization.html",
+    note: "Канонічна еквівалентність і межі суміснісного зіставлення. Англійською.",
+  },
+  "unicode-segmentation": {
+    title: "Unicode – UAX #29: Text Segmentation",
+    url: "https://www.unicode.org/reports/tr29/",
+    note: "Графемні кластери та відмінність від кодових точок. Англійською; потрібна лише концепція.",
+  },
+  "unicode-fonts": {
+    title: "Unicode – Fonts and Keyboards FAQ",
+    url: "https://www.unicode.org/faq/font_keyboard.html",
+    note: "Шрифт, символи та введення – різні компоненти. Англійською.",
+  },
+  "ipa-fonts": {
+    title: "International Phonetic Association – фонетичні шрифти й введення",
+    url: "https://www.internationalphoneticassociation.org/content/other-ipa-font-resources",
+    note: "Unicode-шрифти, комбіновані знаки та способи введення. Англійською; установлення не потрібне.",
+  },
+  "keyman-ipa": {
+    title: "Keyman – IPA (SIL): спробувати клавіатуру та відкрити довідку",
+    url: "https://keyman.com/keyboards/sil_ipa",
+    note: "Справжня Unicode-клавіатура з Try this keyboard і Keyboard help. Англійською; на сайті практикуму є альтернативна мала панель без зовнішнього сервісу.",
+  },
+  charis: {
+    title: "SIL – Charis, Unicode-шрифт",
+    url: "https://software.sil.org/charis/",
+    note: "Розширена латинка й кирилиця. Англійською; шрифт не перекодовує файл.",
+  },
   "chrome-console": {
     title: "Google Chrome DevTools – Console",
     url: "https://developer.chrome.com/docs/devtools/console/reference#open-console",

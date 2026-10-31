@@ -5,19 +5,28 @@ const [pathId, chapterId] = process.argv.slice(2);
 const course = getPath(pathId),
   chapter = course.chapters.find((c) => c.id === chapterId);
 if (!chapter) throw new Error("Unknown chapter");
-const exampleFile = chapterId === "data-formats" ? "formats" : "documents";
+const exampleFile =
+  chapterId === "unicode"
+    ? "typography"
+    : chapterId === "data-formats"
+      ? "formats"
+      : "documents";
 const reviewFile =
-  chapterId === "data-formats" ? "chapter-three-review.md" : "chapter-two-review.md";
+  chapterId === "unicode"
+    ? "chapter-four-review.md"
+    : chapterId === "data-formats"
+      ? "chapter-three-review.md"
+      : "chapter-two-review.md";
 const lines = [
   `# ${chapter.title}: текст для перегляду`,
   "",
-  `Згенеровано з матеріалів маршруту ${course.title}. Українські пояснення спільні; мовні приклади тут — ${course.language}. Інші варіанти: content/tracks/fr/${exampleFile}.js та content/tracks/en/${exampleFile}.js.`,
+  `Згенеровано з матеріалів траєкторії ${course.title}. Українські пояснення спільні; мовні приклади тут – ${course.language}. Інші варіанти: content/tracks/fr/${exampleFile}.js та content/tracks/en/${exampleFile}.js.`,
   "",
   `Текст сайту редагується у \`content/shared/chapters/${chapter.id}.js\` та \`content/shared/chapters/${chapter.id}/\`. Зміни лише в цьому файлі для перегляду не змінюють текст на сайті.`,
   "",
   `Оновити після редагування: \`node scripts/export-chapter-review.mjs ${pathId} ${chapterId} > docs/${reviewFile}\`, потім Prettier.`,
   "",
-  `${chapter.time} хв обов’язкової роботи; час є оцінкою, не перевіреною тривалістю для кожного студента.`,
+  `${chapter.time} хв обов’язкової роботи; час є орієнтовною оцінкою, не перевіреною тривалістю для кожного студента.`,
   "",
   chapter.case,
   "",
@@ -31,7 +40,7 @@ const lines = [
 for (const stage of chapter.workshop.stages) {
   const tasks = chapter.tasks.filter((t) => t.stage === stage.id);
   lines.push(
-    `- ${stage.title}: ${tasks.reduce((n, t) => n + t.minutes, 0)} хв${stage.optional ? "; добровільно" : ""}.`,
+    `- ${stage.title}: ${tasks.reduce((n, t) => n + t.minutes, 0)} хв${stage.optional ? "; додатково" : ""}.`,
   );
 }
 let previous;
@@ -45,7 +54,7 @@ for (const [i, task] of chapter.tasks.entries()) {
     "",
     `### ${i + 1}. ${task.title}`,
     "",
-    `${task.minutes} хв · ${task.required ? "обов’язкова" : "добровільна"} · ${task.type === "portfolio" ? "прикладне подання" : "коротка перевірка"}`,
+    `${task.minutes} хв · ${task.required ? "обов’язкова" : "додаткова"} · ${task.type === "portfolio" ? "прикладне завдання" : "коротка перевірка"}`,
     "",
     `**${task.lesson.title}**`,
     "",
@@ -83,7 +92,7 @@ if (chapter.treasure) {
   const treasure = TREASURES[chapter.treasure];
   lines.push(
     "",
-    "## Прихована знахідка (добровільно)",
+    "## Прихована місія (додатково)",
     "",
     treasure.title,
     "",
@@ -103,4 +112,5 @@ for (const key of sourceKeys) {
   const source = SOURCES[key];
   lines.push(`- [${source.title}](${source.url}). ${source.note}`);
 }
-console.log(lines.join("\n"));
+const output = lines.join("\n");
+console.log(chapterId === "unicode" ? output.replaceAll("—", "–") : output);

@@ -7,7 +7,7 @@ export default {
   id: "en-foundations",
   language: "en",
   level: "foundations",
-  revision: 6,
+  revision: 7,
   milestones: foundationMilestones,
   assessment: foundationAssessment,
   title: "Англійська / Основи",

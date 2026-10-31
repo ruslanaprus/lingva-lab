@@ -2685,3 +2685,59 @@ dialog li + li {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+/* Chapter four: Unicode input and inspection share the existing exercise shell. */
+.symbol-keyboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0;
+}
+.symbol-key {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 76px;
+  max-width: 180px;
+  min-height: 84px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.symbol-key > span,
+.typography-glyph {
+  font-family: var(--sans);
+  font-size: 28px;
+  line-height: 1.4;
+}
+.symbol-key small {
+  font-size: 11px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.symbol-key:hover,
+.symbol-key:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.typography-tool textarea {
+  min-height: 110px;
+  font-size: 20px;
+  line-height: 1.6;
+}
+.typography-preview {
+  margin-top: 16px;
+}
+.normalization-copies pre {
+  font-size: 20px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: 12px;
+  margin: 8px 0 16px;
+  border: 1px solid var(--line);
+}

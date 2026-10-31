@@ -2,6 +2,7 @@ import { normalized } from "../shared/values.js";
 import { wer } from "../tools/text.js";
 import { validTaskValue } from "./values.js";
 import { parseCsv } from "../tools/csv.js";
+import { sameUnicodeText } from "../tools/unicode.js";
 export function evaluateTask(task, value, regexResult) {
   const pass = (feedback) => ({
     status: "passed",
@@ -21,10 +22,19 @@ export function evaluateTask(task, value, regexResult) {
       : fail(
           "Перегляньте обраний варіант. " +
             (task.type === "choice"
-              ? "Зіставте відповідь із теорією та дослідницькою метою."
-              : "Скористайтеся спостереженням у тренажері."),
+              ? "Зіставте відповідь із теорією та метою досліджуваної проблеми."
+              : "Скористайтеся спостереженням у наданому прикладі."),
         );
   if (task.type === "exact") {
+    if (task.checker === "unicode")
+      return sameUnicodeText(value, task.answer, task.normalization)
+        ? pass()
+        : fail(
+            "Зіставте кодові точки, регістр, пробіли та переноси з брифом. " +
+              (task.normalization === "none"
+                ? "Тут потрібна саме задана послідовність, без автоматичного NFC."
+                : "Канонічно еквівалентні NFC/NFD приймаються; інші пробіли, абетки й пунктуація – різні символи."),
+          );
     if (task.checker === "csv") {
       try {
         const rows = parseCsv(value);
@@ -42,7 +52,7 @@ export function evaluateTask(task, value, regexResult) {
         return same
           ? pass()
           : fail(
-              "CSV прочитано, але кількість записів, полів або їхні значення відрізняються від умови. Пробіли є частиною значення; типографічні лапки не обрамлюють поле.",
+              "CSV прочитано, але кількість записів, полів або їхні значення відрізняються від умови. Пробіли є частиною значення; типографічні лапки не замінюють прямі лапки обрамлення поля.",
             );
       } catch (error) {
         return fail(error.message);

@@ -1,4 +1,5 @@
 import { renderCharacterInspection, renderCsvPreview } from "./ui/exercises/formats.js";
+import { renderTypographyPreview } from "./ui/exercises/typography.js";
 import {
   LANGUAGES,
   PATHS,
@@ -306,7 +307,7 @@ $("#profile-form").addEventListener("submit", (e) => {
 $("#help-button").addEventListener("click", () =>
   showInfo(
     "Як працює практикум",
-    `<ol><li>Оберіть німецьку, французьку або англійську. Матеріали та прогрес кожної траєкторії незалежні.</li><li>У розділах є автоматично перевірювані завдання та прикладні роботи для викладача. Необов’язкові вправи позначені окремо. Читайте теорію, досліджуйте тренажери й виправляйте помилки.</li><li>Кожна перевірка зберігає введений текст без виправлень або номери й тексти обраних варіантів, час подання, результат і кількість підказок. Звіт також показує час у розділі; активний час враховує видиму вкладку у фокусі та паузу після 2 хв без взаємодії. Повторні подання зберігаються; попередній успіх залишається в історії.</li><li>Кількість XP указана біля кожного завдання; за прихований виклик — 60 XP. XP за один ID завдання нараховуються лише один раз. Подання практичної роботи очікує перевірки. XP не є оцінкою.</li><li>Розділ завершено після виконання всіх його обов’язкових завдань. Якість цієї роботи оцінює викладач.</li><li>Завантажте HTML-звіт і передайте його разом з артефактами. Для PDF відкрийте звіт і скористайтеся друком браузера → «Зберегти як PDF».</li><li>У портфоліо експортуйте резервну копію JSON. Прогрес локальний: інший браузер або пристрій потребує імпорту. Серверного кабінету викладача у цій версії немає.</li></ol><p class="micro muted">Навчальні приклади створено для цього практикуму; вони не є репрезентативним корпусом. Команди виконуються в симуляторах. Зовнішні STT, TTS і ШІ автоматично не викликаються.</p>`,
+    `<ol><li>Оберіть німецьку, французьку або англійську. Матеріали та прогрес кожної траєкторії незалежні.</li><li>У розділах є автоматично перевірювані завдання та прикладні роботи для викладача. Необов’язкові вправи позначені окремо. Читайте теорію, досліджуйте симулятори й виправляйте помилки.</li><li>Кожна перевірка зберігає введений текст без виправлень або номери й тексти обраних варіантів, час подання, результат і кількість підказок. Звіт також показує час у розділі; активний час враховує видиму вкладку у фокусі та паузу після 2 хв без взаємодії. Повторні подання зберігаються; попередній успіх залишається в історії.</li><li>Кількість XP указана біля кожного завдання; за виконання прихованої місії – 60 XP. XP за один ID завдання нараховуються лише один раз. Подання практичної роботи очікує перевірки. XP не є оцінкою.</li><li>Розділ завершено після виконання всіх його обов’язкових завдань. Якість цієї роботи оцінює викладач.</li><li>Завантажте HTML-звіт і передайте його разом з артефактами – файлами, створеними під час роботи над практичним завданням. Для створення PDF відкрийте звіт і скористайтеся друком браузера → «Зберегти як PDF».</li><li>У портфоліо експортуйте резервну копію JSON. Прогрес локальний: інший браузер або пристрій потребує імпорту резервної копії у форматі JSON. Серверного кабінету викладача у цій версії немає.</li></ol><p class="micro muted">Навчальні приклади створено для цього практикуму; вони не є репрезентативним корпусом. Команди виконуються в симуляторах. Зовнішні STT, TTS і ШІ автоматично не викликаються.</p>`,
   ),
 );
 function showInfo(title, html) {
@@ -333,7 +334,7 @@ function render({ keepScroll = false } = {}) {
     if (!m) {
       main.innerHTML = emptyPage(
         "Такого розділу немає",
-        "Поверніться до карти, щоб обрати лабораторну.",
+        "Поверніться до карти курсу, щоб обрати лабораторну.",
       );
     } else if (!state.activePathId) {
       main.innerHTML = gate();
@@ -502,6 +503,33 @@ $("#main").addEventListener("keydown", (e) => {
 $("#main").addEventListener("click", async (e) => {
   const b = e.target.closest("button,a");
   if (!b) return;
+  if (b.dataset.insertSymbol) {
+    const task = taskById(b.dataset.insertSymbol),
+      index = Number(b.dataset.symbolIndex);
+    const symbol = Number.isInteger(index) ? task?.palette?.[index] : undefined;
+    const input = task && $(`[data-answer="${task.id}"]`);
+    if (symbol && input) {
+      const start = input.selectionStart,
+        end = input.selectionEnd;
+      if (input.value.length - (end - start) + symbol.length > input.maxLength) {
+        toast("Поле заповнено: спочатку скоротіть текст.");
+        return;
+      }
+      input.focus({ preventScroll: true });
+      input.setRangeText(symbol, start, end, "end");
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+    return;
+  }
+  if (b.dataset.typographyPreview) {
+    const task = taskById(b.dataset.typographyPreview);
+    if (task)
+      $(`[data-typography-output="${task.id}"]`).innerHTML = renderTypographyPreview(
+        readValue(task),
+        task.probe,
+      );
+    return;
+  }
   if (b.dataset.csvPreview || b.dataset.inspectCharacters) {
     const id = b.dataset.csvPreview || b.dataset.inspectCharacters;
     const task = taskById(id);
@@ -678,7 +706,7 @@ async function checkTask(id, button) {
   currentButton?.focus({ preventScroll: true });
   if (newXP)
     toast(
-      `+${newXP} XP · ${result.status === "submitted" ? "Подання збережено для викладача" : "Результат перевірено"}${badges(course(), track()).filter((b) => b.unlocked).length > previousBadges ? " · Відкрито відзнаку!" : ""}`,
+      `+${newXP} XP · ${result.status === "submitted" ? "Введений текст збережено для викладача" : "Результат перевірено"}${badges(course(), track()).filter((b) => b.unlocked).length > previousBadges ? " · Нове досягнення!" : ""}`,
     );
   else if (result.status === "failed")
     toast("Спробу збережено. Перевірте пояснення під завданням.");
@@ -729,7 +757,7 @@ function executeCommand(id) {
   const meta = $(`[data-task="${id}"] .attempt-meta`);
   meta.textContent = `СПРОБИ ${r.attempts.length} · ПОМИЛКИ ${r.attempts.filter((a) => a.status === "failed").length} · ПОВТОРНІ ПОДАННЯ ${Math.max(0, r.attempts.length - 1)} · ПОМИЛКИ КОМАНД ${r.toolEvents.filter((e) => !e.ok).length}`;
   if (t.type === "terminal" && t.goal === "navigate" && ok && output.includes("[1893]"))
-    toast("Ви знайшли лист! Примітка ◇ над завданнями відкриває архівний виклик.");
+    toast("Ви знайшли лист! Примітка ◇ над завданнями відкриває архівну місію.");
 }
 
 let resizeTimer;
@@ -741,7 +769,7 @@ window.addEventListener("resize", () => {
 function checkTreasure(key) {
   const input = $(`input[name="treasure-${key}"]:checked`);
   if (!input) {
-    toast("Оберіть відповідь на прихований виклик.");
+    toast("Оберіть відповідь для прихованої місії.");
     return;
   }
   const chapter = modules().find((chapter) => chapter.treasure === key);
@@ -753,7 +781,7 @@ function checkTreasure(key) {
   );
   save();
   $("#treasure-slot").innerHTML = renderTreasure(key);
-  if (pass && newXP) toast(`+${newXP} XP · Прихований виклик розв’язано!`);
+  if (pass && newXP) toast(`+${newXP} XP · Приховану місію виконано!`);
 }
 
 function generateReport(id, format = "html") {
@@ -770,7 +798,7 @@ function generateReport(id, format = "html") {
   else download(name + ".html", reportHtml(data), "text/html;charset=utf-8");
   toast(
     data.summary.complete
-      ? "Звіт завантажено. Прикладну роботу оцінює викладач."
+      ? "Звіт завантажено. Практичну роботу оцінює викладач."
       : "Чернетку звіту завантажено. Розділ ще не завершено.",
   );
 }
@@ -782,7 +810,7 @@ function downloadMaterials(id) {
   if (m.workshop) {
     download(`${m.id}-case-${language()}.zip`, zipFiles(m.workshop.files));
     toast(
-      "Набір завантажено. Розпакуйте його в окрему папку; тексти також доступні в розділі на сторінці.",
+      "Набір завантажено. Розпакуйте його в окрему папку; тексти файлів з набору також доступні в розділі на сторінці.",
     );
     return;
   }
@@ -797,7 +825,9 @@ function downloadMaterials(id) {
     content = l.regexCorpus + "\n" + l.variantCorpus + "\n\n" + l.transcript;
   } else if (m.materials === "audio") {
     download("training-signal.wav", new Blob([signalWav()], { type: "audio/wav" }));
-    toast("WAV завантажено. TextGrid експортується з тренажера після введення меж.");
+    toast(
+      "WAV завантажено. TextGrid експортується з симулятора після введення часових меж.",
+    );
     return;
   } else if (m.materials === "speech") {
     name = "stt-comparison.txt";
@@ -823,7 +853,7 @@ document.addEventListener("change", async (e) => {
   const file = e.target.files[0];
   if (!file) return;
   if (file.size > 8 * 1024 * 1024) {
-    toast("Резервна копія завелика: межа 8 МБ.");
+    toast("Резервна копія завелика: обмеження 8 МБ.");
     return;
   }
   try {

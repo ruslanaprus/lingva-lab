@@ -10,7 +10,7 @@ export function createMapView(context = {}) {
       stats = trackStats(course(), track());
     return `<div class="page">
  <section class="hero" aria-labelledby="hero-title">
-   <div class="hero-copy"><p class="mono eyebrow">DIGITAL TOOLS FOR LINGUISTS</p><h1 id="hero-title">Мова —<br>це теж<br><span class="orange">дані.</span></h1><p class="hero-desc">Працюйте з текстами. Досліджуйте мовлення. Ставте інструментам правильні запитання.</p></div>
+   <div class="hero-copy"><p class="mono eyebrow">DIGITAL TOOLS FOR LINGUISTS</p><h1 id="hero-title">Мова –<br>це теж<br><span class="orange">дані.</span></h1><p class="hero-desc">Працюйте з текстами. Досліджуйте мовлення. Ставте інструментам правильні запитання.</p></div>
    <div class="hero-art">
      <div class="lexicon-header mono"><span>МОВА × ТЕХНОЛОГІЇ</span><span>01—${pad(ms.length)}</span></div>
      <svg class="lexicon-cloud" viewBox="0 0 480 350" role="img" aria-labelledby="lexicon-title lexicon-desc" focusable="false">

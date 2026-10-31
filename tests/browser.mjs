@@ -2,6 +2,7 @@ import { checkWorkspaceWorkshop } from "./browser-workspace.mjs";
 import { checkDocumentWorkshop } from "./browser-documents.mjs";
 import { checkCourseOutline } from "./browser-outline.mjs";
 import { checkFormatWorkshop } from "./browser-formats.mjs";
+import { checkTypographyWorkshop } from "./browser-typography.mjs";
 import { portfolioAnswer } from "./helpers/answers.mjs";
 // Browser QA runs against dist/ using the development-only Playwright dependency.
 // PLAYWRIGHT_MODULE can optionally point to another installed Playwright module.
@@ -90,6 +91,7 @@ try {
   };
   if (!process.argv.includes("--layout-only")) {
     await checkFormatWorkshop(browser, base, output);
+    await checkTypographyWorkshop(browser, base, output);
     // Real failure -> hint -> success -> retry: counters and XP are observed in the UI.
     await go("lab/workspace");
     assert.equal(await page.locator("[data-chapter-feedback]").count(), 0);
@@ -112,6 +114,12 @@ try {
     for (const m of getModules("de")) {
       if (m.status === "planned") continue;
       await go("lab/" + m.id);
+      if (m.id === "text-search") {
+        await page.locator('[data-term="Конвеєр (пайп)"]').click();
+        await page.locator("#info-dialog[open]").waitFor();
+        assert.equal(await page.locator("#info-title").textContent(), "Конвеєр (пайп)");
+        await page.locator("#info-dialog [data-close]").click();
+      }
       for (const t of m.tasks) {
         if (t.id === "workspace-original-storage") continue;
         const article = page.locator(`[data-task="${t.id}"]`);

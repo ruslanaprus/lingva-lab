@@ -7,6 +7,7 @@ import { unicodePoints } from "../../tools/text.js";
 import { createTerminal } from "../../tools/terminal.js";
 import { createGit } from "../../tools/git.js";
 import { renderLesson } from "./workshop.js";
+import { renderTypographyInput } from "./typography.js";
 export function createExerciseView(context = {}) {
   const { track, language } = context;
   function renderTask(t, index) {
@@ -45,6 +46,8 @@ export function createExerciseView(context = {}) {
           "",
         )}</div><p class="unicode-normalized">Після NFC: <b>${esc(l.accent.normalize("NFC"))}</b> = <b>${esc(l.nfd.normalize("NFC"))}</b>. Візуальна подібність сама по собі не доводить еквівалентність.</p></div></div><div style="margin-top:18px">${optionsInput(t, value)}</div>`;
     // HTML removes the first newline in a textarea; a sentinel preserves raw drafts.
+    if (t.type === "exact" && t.inspector === "typography")
+      return renderTypographyInput(t, value);
     if (t.type === "exact" && (t.checker === "csv" || t.inspector === "characters"))
       return `<label class="input-label" for="answer-${id}">${t.checker === "csv" ? "Ваш CSV (роздільник — кома)" : "Інспектор символів – поле для введення"}</label><textarea id="answer-${id}" data-answer="${id}" class="code-input" maxlength="10000" spellcheck="false" autocorrect="off" autocapitalize="off">${"\n"}${esc(value || "")}</textarea><button class="button small" ${t.checker === "csv" ? `data-csv-preview="${id}"` : `data-inspect-characters="${id}"`}>${t.checker === "csv" ? "Розібрати CSV без подання" : "Показати символи й байти"} ↗</button><div class="formats-preview" data-format-output="${id}" role="status" aria-live="polite"></div>`;
     if (t.type === "exact")
