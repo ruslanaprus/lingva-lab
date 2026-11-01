@@ -145,7 +145,7 @@ test("Offline cases remain explicitly fictional and do not contain invented reco
       (file) => file.name === "evidence-cards.txt",
     ).content;
     assert.match(cards, /S1–S8 вигадані/u);
-    assert.match(cards, /немає WAV\/транскрипту\/TextGrid/u);
+    assert.match(cards, /файлів WAV, транскрипту й TextGrid немає/u);
     assert.match(cards, new RegExp(language.search.languageCode));
     for (const file of material.files) assert.ok(/\.(txt|csv)$/u.test(file.name));
     const chapter = getPath(`${language.code}-foundations`).chapters.find(
