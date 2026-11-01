@@ -1,4 +1,94 @@
 export const SOURCES = {
+  "search-language-uk": {
+    title: "Google – фільтр мов результатів (українською)",
+    url: "https://support.google.com/websearch/answer/13485060?hl=uk",
+    note: "Мова результатів налаштовується окремо від меню; фільтр має обмеження. Назви й доступність елементів можуть змінюватися.",
+  },
+  "search-archive-uk": {
+    title: "ЦДІАК України – е-ресурс архіву (українською)",
+    url: "https://archium.cdiak.archives.gov.ua/",
+    note: "Пошук у довідковому апараті й оцифрованих матеріалах: опис справи не є транскрипцією всього документа.",
+  },
+  "search-dataset-google": {
+    title: "Google Dataset Search – про пошук наборів даних",
+    url: "https://datasetsearch.research.google.com/help",
+    note: "Пошук описів наборів із різних сховищ. Для перевірки переходьте до видавця та документації конкретного набору.",
+  },
+  "search-dataset-entry": {
+    title: "Google Dataset Search – пошукова сторінка",
+    url: "https://datasetsearch.research.google.com/",
+    note: "Почніть із теми, мови й типу даних. Наявність запису не гарантує доступності файлів.",
+  },
+  "search-hf-cards": {
+    title: "Hugging Face – Dataset Cards",
+    url: "https://huggingface.co/docs/hub/datasets-cards",
+    note: "Паспорт набору: походження, мови, використання й обмеження. Незаповнені поля залишаються невідомими.",
+  },
+  "search-hf": {
+    title: "Hugging Face – каталог Datasets",
+    url: "https://huggingface.co/datasets",
+    note: "Виберіть Datasets, мову й модальність. Для цієї майстерні потрібне читання карток, без коду, моделей або великих завантажень.",
+  },
+  "search-kaggle-docs": {
+    title: "Kaggle – документація Datasets",
+    url: "https://www.kaggle.com/docs/datasets",
+    note: "Опис файлів і перегляду даних. CSV та JSON із розділу 3 допомагають зрозуміти, що містить набір.",
+  },
+  "search-kaggle": {
+    title: "Kaggle – каталог Datasets",
+    url: "https://www.kaggle.com/datasets",
+    note: "Перевіряйте автора завантаження, початкове джерело, версію й умови конкретного набору; популярність не замінює перевірки.",
+  },
+  "search-vlo": {
+    title: "CLARIN – Virtual Language Observatory",
+    url: "https://vlo.clarin.eu/",
+    note: "Пошук мовних ресурсів за метаданими. Запис веде до установи-постачальника; доступ і умови визначаються ресурсом.",
+  },
+  "search-vlo-help": {
+    title: "CLARIN – як VLO пов’язує описи з постачальниками даних",
+    url: "https://forum.clarin.eu/t/mozilla-data-collective-datasets-can-now-be-explored-through-clarins-virtual-language-observatory-vlo/1476",
+    note: "Приклад того, чому пошуковий каталог і місце зберігання набору виконують різні ролі.",
+  },
+  "search-bas": {
+    title: "BAS CLARIN – довідка до архіву мовленнєвих корпусів",
+    url: "https://clarin.phonetik.uni-muenchen.de/BASRepository/Public/FAQ.php",
+    note: "Записи, сеанси, стійкі ідентифікатори й різні умови доступу. Відкриті метадані не означають необмеженого поширення записів.",
+  },
+  "search-dgd": {
+    title: "IDS Mannheim – Datenbank für Gesprochenes Deutsch",
+    url: "https://dgd.ids-mannheim.de/",
+    note: "Інформація про усні корпуси, зокрема FOLK. Для роботи з даними потрібна реєстрація; у майстерні можна обмежитися публічним описом.",
+  },
+  "search-dwds": {
+    title: "DWDS – корпуси та пошук",
+    url: "https://www.dwds.de/r",
+    note: "Початкова точка для пошуку німецькомовних контекстів. Перевіряйте склад, період і умови окремого корпусу.",
+  },
+  "search-ortolang": {
+    title: "ORTOLANG – каталог мовних ресурсів",
+    url: "https://www.ortolang.fr/fr/explorer/",
+    note: "Пошук корпусів і їхньої документації; доступ до окремих матеріалів може відрізнятися.",
+  },
+  "search-eslo": {
+    title: "ORTOLANG – документація підкорпусу ESLO-MD",
+    url: "https://repository.ortolang.fr/api/content/eslo-md/3/Documentation/Presentation_sous_corpus_ESLO_MD.pdf",
+    note: "Реальний приклад опису усного матеріалу, часових зрізів і добору інтерв’ю. Читаємо документацію; завантажувати аудіокорпус не потрібно.",
+  },
+  "search-bnc": {
+    title: "University of Oxford – British National Corpus",
+    url: "https://www.natcorp.ox.ac.uk/",
+    note: "Почніть з опису складу корпусу, перш ніж використовувати його як доказ сучасного або регіонального вживання.",
+  },
+  "search-audio-bnc": {
+    title: "University of Oxford – Audio BNC",
+    url: "https://www.phon.ox.ac.uk/AudioBNC",
+    note: "Приклад зв’язку між записом, транскриптом і TextGrid. Дата випуску відрізняється від дат запису й оцифрування; автоматичне вирівнювання потребує перевірки.",
+  },
+  "search-gallica": {
+    title: "BnF Gallica – довідка з пошуку",
+    url: "https://gallica.bnf.fr/accueil/fr/html/aide-a-la-recherche",
+    note: "Пошук історичних документів, фільтри й OCR. Мова довідки французька; пояснення завдань українське, за потреби скористайтеся альтернативним архівом.",
+  },
   "windows-input-uk": {
     title: "Microsoft – мова та розкладка клавіатури у Windows (українською)",
     url: "https://support.microsoft.com/uk-ua/windows/hardware/input-devices/manage-the-language-and-keyboard-input-layout-settings-in-windows",
@@ -140,7 +230,7 @@ export const SOURCES = {
     note: "Призначення XML та посилання на специфікації. Англійською; потрібні лише розпізнавання елементів, атрибутів і вкладення.",
   },
   "google-search": {
-    title: "Google — Як уточнювати пошукові запити",
+    title: "Google – Як уточнювати пошукові запити",
     url: "https://support.google.com/websearch/answer/2466433?hl=uk",
     note: "Точні фрази, site:, виключення, тип файла й часові обмеження. Довідка сервісу; результати живого пошуку можуть змінюватися.",
   },

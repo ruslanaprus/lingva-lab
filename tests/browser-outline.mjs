@@ -34,10 +34,10 @@ export async function checkCourseOutline(browser, base, output) {
       await page.goto(base + "/#map");
       await page.locator(".module-card").first().waitFor();
       assert.equal(await page.locator(".module-card").count(), 32);
-      assert.equal(await page.locator('[data-chapter-status="planned"]').count(), 19);
+      assert.equal(await page.locator('[data-chapter-status="planned"]').count(), 18);
       assert.equal(
         await page.locator(".continue-panel a").getAttribute("href"),
-        "#lab/terminal-navigation",
+        "#lab/information-search",
       );
       const xp = await page.locator("#xp-label").textContent();
       const before = await page.evaluate(
@@ -45,11 +45,11 @@ export async function checkCourseOutline(browser, base, output) {
         STORAGE_KEY,
       );
       await page.locator('[data-filter="planned"]').click();
-      assert.equal(await page.locator(".module-card").count(), 19);
+      assert.equal(await page.locator(".module-card").count(), 18);
       assert.equal(await page.locator(".module-card:not(.planned)").count(), 0);
       await page.locator('[data-filter="new"]').click();
       assert.equal(await page.locator(".module-card.planned").count(), 0);
-      assert.equal(await page.locator(".module-card").count(), 9);
+      assert.equal(await page.locator(".module-card").count(), 10);
       for (const chapter of course.chapters.filter((c) => c.status === "planned")) {
         await page.goto(base + "/#lab/" + chapter.id);
         await page.locator(`[data-planned-chapter="${chapter.id}"]`).waitFor();
@@ -69,7 +69,7 @@ export async function checkCourseOutline(browser, base, output) {
           ),
         );
         assert.equal(await page.locator("#xp-label").textContent(), xp);
-        assert.equal(await page.locator("#progress-label").textContent(), "04 / 13");
+        assert.equal(await page.locator("#progress-label").textContent(), "04 / 14");
       }
       await page.goto(base + "/#lab/data-formats");
       await page.locator("#task-data-formats-dictionary-json").waitFor();
@@ -80,7 +80,7 @@ export async function checkCourseOutline(browser, base, output) {
         ).includes("НЕОБОВ’ЯЗКОВА ПРАКТИКА"),
       );
       await page.goto(base + "/#portfolio");
-      assert.equal(await page.locator(".report-row").count(), 13);
+      assert.equal(await page.locator(".report-row").count(), 14);
       assert.equal(await page.locator('[data-module="spreadsheets"]').count(), 0);
       const after = await page.evaluate(
         (key) => JSON.parse(localStorage.getItem(key)).paths,
@@ -118,6 +118,6 @@ export async function checkCourseOutline(browser, base, output) {
     }
   }
   console.log(
-    "PASS: 57 description pages across three paths, preserved answers, filters, Continue, report exclusion and 45 responsive layouts.",
+    "PASS: 54 description pages across three paths, preserved answers, filters, Continue, report exclusion and 45 responsive layouts.",
   );
 }

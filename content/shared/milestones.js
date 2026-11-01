@@ -1,5 +1,13 @@
 export const foundationMilestones = [
   {
+    id: "source-navigator",
+    name: "Дослідник джерел",
+    mark: "⌕",
+    description:
+      "Завершено обов’язкову майстерню пошуку та подано пошукове досьє; якість доказів перевіряє викладач",
+    chapterIds: ["information-search"],
+  },
+  {
     id: "academic-editor",
     name: "Уважний співредактор",
     mark: "¶",

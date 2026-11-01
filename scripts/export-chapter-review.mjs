@@ -6,17 +6,21 @@ const course = getPath(pathId),
   chapter = course.chapters.find((c) => c.id === chapterId);
 if (!chapter) throw new Error("Unknown chapter");
 const exampleFile =
-  chapterId === "unicode"
-    ? "typography"
-    : chapterId === "data-formats"
-      ? "formats"
-      : "documents";
+  chapterId === "information-search"
+    ? "search"
+    : chapterId === "unicode"
+      ? "typography"
+      : chapterId === "data-formats"
+        ? "formats"
+        : "documents";
 const reviewFile =
-  chapterId === "unicode"
-    ? "chapter-four-review.md"
-    : chapterId === "data-formats"
-      ? "chapter-three-review.md"
-      : "chapter-two-review.md";
+  chapterId === "information-search"
+    ? "chapter-six-review.md"
+    : chapterId === "unicode"
+      ? "chapter-four-review.md"
+      : chapterId === "data-formats"
+        ? "chapter-three-review.md"
+        : "chapter-two-review.md";
 const lines = [
   `# ${chapter.title}: текст для перегляду`,
   "",
@@ -113,4 +117,8 @@ for (const key of sourceKeys) {
   lines.push(`- [${source.title}](${source.url}). ${source.note}`);
 }
 const output = lines.join("\n");
-console.log(chapterId === "unicode" ? output.replaceAll("—", "–") : output);
+console.log(
+  ["unicode", "information-search"].includes(chapterId)
+    ? output.replaceAll("—", "–")
+    : output,
+);

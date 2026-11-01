@@ -17,6 +17,10 @@ const typographyGuide = readFileSync(
   new URL("../fixtures/typography-guide.txt", import.meta.url),
   "utf8",
 );
+const searchLog = readFileSync(
+  new URL("../fixtures/search-log.txt", import.meta.url),
+  "utf8",
+);
 export function portfolioAnswer(task, language = "de") {
   const material = LANGUAGES[language];
   return {
@@ -25,18 +29,20 @@ export function portfolioAnswer(task, language = "de") {
         ? `${material.root}/README.txt`
         : "results/practical-notes.txt",
     method:
-      task.id === "workspace-portfolio"
-        ? readme
-            .replaceAll("{{ROOT}}", material.root)
-            .replaceAll("{{CODE}}", language)
-            .replaceAll("{{LANGUAGE}}", material.native)
-        : task.id === "academic-documents-portfolio"
-          ? editorialLog
-          : task.id === "data-formats-portfolio"
-            ? formatAudit
-            : task.id === "unicode-typography-guide"
-              ? typographyGuide.replaceAll("{{LANGUAGE}}", material.native)
-              : "Я описую використані джерела, інструменти та досліджувану проблему. Вказую точні параметри аналізу, перераховую отримані результати і спосіб їх перевірки. Це навчальний опис, а наявність зовнішнього артефакту потребує перевірки викладачем.",
+      task.id === "information-search-research-log"
+        ? searchLog.replaceAll("{{LANGUAGE}}", material.native)
+        : task.id === "workspace-portfolio"
+          ? readme
+              .replaceAll("{{ROOT}}", material.root)
+              .replaceAll("{{CODE}}", language)
+              .replaceAll("{{LANGUAGE}}", material.native)
+          : task.id === "academic-documents-portfolio"
+            ? editorialLog
+            : task.id === "data-formats-portfolio"
+              ? formatAudit
+              : task.id === "unicode-typography-guide"
+                ? typographyGuide.replaceAll("{{LANGUAGE}}", material.native)
+                : "Я описую використані джерела, інструменти та досліджувану проблему. Вказую точні параметри аналізу, перераховую отримані результати і спосіб їх перевірки. Це навчальний опис, а наявність зовнішнього артефакту потребує перевірки викладачем.",
     reflection:
       "Висновки обмежені наданим навчальним набором і не поширюються на всіх носіїв мови. Потрібно окремо звірити фактичні файли, інвентар і спосіб відновлення. Якщо дію ще не виконано, вона залишається планом; я не видаю припущення за перевірений результат.",
     confirm: true,

@@ -2,6 +2,7 @@ import workspace from "../chapters/workspace.js";
 import academicDocuments from "../chapters/academic-documents.js";
 import formats from "../chapters/data-formats.js";
 import unicode from "../chapters/unicode.js";
+import informationSearch from "../chapters/information-search.js";
 import terminal from "../chapters/terminal-navigation.js";
 import search from "../chapters/text-search.js";
 import regexSearch from "../chapters/regex-search.js";
@@ -160,6 +161,7 @@ const existing = {
   "academic-documents": academicDocuments,
   "data-formats": formats,
   unicode,
+  "information-search": informationSearch,
   "terminal-navigation": terminal,
   "text-search": search,
   "regex-search": regexSearch,
