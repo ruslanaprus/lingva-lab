@@ -3,6 +3,7 @@ import { checkDocumentWorkshop } from "./browser-documents.mjs";
 import { checkCourseOutline } from "./browser-outline.mjs";
 import { checkFormatWorkshop } from "./browser-formats.mjs";
 import { checkTypographyWorkshop } from "./browser-typography.mjs";
+import { checkSearchWorkshop } from "./browser-search.mjs";
 import { portfolioAnswer } from "./helpers/answers.mjs";
 // Browser QA runs against dist/ using the development-only Playwright dependency.
 // PLAYWRIGHT_MODULE can optionally point to another installed Playwright module.
@@ -92,6 +93,7 @@ try {
   if (!process.argv.includes("--layout-only")) {
     await checkFormatWorkshop(browser, base, output);
     await checkTypographyWorkshop(browser, base, output);
+    await checkSearchWorkshop(browser, base, output);
     // Real failure -> hint -> success -> retry: counters and XP are observed in the UI.
     await go("lab/workspace");
     assert.equal(await page.locator("[data-chapter-feedback]").count(), 0);
