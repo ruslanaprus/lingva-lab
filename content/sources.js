@@ -1,4 +1,9 @@
 export const SOURCES = {
+  "search-mirrors": {
+    title: "GNU – приклад мережі дзеркал ресурсу",
+    url: "https://www.gnu.org/prep/ftp.en.html",
+    note: "Технічний приклад розміщення копій матеріалів на різних серверах. Для майстерні достатньо зрозуміти термін; налаштовувати дзеркало не потрібно.",
+  },
   "search-language-uk": {
     title: "Google – фільтр мов результатів (українською)",
     url: "https://support.google.com/websearch/answer/13485060?hl=uk",

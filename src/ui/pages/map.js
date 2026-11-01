@@ -1,5 +1,5 @@
 import { trackStats, sectionStats, taskStatus } from "../../learning/progress.js";
-import { pad, esc } from "../../shared/format.js";
+import { esc } from "../../shared/format.js";
 import { PATHS, LANGUAGES, chapterNumber } from "../../../content/registry.js";
 import { countLabel } from "../../i18n/index.js";
 export function createMapView(context = {}) {
@@ -12,7 +12,7 @@ export function createMapView(context = {}) {
  <section class="hero" aria-labelledby="hero-title">
    <div class="hero-copy"><p class="mono eyebrow">DIGITAL TOOLS FOR LINGUISTS</p><h1 id="hero-title">Мова –<br>це теж<br><span class="orange">дані.</span></h1><p class="hero-desc">Працюйте з текстами. Досліджуйте мовлення. Ставте інструментам правильні запитання.</p></div>
    <div class="hero-art">
-     <div class="lexicon-header mono"><span>МОВА × ТЕХНОЛОГІЇ</span><span>01—${pad(ms.length)}</span></div>
+     <div class="lexicon-header mono"><span>МОВА × ТЕХНОЛОГІЇ</span><span>1–${ms.length}</span></div>
      <svg class="lexicon-cloud" viewBox="0 0 480 350" role="img" aria-labelledby="lexicon-title lexicon-desc" focusable="false">
        <title id="lexicon-title">На перетині мови й цифрових інструментів</title>
        <desc id="lexicon-desc">Хмара термінів курсу: команди grep і git diff, кодування UTF-8 та Unicode, регулярні вирази Regex, формати TXT, CSV, JSON, WAV і TextGrid, корпус, лема, токен і фонетичні символи.</desc>
@@ -44,7 +44,7 @@ export function createMapView(context = {}) {
      <div class="lexicon-footer mono"><span>ТЕКСТ · КОД · ЗВУК</span><span>DE / FR / EN</span></div>
    </div>
  </section>
- <div class="language-bar"><p class="mono">01 / ВАША МОВА</p><div class="language-buttons">${Object.entries(
+ <div class="language-bar"><p class="mono">1 / ВАША МОВА</p><div class="language-buttons">${Object.entries(
    PATHS,
  )
    .map(
@@ -55,7 +55,7 @@ export function createMapView(context = {}) {
      "",
    )}</div><p class="micro muted">Український інтерфейс.<br>${Object.keys(PATHS).length} незалежні траєкторії.</p></div>
  <div class="section-heading"><h2>Маршрут дослідження<span class="orange">.</span></h2><p class="mono">${countLabel("chapter", ms.length)} · ${countLabel("task", stats.total)}<br>І СКАРБИ МІЖ РЯДКАМИ</p></div>
- <section class="continue-panel"><div class="continue-number">${pad(chapterNumber(pathId(), next.id))}</div><div><div class="mono">${stats.done ? "ПРОДОВЖУЄМО ЕКСПЕДИЦІЮ" : "ПОЧНІТЬ З ОСНОВ"} / ${next.category}</div><h3>${next.title}</h3><p>${next.short} ${next.time} хв орієнтовно.</p></div><a class="button light" href="#lab/${next.id}">${stats.done ? "Продовжити" : "До лабораторії"} <span>↗</span></a></section>
+ <section class="continue-panel"><div class="continue-number">${chapterNumber(pathId(), next.id)}</div><div><div class="mono">${stats.done ? "ПРОДОВЖУЄМО ЕКСПЕДИЦІЮ" : "ПОЧНІТЬ З ОСНОВ"} / ${next.category}</div><h3>${next.title}</h3><p>${next.short} ${next.time} хв орієнтовно.</p></div><a class="button light" href="#lab/${next.id}">${stats.done ? "Продовжити" : "До лабораторії"} <span>↗</span></a></section>
  <p class="catalog-notice">У програмі ${countLabel("chapter", ms.length)}: ${stats.sectionTotal} із наявними вправами та ${stats.plannedTotal} з описами майбутніх тем. Прогрес і звіти стосуються наявної практики; описи можна читати вже зараз.</p>
  <div class="module-filters mono" role="group" aria-label="Фільтр розділів"><button class="filter ${filter() === "all" ? "active" : ""}" data-filter="all" aria-pressed="${filter() === "all"}">Усі / ${ms.length}</button><button class="filter ${filter() === "planned" ? "active" : ""}" data-filter="planned" aria-pressed="${filter() === "planned"}">Описи / ${stats.plannedTotal}</button><button class="filter ${filter() === "new" ? "active" : ""}" data-filter="new" aria-pressed="${filter() === "new"}">Попереду</button><button class="filter ${filter() === "progress" ? "active" : ""}" data-filter="progress" aria-pressed="${filter() === "progress"}">У процесі</button><button class="filter ${filter() === "complete" ? "active" : ""}" data-filter="complete" aria-pressed="${filter() === "complete"}">Завершені</button></div>
  <div class="module-grid">${ms
@@ -90,13 +90,13 @@ export function createMapView(context = {}) {
      ? '<p class="no-results">Тут поки немає розділів. Продовжуйте свій маршрут.</p>'
      : ""
  }
- <section class="map-note"><h2>Не просто<br>натискати.<br><span class="orange">Розуміти.</span></h2><div><p>Кожен інструмент тут розв’язує реальну задачу лінгвіста: зберегти польовий запис, знайти словоформи, перевірити транскрипцію або дослідити помилку моделі.</p><p class="mono">ПРАКТИКА → ДОКАЗ → ПОРТФОЛІО</p><p>Спроби й виправлення — частина роботи. Накопичуйте досвід, відкривайте відзнаки та забирайте звіт після кожного розділу.</p></div></section>
+ <section class="map-note"><h2>Не просто<br>натискати.<br><span class="orange">Розуміти.</span></h2><div><p>Кожен інструмент тут розв’язує реальну задачу лінгвіста: зберегти польовий запис, знайти словоформи, перевірити транскрипцію або дослідити помилку моделі.</p><p class="mono">ПРАКТИКА → ДОКАЗ → ПОРТФОЛІО</p><p>Спроби й виправлення – частина роботи. Накопичуйте досвід, відкривайте відзнаки та забирайте звіт після кожного розділу.</p></div></section>
  </div>`;
   }
 
   function moduleCard(m) {
     const s = sectionStats(m, track());
-    return `<a class="module-card${m.status === "planned" ? " planned" : ""}" href="#lab/${m.id}" data-chapter-status="${m.status === "planned" ? "planned" : "practice"}"><div class="module-card-head mono"><span class="number">${pad(chapterNumber(pathId(), m.id))} / <span class="${s.complete || s.done || s.attempts ? "card-state" : "category"}">${m.status === "planned" ? "ОПИС" : s.complete ? "ЗАВЕРШЕНО" : s.done || s.attempts ? "У ПРОЦЕСІ" : m.category}</span></span><span>${m.status === "planned" ? "ОПИС" : `${m.time} ХВ`}</span></div><h3>${m.title}</h3><p>${m.short}</p><div class="module-card-bottom">${m.status === "planned" ? '<span class="mono muted">ВПРАВИ ГОТУЮТЬСЯ</span>' : m.workshop ? `<div class="workshop-card-progress"><span class="mono">${s.requiredDone}/${s.requiredTotal} ОБОВ’ЯЗКОВИХ</span><progress value="${s.requiredDone}" max="${s.requiredTotal}" aria-label="Виконано ${s.requiredDone} з ${s.requiredTotal} обов’язкових завдань"></progress></div>` : `<div class="task-dots" aria-label="${s.requiredDone} із ${s.requiredTotal} обов’язкових завдань виконано">${m.tasks.map((t) => `<i class="${taskStatus(track().answers[t.id], t)}"></i>`).join("")}</div>`}<span class="card-arrow" aria-hidden="true">↗</span></div></a>`;
+    return `<a class="module-card${m.status === "planned" ? " planned" : ""}" href="#lab/${m.id}" data-chapter-status="${m.status === "planned" ? "planned" : "practice"}"><div class="module-card-head mono"><span class="number">${chapterNumber(pathId(), m.id)} / <span class="${s.complete || s.done || s.attempts ? "card-state" : "category"}">${m.status === "planned" ? "ОПИС" : s.complete ? "ЗАВЕРШЕНО" : s.done || s.attempts ? "У ПРОЦЕСІ" : m.category}</span></span><span>${m.status === "planned" ? "ОПИС" : `${m.time} ХВ`}</span></div><h3>${m.title}</h3><p>${m.short}</p><div class="module-card-bottom">${m.status === "planned" ? '<span class="mono muted">ВПРАВИ ГОТУЮТЬСЯ</span>' : m.workshop ? `<div class="workshop-card-progress"><span class="mono">${s.requiredDone}/${s.requiredTotal} ОБОВ’ЯЗКОВИХ</span><progress value="${s.requiredDone}" max="${s.requiredTotal}" aria-label="Виконано ${s.requiredDone} з ${s.requiredTotal} обов’язкових завдань"></progress></div>` : `<div class="task-dots" aria-label="${s.requiredDone} із ${s.requiredTotal} обов’язкових завдань виконано">${m.tasks.map((t) => `<i class="${taskStatus(track().answers[t.id], t)}"></i>`).join("")}</div>`}<span class="card-arrow" aria-hidden="true">↗</span></div></a>`;
   }
   return { renderMap, moduleCard };
 }
