@@ -1,0 +1,81 @@
+// Examples are authored for the workshop, not copied dictionary entries.
+export default {
+  lexical: {
+    noun: "car",
+    synonym: "automobile",
+    broader: "vehicle",
+    related: "road",
+    definition: "Легковий автомобіль для перевезення людей.",
+    example: "The car is parked outside the museum.",
+    synonymNote:
+      "Car та automobile можуть позначати легковий автомобіль; automobile зазвичай формальніше, тому синонімія не скасовує відмінності регістру.",
+    opposite: ["open", "closed"],
+    posWord: "book",
+    posContext: "Please book a room.",
+    posHelp: "Будь ласка, забронюйте кімнату. Book тут називає дію бронювання.",
+    posOther: "The book is here.",
+    posOtherHelp: "Книжка тут. Book у цьому реченні є іменником.",
+    polyWord: "head",
+    polyExamples: "He turns his head. / She is the head of the team.",
+    polyHelp:
+      "Голова як частина тіла / керівниця команди. Зв’язок значень допомагає пояснити метафоричне перенесення.",
+    sameSpelling: "bank",
+    sameSpellingHelp:
+      "Bank як берег та bank як фінансова установа можуть бути окремими статтями. Однакове написання не об’єднує їх в одне поняття.",
+    networkSource: "dictionary-wordnet",
+  },
+  primary: "cambridge",
+  secondary: "dictionary-mw-bank",
+  primaryName: "Cambridge Dictionary",
+  secondaryName: "Merriam-Webster",
+  headword: "bank",
+  form: "banks",
+  formContext: "The river has steep banks.",
+  formContextHelp: "У річки круті береги.",
+  grammar:
+    "n. / noun = іменник; [C] = злічуваний іменник; plural = множина; UK / US = британський / американський варіант.",
+  formNote:
+    "Banks – форма множини іменника bank у нашій картці. Поза цим контекстом banks може бути також дієслівною формою: результат пошуку потрібно звіряти з реченням. [C] не позначає граматичного роду.",
+  target: "берег річки",
+  other: "банк, фінансова установа",
+  context: "They rested on the bank of the river.",
+  contextHelp: "Вони відпочивали на bank річки. Rested – відпочивали; river – річка.",
+  clue: "of the river: місце біля річки",
+  otherContext: "The bank approved the loan.",
+  ipa: "[bæŋk]",
+  grammarQuestion: "Що означає noun [C] у навчальній картці bank?",
+  grammarAnswer: "Це злічуваний іменник, а не позначка граматичного роду.",
+  grammarDistractors: [
+    "Це іменник, який у цьому значенні вживається тільки з великої літери на початку.",
+    "Це іменник, який у цьому значенні вживається лише як назва незлічуваної речовини.",
+  ],
+  construction: "be interested in",
+  constructionExample: "The group is interested in the exhibition.",
+  constructionHelp:
+    "Група цікавиться виставкою. У цій конструкції вживають in; українське керування не визначає англійського прийменника.",
+  collocation: "make a decision",
+  wrongCollocation: "do a decision",
+  informal: "kid",
+  informalLabel: "informal (у значенні «дитина»)",
+  neutral: "child",
+  notice: "Each kid needs a ticket for the exhibition.",
+  noticeRevision: "Each child needs a ticket for the exhibition.",
+  region: "pavement",
+  regionLabel: "UK / US (різні значення)",
+  regionHelp:
+    "У британському вжитку – доріжка для пішоходів біля дороги; в американському – тверде покриття дороги. Для американської інструкції пішоходам перевірте sidewalk. Це відмінність значень, а не оцінка правильності мовця.",
+  regionNeutral: "sidewalk (для американської інструкції пішоходам)",
+  historical: "thou",
+  historicalLabel: "old use (для займенника)",
+  historicalHelp:
+    "Історичний займенник другої особи однини. У сучасній нейтральній інструкції вживають you. Окремий іменник thou зі значенням тисячі грошових одиниць має іншу позначку: не переносіть мітку між статтями.",
+  historicalModern: "you",
+  usageSources: [
+    "dictionary-en-register",
+    "dictionary-en-region",
+    "dictionary-en-history",
+  ],
+  extraSources: ["dictionary-cambridge-bank", "dictionary-mw-bank"],
+  phoneticNote:
+    "Навчальна широка транскрипція; це не транскрипція запису певного мовця. У живому словнику звірте UK / US та джерело аудіо, перш ніж порівнювати вимову.",
+};

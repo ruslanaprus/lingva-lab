@@ -157,7 +157,18 @@ export function badges(path, track) {
     },
     ...(course.milestones ?? []).map((milestone) => ({
       ...milestone,
-      unlocked: completeGroup(milestone.chapterIds),
+      unlocked: milestone.taskIds?.length
+        ? milestone.taskIds.every((id) => {
+            const task = course.chapters
+              .flatMap((chapter) => chapter.tasks)
+              .find((t) => t.id === id);
+            return (
+              task &&
+              ["passed", "submitted"].includes(taskStatus(track.answers[id], task))
+            );
+          }) &&
+          (!milestone.chapterIds?.length || completeGroup(milestone.chapterIds))
+        : !!milestone.chapterIds?.length && completeGroup(milestone.chapterIds),
     })),
     {
       name: "Архівний детектив",

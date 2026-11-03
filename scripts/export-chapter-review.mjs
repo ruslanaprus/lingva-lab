@@ -6,21 +6,25 @@ const course = getPath(pathId),
   chapter = course.chapters.find((c) => c.id === chapterId);
 if (!chapter) throw new Error("Unknown chapter");
 const exampleFile =
-  chapterId === "information-search"
-    ? "search"
-    : chapterId === "unicode"
-      ? "typography"
-      : chapterId === "data-formats"
-        ? "formats"
-        : "documents";
+  chapterId === "digital-dictionaries"
+    ? "dictionaries"
+    : chapterId === "information-search"
+      ? "search"
+      : chapterId === "unicode"
+        ? "typography"
+        : chapterId === "data-formats"
+          ? "formats"
+          : "documents";
 const reviewFile =
-  chapterId === "information-search"
-    ? "chapter-six-review.md"
-    : chapterId === "unicode"
-      ? "chapter-four-review.md"
-      : chapterId === "data-formats"
-        ? "chapter-three-review.md"
-        : "chapter-two-review.md";
+  chapterId === "digital-dictionaries"
+    ? "chapter-eight-review.md"
+    : chapterId === "information-search"
+      ? "chapter-six-review.md"
+      : chapterId === "unicode"
+        ? "chapter-four-review.md"
+        : chapterId === "data-formats"
+          ? "chapter-three-review.md"
+          : "chapter-two-review.md";
 const lines = [
   `# ${chapter.title}: текст для перегляду`,
   "",
@@ -88,6 +92,11 @@ for (const [i, task] of chapter.tasks.entries()) {
       `**Ключ для редакторського перегляду:** ${task.multiple ? task.answer.map((n) => n + 1).join(", ") : task.answer + 1}. ${task.explain}`,
     );
   if (task.rubric) lines.push("", "Критерії:", "", ...task.rubric.map((r) => "- " + r));
+  if (task.editor === "dictionary")
+    lines.push(
+      "",
+      "На сайті доступна форма мінісловника: назва й аудиторія; до 8 записів із незмінними ID, лемою, POS, тлумаченням, прикладом, позначкою, джерелом, локатором, групою DEMO, типом зв’язку й цільовим ID. Чернетка зберігається у полі методу. Є додавання навчального прикладу, перевірка структури та експорт JSON/TXT. Для подання потрібно щонайменше 5 значень, два значення одного написання й один зв’язок. Відзнака позначає подання; зміст оцінює викладач.",
+    );
 }
 lines.push("", "## Матеріали набору", "");
 for (const file of [...chapter.workshop.files, ...chapter.workshop.documents])
@@ -118,7 +127,7 @@ for (const key of sourceKeys) {
 }
 const output = lines.join("\n");
 console.log(
-  ["unicode", "information-search"].includes(chapterId)
+  ["unicode", "information-search", "digital-dictionaries"].includes(chapterId)
     ? output.replaceAll("—", "–")
     : output,
 );

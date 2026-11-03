@@ -4,6 +4,8 @@ import { checkCourseOutline } from "./browser-outline.mjs";
 import { checkFormatWorkshop } from "./browser-formats.mjs";
 import { checkTypographyWorkshop } from "./browser-typography.mjs";
 import { checkSearchWorkshop } from "./browser-search.mjs";
+import { checkDictionaryWorkshop } from "./browser-dictionaries.mjs";
+import { lexiconFixture, fillLexicon } from "./helpers/lexicon.mjs";
 import { portfolioAnswer } from "./helpers/answers.mjs";
 // Browser QA runs against dist/ using the development-only Playwright dependency.
 // PLAYWRIGHT_MODULE can optionally point to another installed Playwright module.
@@ -94,6 +96,7 @@ try {
     await checkFormatWorkshop(browser, base, output);
     await checkTypographyWorkshop(browser, base, output);
     await checkSearchWorkshop(browser, base, output);
+    await checkDictionaryWorkshop(browser, base, output);
     // Real failure -> hint -> success -> retry: counters and XP are observed in the UI.
     await go("lab/workspace");
     assert.equal(await page.locator("[data-chapter-feedback]").count(), 0);
@@ -183,8 +186,11 @@ try {
           await (await downloaded).saveAs(output + "/sample.TextGrid");
         } else if (t.type === "portfolio") {
           const value = portfolioAnswer(t, "de");
+          if (t.editor === "dictionary")
+            await fillLexicon(article, lexiconFixture("de"));
           for (const key of ["artifact", "method", "reflection"])
-            await article.locator(`[data-portfolio=${key}]`).fill(value[key]);
+            if (t.editor !== "dictionary" || key !== "method")
+              await article.locator(`[data-portfolio=${key}]`).fill(value[key]);
           await article.locator("[data-portfolio=confirm]").check();
         }
         await article.locator("[data-check]").click();

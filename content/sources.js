@@ -1,4 +1,129 @@
 export const SOURCES = {
+  "dictionary-wordnet": {
+    title: "Princeton WordNet – значення, синсети й семантичні відношення",
+    url: "https://wordnet.princeton.edu/",
+    note: "Зв’язки стосуються конкретних значень. Навчальні групи в курсі не є офіційними синсетами WordNet; програмування не потрібне.",
+  },
+  "dictionary-pos": {
+    title: "Universal Dependencies – універсальні POS-теги",
+    url: "https://universaldependencies.org/u/pos/",
+    note: "NOUN, VERB, ADJ та інші теги частин мови. Морфологічні ознаки на кшталт числа описуються окремо; інші системи розмітки можуть мати власні теги.",
+  },
+  "dictionary-germanet": {
+    title: "Університет Тюбінгена – будова GermaNet",
+    url: "https://uni-tuebingen.de/en/142812",
+    note: "Німецька лексико-семантична мережа: лексичні одиниці в окремих значеннях, синсети й відношення між поняттями.",
+  },
+  "dictionary-crisco": {
+    title: "CRISCO, Université de Caen – електронний словник синонімів",
+    url: "https://crisco.unicaen.fr/dictionnaire-electronique-des-synonymes-des/",
+    note: "Французькі синоніми потребують перевірки в контексті; сусідство в ресурсі не робить слова взаємозамінними в будь-якій ситуації.",
+  },
+  "dictionary-ideographic": {
+    title: "University of Glasgow – Historical Thesaurus of English",
+    url: "https://www.ht.ac.uk/about/",
+    note: "Приклад руху від поняттєвої категорії до слів: значення впорядковано за семантичними рубриками та історією вживання.",
+  },
+  "dictionary-thesaurus-uk": {
+    title: "Житомирська політехніка – пояснення терміна «тезаурус»",
+    url: "https://emtd.ztu.edu.ua/view/word-7961/0",
+    note: "Українською про кілька значень терміна. Ідеографічний словник, словник синонімів і пошуковий тезаурус мають різні цілі.",
+  },
+  "dictionary-homographs": {
+    title: "Larousse – омоніми, омографи й омофони",
+    url: "https://www.larousse.fr/dictionnaires/francais/homonyme/40288",
+    note: "Розрізняйте однакове написання, однакову вимову й різні значення. Саме написання не визначає словникового поділу.",
+  },
+  "dictionary-dwds-bank": {
+    title: "DWDS – Bank, словникова стаття",
+    url: "https://www.dwds.de/wb/Bank",
+    note: "Відкрийте потрібний словниковий запис і зіставте його з реченням. Опис проєкту BBAW наведено окремо; це не сама стаття.",
+  },
+  "dictionary-larousse-fruit": {
+    title: "Larousse – avocat, плід",
+    url: "https://www.larousse.fr/dictionnaires/francais/avocat/7135",
+    note: "Окрема стаття для значення в реченні про салат. Порівняйте її з омонімом, який називає професію.",
+  },
+  "dictionary-uk-resources": {
+    title: "УМІФ НАН України – каталог словників і лексикографічних ресурсів",
+    url: "https://lcorp.ulif.org.ua/LSlist/",
+    note: "Українські тлумачні, граматичні та спеціалізовані ресурси. Обирайте ресурс за потрібним питанням, перевіряйте автора й конкретну статтю.",
+  },
+  "dictionary-uk-purpose": {
+    title: "УМІФ – про призначення Словника української мови у 20 томах",
+    url: "https://www.ulif.org.ua/bookline/slovnik-ukrayins-koyi-movi-tom-piershii-b",
+    note: "Українською про охоплення лексики й джерела академічного словника. Дата прикладу та час створення словника – різні відомості.",
+  },
+  "dictionary-cnrtl-help": {
+    title: "CNRTL – довідка про пошук і типи лексичних відомостей",
+    url: "https://www.cnrtl.fr/aide",
+    note: "Пошук слова, морфологія, визначення, етимологія, сполучуваність і конкорданс. Інтерфейс змінюється; перевіряйте назву джерела в потрібному розділі.",
+  },
+  "dictionary-duden-bank": {
+    title: "Duden – Bank, місце для сидіння",
+    url: "https://www.duden.de/rechtschreibung/Bank_Sitzgelegenheit",
+    note: "Перевірте граматичний рід, множину й відмежування від фінансової установи. Наші E1/E2 не копіюють цю статтю.",
+  },
+  "dictionary-de-register": {
+    title: "Duden – kriegen, позначка розмовного вживання",
+    url: "https://www.duden.de/rechtschreibung/kriegen_erhalten",
+    note: "Підстава для зіставлення розмовного слова з нейтральним варіантом у заданому брифі.",
+  },
+  "dictionary-de-region": {
+    title: "Duden – Jänner, регіональне вживання",
+    url: "https://www.duden.de/rechtschreibung/Jaenner",
+    note: "Регіональна позначка не означає помилки. Зіставте її з аудиторією документа.",
+  },
+  "dictionary-de-history": {
+    title: "Duden – Fernsprecher, історична й стильова позначки",
+    url: "https://www.duden.de/rechtschreibung/Fernsprecher",
+    note: "Розрізняйте читання давнього джерела та створення сучасної інструкції.",
+  },
+  "dictionary-larousse-avocat": {
+    title: "Larousse – avocat, професія",
+    url: "https://www.larousse.fr/dictionnaires/francais/avocat/7134",
+    note: "Початкова стаття для порівняння. Плід може бути в окремій статті: знайдіть потрібний опис, а не зупиняйтеся на першій сторінці.",
+  },
+  "dictionary-fr-register": {
+    title: "Larousse – bouquin, розмовна позначка",
+    url: "https://www.larousse.fr/dictionnaires/francais/bouquin/10595",
+    note: "Зіставте позначку зі стилем пам’ятки; не плутайте доречність і граматичну правильність.",
+  },
+  "dictionary-fr-region": {
+    title: "Larousse – souper, регіон і конкретне значення",
+    url: "https://www.larousse.fr/dictionnaires/francais/souper/73709",
+    note: "Назва вечірньої їжі залежить від регіону. Позначку потрібно читати разом із поясненням.",
+  },
+  "dictionary-fr-history": {
+    title: "Académie française – icelui, історична форма",
+    url: "https://www.dictionnaire-academie.fr/article/A9I0013",
+    note: "Приклад ресурсу для читання історичних форм. Зберігайте джерельне написання й пояснюйте його окремо.",
+  },
+  "dictionary-cambridge-bank": {
+    title: "Cambridge Dictionary – bank, значення й граматика",
+    url: "https://dictionary.cambridge.org/us/dictionary/english/bank",
+    note: "Порівнюйте потрібні значення та частини мови, а не лише перший переклад.",
+  },
+  "dictionary-mw-bank": {
+    title: "Merriam-Webster – bank, інша структура статей",
+    url: "https://www.merriam-webster.com/dictionary/bank",
+    note: "Для зіставлення з Cambridge: локальні номери можуть позначати інші групи значень.",
+  },
+  "dictionary-en-register": {
+    title: "Cambridge Dictionary – kid, неофіційне вживання",
+    url: "https://dictionary.cambridge.org/us/dictionary/english/kid",
+    note: "Позначка informal для значення «дитина» допомагає обґрунтувати редакторську пропозицію.",
+  },
+  "dictionary-en-region": {
+    title: "Cambridge Dictionary – pavement, UK та US",
+    url: "https://dictionary.cambridge.org/us/dictionary/english/pavement",
+    note: "Приклад регіональної різниці значень. Уточніть, для кого написана інструкція.",
+  },
+  "dictionary-en-history": {
+    title: "Cambridge Dictionary – thou, різні статті й позначки",
+    url: "https://dictionary.cambridge.org/us/dictionary/english/thou",
+    note: "Історична мітка займенника не описує автоматично інше, іменникове вживання того самого написання.",
+  },
   "search-mirrors": {
     title: "GNU – приклад мережі дзеркал ресурсу",
     url: "https://www.gnu.org/prep/ftp.en.html",

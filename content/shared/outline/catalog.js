@@ -3,6 +3,7 @@ import academicDocuments from "../chapters/academic-documents.js";
 import formats from "../chapters/data-formats.js";
 import unicode from "../chapters/unicode.js";
 import informationSearch from "../chapters/information-search.js";
+import digitalDictionaries from "../chapters/digital-dictionaries.js";
 import terminal from "../chapters/terminal-navigation.js";
 import search from "../chapters/text-search.js";
 import regexSearch from "../chapters/regex-search.js";
@@ -162,6 +163,7 @@ const existing = {
   "data-formats": formats,
   unicode,
   "information-search": informationSearch,
+  "digital-dictionaries": digitalDictionaries,
   "terminal-navigation": terminal,
   "text-search": search,
   "regex-search": regexSearch,
