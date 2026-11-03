@@ -1,3 +1,8 @@
+import {
+  syncDictionaryBuilder,
+  dictionaryBuilderAction,
+  importDictionaryFile,
+} from "./ui/exercises/lexicon.js";
 import { renderCharacterInspection, renderCsvPreview } from "./ui/exercises/formats.js";
 import { renderTypographyPreview } from "./ui/exercises/typography.js";
 import {
@@ -477,17 +482,23 @@ $("#main").addEventListener("input", (e) => {
   if (article) {
     const t = taskById(article.dataset.task);
     if (!t) return;
+    if (e.target.closest("[data-lexicon-builder]")) syncDictionaryBuilder(article);
     answerRecord(track(), t.id).draft = readValue(t);
     scheduleSave();
     if (t.type === "wer") updateWer(taskById);
   }
   if (e.target.id === "reference-search") filterGlossary(e.target.value);
 });
-$("#main").addEventListener("change", (e) => {
+$("#main").addEventListener("change", async (e) => {
+  if (e.target.matches("[data-lexicon-import]")) {
+    await importDictionaryFile(e.target, e.target.closest("[data-task]"), language());
+    return;
+  }
   const article = e.target.closest("[data-task]");
   if (article) {
     const t = taskById(article.dataset.task);
     if (t) {
+      if (e.target.closest("[data-lexicon-builder]")) syncDictionaryBuilder(article);
       answerRecord(track(), t.id).draft = readValue(t);
       scheduleSave();
     }
@@ -503,6 +514,10 @@ $("#main").addEventListener("keydown", (e) => {
 $("#main").addEventListener("click", async (e) => {
   const b = e.target.closest("button,a");
   if (!b) return;
+  if (b.dataset.lexiconAction) {
+    dictionaryBuilderAction(b, b.closest("[data-task]"), LANGUAGES[language()]);
+    return;
+  }
   if (b.dataset.insertSymbol) {
     const task = taskById(b.dataset.insertSymbol),
       index = Number(b.dataset.symbolIndex);

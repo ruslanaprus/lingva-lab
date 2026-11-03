@@ -3,6 +3,7 @@ import { wer } from "../tools/text.js";
 import { validTaskValue } from "./values.js";
 import { parseCsv } from "../tools/csv.js";
 import { sameUnicodeText } from "../tools/unicode.js";
+import { readLexicon, inspectLexicon } from "../tools/lexicon.js";
 export function evaluateTask(task, value, regexResult) {
   const pass = (feedback) => ({
     status: "passed",
@@ -167,6 +168,16 @@ export function evaluateTask(task, value, regexResult) {
       return fail(
         `Для подання вкажіть артефакт (від 5 символів), ${task.submission ? `повний текст документа «${documentTitle}»` : "метод і результати"} (від ${minimumMethod}), обмеження та висновок (від ${minimumReflection}), і підтвердьте самоперевірку.`,
       );
+    if (task.editor === "dictionary") {
+      const dictionary = readLexicon(value.method, task.dictionaryLanguage);
+      if (!dictionary)
+        return fail(
+          "Відкрийте форму мінісловника: потрібна чернетка поточної мови у відомому форматі.",
+        );
+      const issues = inspectLexicon(dictionary);
+      if (issues.length)
+        return fail("Доповніть структуру мінісловника: " + issues.join(" "));
+    }
     if (task.submission?.sections) {
       const headings = value.method
         .normalize("NFC")

@@ -87,6 +87,13 @@ export function validateCourse(course, sources = {}, challenges = {}) {
       )
         fail(`${chapter.id}: invalid or duplicate exercise`);
       exerciseIds.add(task.id);
+      if (
+        task.editor !== undefined &&
+        (task.editor !== "dictionary" ||
+          task.type !== "portfolio" ||
+          task.dictionaryLanguage !== course.language)
+      )
+        fail(`${task.id}: invalid dictionary editor contract`);
       for (const key of ["title", "prompt", "hint"])
         if (typeof task[key] !== "string" || !task[key].trim())
           fail(`${task.id}: missing ${key}`);

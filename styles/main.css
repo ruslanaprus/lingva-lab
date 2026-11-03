@@ -2741,3 +2741,65 @@ dialog li + li {
   margin: 8px 0 16px;
   border: 1px solid var(--line);
 }
+/* Optional dictionary project: the editor shares portfolio persistence. */
+.lexicon-builder {
+  margin: 24px 0;
+  padding: 20px;
+  border: 1px solid currentColor;
+  min-width: 0;
+}
+.lexicon-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.lexicon-fields label {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+}
+.lexicon-fields input,
+.lexicon-fields textarea,
+.lexicon-fields select {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.lexicon-fields textarea {
+  min-height: 80px;
+}
+.lexicon-entry {
+  min-width: 0;
+  margin: 20px 0;
+  padding: 16px;
+  border: 1px solid currentColor;
+}
+.lexicon-entry legend {
+  padding: 0 8px;
+}
+.lexicon-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0;
+}
+.lexicon-data {
+  min-width: 0;
+}
+.lexicon-data summary {
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+.lexicon-builder [data-lexicon-output] {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 720px) {
+  .lexicon-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .lexicon-builder,
+  .lexicon-entry {
+    padding: 12px;
+  }
+}

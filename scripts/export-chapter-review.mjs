@@ -6,31 +6,35 @@ const course = getPath(pathId),
   chapter = course.chapters.find((c) => c.id === chapterId);
 if (!chapter) throw new Error("Unknown chapter");
 const exampleFile =
-  chapterId === "information-search"
-    ? "search"
-    : chapterId === "unicode"
-      ? "typography"
-      : chapterId === "data-formats"
-        ? "formats"
-        : "documents";
+  chapterId === "digital-dictionaries"
+    ? "dictionaries"
+    : chapterId === "information-search"
+      ? "search"
+      : chapterId === "unicode"
+        ? "typography"
+        : chapterId === "data-formats"
+          ? "formats"
+          : "documents";
 const reviewFile =
-  chapterId === "information-search"
-    ? "chapter-six-review.md"
-    : chapterId === "unicode"
-      ? "chapter-four-review.md"
-      : chapterId === "data-formats"
-        ? "chapter-three-review.md"
-        : "chapter-two-review.md";
+  chapterId === "digital-dictionaries"
+    ? "chapter-eight-review.md"
+    : chapterId === "information-search"
+      ? "chapter-six-review.md"
+      : chapterId === "unicode"
+        ? "chapter-four-review.md"
+        : chapterId === "data-formats"
+          ? "chapter-three-review.md"
+          : "chapter-two-review.md";
 const lines = [
   `# ${chapter.title}: текст для перегляду`,
   "",
   `Згенеровано з матеріалів траєкторії ${course.title}. Українські пояснення спільні; мовні приклади тут – ${course.language}. Інші варіанти: content/tracks/fr/${exampleFile}.js та content/tracks/en/${exampleFile}.js.`,
   "",
-  `Текст сайту редагується у \`content/shared/chapters/${chapter.id}.js\` та \`content/shared/chapters/${chapter.id}/\`. Зміни лише в цьому файлі для перегляду не змінюють текст на сайті.`,
+  `Текст сайту редагується у \`content/shared/chapters/${chapter.id}.js\` та \`content/shared/chapters/${chapter.id}/\`. Зміни, внесені лише в цей файл для перегляду, не впливають на текст сайту.`,
   "",
   `Оновити після редагування: \`node scripts/export-chapter-review.mjs ${pathId} ${chapterId} > docs/${reviewFile}\`, потім Prettier.`,
   "",
-  `${chapter.time} хв обов’язкової роботи; час є орієнтовною оцінкою, не перевіреною тривалістю для кожного студента.`,
+  `${chapter.time} хв обов’язкової роботи; час – орієнтовна оцінка, а не виміряна тривалість для кожного студента.`,
   "",
   chapter.case,
   "",
@@ -88,6 +92,11 @@ for (const [i, task] of chapter.tasks.entries()) {
       `**Ключ для редакторського перегляду:** ${task.multiple ? task.answer.map((n) => n + 1).join(", ") : task.answer + 1}. ${task.explain}`,
     );
   if (task.rubric) lines.push("", "Критерії:", "", ...task.rubric.map((r) => "- " + r));
+  if (task.editor === "dictionary")
+    lines.push(
+      "",
+      "На сайті доступна форма мінісловника: назва й аудиторія; до 8 записів із незмінними ID, лемою, POS, тлумаченням, прикладом, позначкою, джерелом, локатором, групою DEMO, типом зв’язку й цільовим ID. Форма зберігає чернетку відповіді. Можна додати навчальний приклад, перевірити структуру, відкрити збережений JSON та завантажити словник у форматах JSON/TXT. Для подання потрібно щонайменше 5 значень, два значення одного написання й один зв’язок. Відзнака позначає подання; зміст оцінює викладач.",
+    );
 }
 lines.push("", "## Матеріали набору", "");
 for (const file of [...chapter.workshop.files, ...chapter.workshop.documents])
@@ -118,7 +127,7 @@ for (const key of sourceKeys) {
 }
 const output = lines.join("\n");
 console.log(
-  ["unicode", "information-search"].includes(chapterId)
+  ["unicode", "information-search", "digital-dictionaries"].includes(chapterId)
     ? output.replaceAll("—", "–")
     : output,
 );

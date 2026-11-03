@@ -6,12 +6,23 @@ import { dictionaries } from "../src/i18n/index.js";
 for (const path of Object.values(PATHS)) {
   validateCourse(path, SOURCES, TREASURES);
   for (const milestone of path.milestones ?? []) {
-    assert.ok(milestone.chapterIds.length > 0, `${path.id}: empty milestone`);
+    const chapterIds = milestone.chapterIds ?? [],
+      taskIds = milestone.taskIds ?? [];
     assert.ok(
-      milestone.chapterIds.every((id) =>
-        path.chapters.some((chapter) => chapter.id === id),
-      ),
+      Array.isArray(chapterIds) &&
+        Array.isArray(taskIds) &&
+        chapterIds.length + taskIds.length > 0,
+      `${path.id}: empty milestone`,
+    );
+    assert.ok(
+      chapterIds.every((id) => path.chapters.some((chapter) => chapter.id === id)),
       `${path.id}: unknown milestone chapter`,
+    );
+    assert.ok(
+      taskIds.every((id) =>
+        path.chapters.some((chapter) => chapter.tasks.some((task) => task.id === id)),
+      ),
+      `${path.id}: unknown milestone task`,
     );
   }
   for (const chapter of path.chapters) {

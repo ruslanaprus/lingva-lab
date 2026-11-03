@@ -1,6 +1,6 @@
 # Програма практикуму: теми та їхнє застосування
 
-У траєкторії Німецька / Основи — 32 розділи: 14 із наявними вправами й 18 з описами майбутніх тем.
+У траєкторії Німецька / Основи — 32 розділи: 15 із наявними вправами й 17 з описами майбутніх тем.
 
 Описи не впливають на завершення, XP, звіти та відзнаки. Додавання вправ згодом потребуватиме окремого перегляду навантаження. Наявне JSON-завдання збережено як додаткове; у базовому плані JSON/XML читаємо й розпізнаємо, а не вивчаємо формальний синтаксис.
 
@@ -116,7 +116,7 @@ ID: `reading-sources` · опис, вправи готуються
 
 ## 8. Електронні словники
 
-ID: `digital-dictionaries` · опис, вправи готуються
+ID: `digital-dictionaries` · вправи доступні (51)
 
 **Практичне призначення.** Обирати значення й уживання, придатні для конкретного контексту.
 
@@ -128,9 +128,9 @@ ID: `digital-dictionaries` · опис, вправи готуються
 
 **Приклад для лінгвіста.** У «die Bank vor dem Haus» і «die Bank vergibt einen Kredit» слово Bank має різні значення. Перекладачеві потрібні контекст, граматика й окремі значення статті, а не перший відповідник.
 
-**Межі та зв’язки.** Для кожної мови добираємо відповідне джерело. DWDS, французький лексичний портал CNRTL та англійські словники мають різну структуру; навичка полягає в її читанні.
+**Межі та зв’язки.** Майстерня має 47 обов’язкових вправ на орієнтовні 209 хв читання й практики та 4 додаткові на 56 хв. Вивчаємо типи словників, POS-теги, значення, синоніми, антоніми й синсети; порівнюємо джерела й готуємо досьє. За бажанням створіть власний мінісловник на 5–8 значень у формі на сайті. Його можна завантажити у форматах JSON і TXT. За подання роботи є відзнака; якість оцінює викладач.
 
-Джерела: [BBAW — Digitales Wörterbuch der deutschen Sprache](https://www.bbaw.de/forschung/digitales-woerterbuch-der-deutschen-sprache).
+Джерела: [DWDS – Bank, словникова стаття](https://www.dwds.de/wb/Bank), [Duden – Bank, місце для сидіння](https://www.duden.de/rechtschreibung/Bank_Sitzgelegenheit), [Duden – kriegen, позначка розмовного вживання](https://www.duden.de/rechtschreibung/kriegen_erhalten), [Duden – Jänner, регіональне вживання](https://www.duden.de/rechtschreibung/Jaenner), [Duden – Fernsprecher, історична й стильова позначки](https://www.duden.de/rechtschreibung/Fernsprecher), [УМІФ НАН України – каталог словників і лексикографічних ресурсів](https://lcorp.ulif.org.ua/LSlist/), [УМІФ – про призначення Словника української мови у 20 томах](https://www.ulif.org.ua/bookline/slovnik-ukrayins-koyi-movi-tom-piershii-b), [CNRTL – довідка про пошук і типи лексичних відомостей](https://www.cnrtl.fr/aide), [BBAW — Digitales Wörterbuch der deutschen Sprache](https://www.bbaw.de/forschung/digitales-woerterbuch-der-deutschen-sprache), [International Phonetic Association – IPA Chart](https://www.internationalphoneticassociation.org/content/ipa-chart), [Princeton WordNet – значення, синсети й семантичні відношення](https://wordnet.princeton.edu/), [Universal Dependencies – універсальні POS-теги](https://universaldependencies.org/u/pos/), [Житомирська політехніка – пояснення терміна «тезаурус»](https://emtd.ztu.edu.ua/view/word-7961/0), [University of Glasgow – Historical Thesaurus of English](https://www.ht.ac.uk/about/), [Larousse – омоніми, омографи й омофони](https://www.larousse.fr/dictionnaires/francais/homonyme/40288), [Університет Тюбінгена – будова GermaNet](https://uni-tuebingen.de/en/142812).
 
 ## 9. Двомовні приклади: Reverso та контекстні ресурси
 

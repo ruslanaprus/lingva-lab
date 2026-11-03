@@ -32,8 +32,8 @@ for (const language of ["de", "fr", "en"]) {
       track = state.paths[course.id];
     const planned = course.chapters.filter((c) => c.status === "planned");
     assert.equal(course.chapters.length, 32);
-    assert.equal(planned.length, 18);
-    assert.equal(practiceChapters(course).length, 14);
+    assert.equal(planned.length, 17);
+    assert.equal(practiceChapters(course).length, 15);
     for (const chapter of planned) {
       assert.equal(chapter.tasks.length, 0);
       assert.equal(sectionStats(chapter, track).complete, false);
@@ -61,9 +61,9 @@ for (const language of ["de", "fr", "en"]) {
     }
     const stats = trackStats(course, track);
     assert.equal(stats.complete, true);
-    assert.equal(stats.sections, 14);
-    assert.equal(stats.sectionTotal, 14);
-    assert.equal(stats.plannedTotal, 18);
+    assert.equal(stats.sections, 15);
+    assert.equal(stats.sectionTotal, 15);
+    assert.equal(stats.plannedTotal, 17);
     assert.equal(
       stats.done,
       course.chapters.flatMap((c) => c.tasks).filter((t) => t.required).length,
@@ -116,12 +116,12 @@ test("A language path can supply its own examples and dictionary without changin
   const baseline = JSON.stringify(getPath("de-foundations")),
     material = structuredClone(LANGUAGES.fr);
   material.outline.dictionaryExample = "Новий французький контекст для статті.";
-  material.outline.dictionarySource = "cambridge";
+  material.dictionaries.primary = "cambridge";
   const changed = buildPath(french, material).chapters.find(
     (c) => c.id === "digital-dictionaries",
   );
   assert.equal(changed.overview.example, material.outline.dictionaryExample);
-  assert.deepEqual(changed.sources, ["cambridge"]);
+  assert.ok(changed.sources.includes("cambridge"));
   assert.equal(JSON.stringify(getPath("de-foundations")), baseline);
 });
 
