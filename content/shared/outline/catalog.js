@@ -1,3 +1,4 @@
+import bilingualContexts from "../chapters/bilingual-contexts.js";
 import workspace from "../chapters/workspace.js";
 import academicDocuments from "../chapters/academic-documents.js";
 import formats from "../chapters/data-formats.js";
@@ -158,6 +159,7 @@ function withOverview(base, description) {
 }
 
 const existing = {
+  "bilingual-contexts": bilingualContexts,
   workspace,
   "academic-documents": academicDocuments,
   "data-formats": formats,

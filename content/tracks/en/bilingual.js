@@ -1,0 +1,46 @@
+// Authored teaching examples. These are not quotations from the linked services.
+export default {
+  word: "application",
+  phrase: "submit an application",
+  target: "заява",
+  competitor: "застосунок",
+  competitorDomain: "опис програмного забезпечення",
+  transfer: {
+    word: "charge",
+    first: "The library will charge a small fee.",
+    firstUk: "Бібліотека стягне невелику плату.",
+    second: "The police may charge the driver.",
+    secondUk: "Поліція може висунути водієві обвинувачення.",
+    clue: "Charge є дієсловом в обох випадках. Плата в бібліотеці й дія поліції задають різні ситуації; збіг POS не визначає потрібного значення.",
+  },
+  main: "Submit your application for admission no later than 15 May.",
+  mainUk: "Подайте заяву про вступ не пізніше 15 травня.",
+  clue: "application for admission – заява про вступ; submit – подати",
+  second:
+    "You must submit an application to be considered for a place at the university.",
+  secondUk:
+    "Щоб вашу кандидатуру розглянули для вступу до університету, потрібно подати заяву.",
+  other: "Install the application before opening the file.",
+  otherUk: "Установіть застосунок, перш ніж відкривати файл.",
+  chat: "This application keeps crashing on my phone.",
+  chatUk: "Цей застосунок постійно вилітає на моєму телефоні.",
+  chatHelp:
+    "Keeps crashing та розмовне «вилітає» стосуються роботи програми. Таке повідомлення не є зразком офіційного тексту для вступників.",
+  negative: "Do not send the application without a signature.",
+  negativeUk: "Не надсилайте заяву без підпису.",
+  next: "You will receive confirmation by email.",
+  nextUk: "Підтвердження ви отримаєте електронною поштою.",
+  modal: "You may submit the application online.",
+  modalUk: "Ви можете подати заяву онлайн.",
+  modalBad: "Ви повинні подати заяву онлайн.",
+  modalityClue: "may тут дозволяє обрати онлайн-подання; воно не встановлює обов’язку",
+  split: "Complete the application and sign it.",
+  splitUk: "Заповніть заяву. Потім підпишіть її.",
+  truncated: "Without a signature, the application will not be considered.",
+  truncatedUk: "Без підпису заяву не розглядатимуть.",
+  phraseDistractors: ["представити застосування", "надіслати застосунок"],
+  reversoSource: "bilingual-reverso-en",
+  lingueeSource: "bilingual-linguee-en",
+  pairNote:
+    "Почніть із пари англійська → українська. Якщо сервіс не показує достатніх прикладів або обмежує доступ, використайте підготовлені картки. Англо-французькі чи англо-німецькі матеріали Linguee – додатковий маршрут, а не вимога знати ще одну іноземну мову.",
+};

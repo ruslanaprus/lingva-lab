@@ -26,6 +26,10 @@ const dictionaryDossier = readFileSync(
   new URL("../fixtures/dictionary-dossier.txt", import.meta.url),
   "utf8",
 );
+const bilingualDossier = readFileSync(
+  new URL("../fixtures/bilingual-dossier.txt", import.meta.url),
+  "utf8",
+);
 export function portfolioAnswer(task, language = "de") {
   const material = LANGUAGES[language];
   return {
@@ -34,24 +38,26 @@ export function portfolioAnswer(task, language = "de") {
         ? `${material.root}/README.txt`
         : "results/practical-notes.txt",
     method:
-      task.editor === "dictionary"
-        ? lexiconMethod(language)
-        : task.id === "digital-dictionaries-word-dossier"
-          ? dictionaryDossier.replaceAll("{{LANGUAGE}}", material.native)
-          : task.id === "information-search-research-log"
-            ? searchLog.replaceAll("{{LANGUAGE}}", material.native)
-            : task.id === "workspace-portfolio"
-              ? readme
-                  .replaceAll("{{ROOT}}", material.root)
-                  .replaceAll("{{CODE}}", language)
-                  .replaceAll("{{LANGUAGE}}", material.native)
-              : task.id === "academic-documents-portfolio"
-                ? editorialLog
-                : task.id === "data-formats-portfolio"
-                  ? formatAudit
-                  : task.id === "unicode-typography-guide"
-                    ? typographyGuide.replaceAll("{{LANGUAGE}}", material.native)
-                    : "Я описую використані джерела, інструменти та досліджувану проблему. Вказую точні параметри аналізу, перераховую отримані результати і спосіб їх перевірки. Це навчальний опис, а наявність зовнішнього артефакту потребує перевірки викладачем.",
+      task.id === "bilingual-contexts-decision-dossier"
+        ? bilingualDossier.replaceAll("{{LANGUAGE}}", material.native)
+        : task.editor === "dictionary"
+          ? lexiconMethod(language)
+          : task.id === "digital-dictionaries-word-dossier"
+            ? dictionaryDossier.replaceAll("{{LANGUAGE}}", material.native)
+            : task.id === "information-search-research-log"
+              ? searchLog.replaceAll("{{LANGUAGE}}", material.native)
+              : task.id === "workspace-portfolio"
+                ? readme
+                    .replaceAll("{{ROOT}}", material.root)
+                    .replaceAll("{{CODE}}", language)
+                    .replaceAll("{{LANGUAGE}}", material.native)
+                : task.id === "academic-documents-portfolio"
+                  ? editorialLog
+                  : task.id === "data-formats-portfolio"
+                    ? formatAudit
+                    : task.id === "unicode-typography-guide"
+                      ? typographyGuide.replaceAll("{{LANGUAGE}}", material.native)
+                      : "Я описую використані джерела, інструменти та досліджувану проблему. Вказую точні параметри аналізу, перераховую отримані результати і спосіб їх перевірки. Це навчальний опис, а наявність зовнішнього артефакту потребує перевірки викладачем.",
     reflection:
       "Висновки обмежені наданим навчальним набором і не поширюються на всіх носіїв мови. Потрібно окремо звірити фактичні файли, інвентар і спосіб відновлення. Якщо дію ще не виконано, вона залишається планом; я не видаю припущення за перевірений результат.",
     confirm: true,
