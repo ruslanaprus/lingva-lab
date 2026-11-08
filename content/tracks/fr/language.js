@@ -1,3 +1,4 @@
+import bilingual from "./bilingual.js";
 import dictionaries from "./dictionaries.js";
 import search from "./search.js";
 import typography from "./typography.js";
@@ -6,6 +7,7 @@ import outline from "./outline.js";
 import documents from "./documents.js";
 // Language material only: application behavior is shared.
 export default {
+  bilingual,
   dictionaries,
   search,
   typography,

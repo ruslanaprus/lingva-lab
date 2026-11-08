@@ -9,6 +9,7 @@ import { createTerminal } from "../../tools/terminal.js";
 import { createGit } from "../../tools/git.js";
 import { renderLesson } from "./workshop.js";
 import { renderTypographyInput } from "./typography.js";
+import { renderAlignmentInput } from "./alignment.js";
 export function createExerciseView(context = {}) {
   const { track, language } = context;
   function renderTask(t, index) {
@@ -47,6 +48,8 @@ export function createExerciseView(context = {}) {
           "",
         )}</div><p class="unicode-normalized">Після NFC: <b>${esc(l.accent.normalize("NFC"))}</b> = <b>${esc(l.nfd.normalize("NFC"))}</b>. Візуальна подібність сама по собі не доводить еквівалентність.</p></div></div><div style="margin-top:18px">${optionsInput(t, value)}</div>`;
     // HTML removes the first newline in a textarea; a sentinel preserves raw drafts.
+    if (t.type === "exact" && t.inspector === "alignment")
+      return renderAlignmentInput(t, value);
     if (t.type === "exact" && t.inspector === "typography")
       return renderTypographyInput(t, value);
     if (t.type === "exact" && (t.checker === "csv" || t.inspector === "characters"))

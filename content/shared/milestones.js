@@ -1,5 +1,13 @@
 export const foundationMilestones = [
   {
+    id: "context-investigator",
+    name: "Дослідник контекстів",
+    mark: "⇄",
+    description:
+      "Завершено обов’язкову майстерню двомовних прикладів і подано досьє; якість перекладу та доказів оцінює викладач",
+    chapterIds: ["bilingual-contexts"],
+  },
+  {
     id: "mini-lexicographer",
     name: "Укладач мінісловника",
     mark: "{Aa}",

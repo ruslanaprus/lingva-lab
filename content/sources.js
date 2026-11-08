@@ -1,4 +1,49 @@
 export const SOURCES = {
+  "bilingual-reverso-de": {
+    title: "Reverso Context – Antrag, німецька → англійська",
+    url: "https://context.reverso.net/translation/german-english/Antrag",
+    note: "Додатковий маршрут лише для тих, хто може перевірити англійський текст. Спочатку перевірте доступність прямої пари з українською; за її відсутності працюйте з навчальними картками. Проміжну мову не приховуйте.",
+  },
+  "bilingual-reverso-fr": {
+    title: "Reverso Context – французька → українська",
+    url: "https://context.reverso.net/traduction/francais-ukrainien/",
+    note: "Перевірте вибрані мови та введіть запит. Порядок результатів і доступні функції змінюються; жива видача не є автоматичним ключем вправи.",
+  },
+  "bilingual-reverso-en": {
+    title: "Reverso Context – application, англійська → українська",
+    url: "https://context.reverso.net/translation/english-ukrainian/application",
+    note: "Різні значення потребують різних відповідників. Читайте обидві частини й перевіряйте джерело конкретного прикладу.",
+  },
+  "bilingual-linguee-de": {
+    title: "Linguee – Antrag, німецько-англійські приклади",
+    url: "https://www.linguee.com/german-english/translation/antrag.html",
+    note: "Відрізняйте словникову частину від External sources (not reviewed). Це додаткова мовна пара, а не пряме підтвердження українського відповідника.",
+  },
+  "bilingual-linguee-fr": {
+    title: "Linguee – demande, французько-англійські приклади",
+    url: "https://www.linguee.com/french-english/translation/demande.html",
+    note: "Порівняйте значення й зовнішні джерела; не припускайте прямої пари з українською. Без знання додаткової мови використовуйте навчальний набір.",
+  },
+  "bilingual-linguee-en": {
+    title: "Linguee – application, англійсько-німецькі приклади",
+    url: "https://www.linguee.com/english-german/translation/application.html",
+    note: "Приклад іншої мовної пари для порівняння структури ресурсу. Друга іноземна мова не є вимогою курсу; картки дають альтернативний маршрут.",
+  },
+  "bilingual-opus": {
+    title: "OPUS – колекції паралельних корпусів",
+    url: "https://opus.nlpl.eu/",
+    note: "Почніть з опису колекції, мов, жанру й походження. Корпуси відрізняються складом та якістю вирівнювання; програмування для цього розділу не потрібне.",
+  },
+  "bilingual-tatoeba": {
+    title: "Tatoeba – про спільнотну колекцію речень і перекладів",
+    url: "https://en.wiki.tatoeba.org/articles/show/about-tatoeba",
+    note: "Офіційне пояснення проєкту. Речення можуть допомогти в навчанні й порівнянні конструкцій; вони не завжди мають ширший документальний контекст.",
+  },
+  "bilingual-eurlex": {
+    title: "EUR-Lex – налаштування мов і багатомовного перегляду",
+    url: "https://eur-lex.europa.eu/content/help/my-eurlex/preferences.html",
+    note: "Порівнюйте доступні мовні версії того самого документа, пункту й редакції. Мова інтерфейсу не гарантує наявності української версії конкретного тексту.",
+  },
   "dictionary-wordnet": {
     title: "Princeton WordNet – значення, синсети й семантичні відношення",
     url: "https://wordnet.princeton.edu/",

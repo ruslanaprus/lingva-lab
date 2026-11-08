@@ -5,6 +5,7 @@ import {
 } from "./ui/exercises/lexicon.js";
 import { renderCharacterInspection, renderCsvPreview } from "./ui/exercises/formats.js";
 import { renderTypographyPreview } from "./ui/exercises/typography.js";
+import { renderAlignmentPreview } from "./ui/exercises/alignment.js";
 import {
   LANGUAGES,
   PATHS,
@@ -534,6 +535,16 @@ $("#main").addEventListener("click", async (e) => {
       input.setRangeText(symbol, start, end, "end");
       input.dispatchEvent(new Event("input", { bubbles: true }));
     }
+    return;
+  }
+  if (b.dataset.alignmentPreview) {
+    const task = taskById(b.dataset.alignmentPreview);
+    if (task?.alignment)
+      $(`[data-alignment-output="${task.id}"]`).innerHTML = renderAlignmentPreview(
+        task.alignment,
+        $(`[data-alignment-source="${task.id}"]`).value,
+        $(`[data-alignment-target="${task.id}"]`).value,
+      );
     return;
   }
   if (b.dataset.typographyPreview) {

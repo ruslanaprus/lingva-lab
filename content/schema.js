@@ -147,9 +147,44 @@ export function validateCourse(course, sources = {}, challenges = {}) {
       if (
         task.inspector !== undefined &&
         (task.type !== "exact" ||
-          !["characters", "typography"].includes(task.inspector))
+          !["characters", "typography", "alignment"].includes(task.inspector))
       )
         fail(`${task.id}: invalid character inspector`);
+      if (task.inspector === "alignment" || task.alignment !== undefined) {
+        const data = task.alignment;
+        const segments = (items, prefix) =>
+          Array.isArray(items) &&
+          items.length >= 2 &&
+          items.length <= 8 &&
+          new Set(items.map((s) => s?.id)).size === items.length &&
+          items.every(
+            (s) =>
+              s &&
+              typeof s.id === "string" &&
+              new RegExp(`^${prefix}[1-9][0-9]?$`).test(s.id) &&
+              typeof s.text === "string" &&
+              s.text.trim().length > 0 &&
+              s.text.length <= 2000,
+          );
+        if (
+          task.type !== "exact" ||
+          task.inspector !== "alignment" ||
+          !data ||
+          typeof data.document !== "string" ||
+          !data.document.trim() ||
+          data.document.length > 300 ||
+          !validId(data.sourceLanguage) ||
+          !validId(data.targetLanguage) ||
+          !segments(data.sources, "S") ||
+          !segments(data.targets, "T") ||
+          !data.targets.some((s) => s.id === task.answer) ||
+          !task.lesson?.example ||
+          [...data.sources, ...data.targets].some(
+            (s) => !task.lesson.example.includes(`${s.id}: ${s.text}`),
+          )
+        )
+          fail(`${task.id}: invalid alignment inspector or historical example`);
+      }
       if (
         task.palette !== undefined &&
         (task.inspector !== "typography" ||

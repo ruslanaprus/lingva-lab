@@ -2803,3 +2803,27 @@ dialog li + li {
     padding: 12px;
   }
 }
+
+.alignment-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-block: 1rem;
+}
+.alignment-fields > * {
+  min-width: 0;
+}
+.alignment-tool .code-input {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.alignment-fields select {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+@media (max-width: 600px) {
+  .alignment-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

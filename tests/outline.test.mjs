@@ -32,8 +32,8 @@ for (const language of ["de", "fr", "en"]) {
       track = state.paths[course.id];
     const planned = course.chapters.filter((c) => c.status === "planned");
     assert.equal(course.chapters.length, 32);
-    assert.equal(planned.length, 17);
-    assert.equal(practiceChapters(course).length, 15);
+    assert.equal(planned.length, 16);
+    assert.equal(practiceChapters(course).length, 16);
     for (const chapter of planned) {
       assert.equal(chapter.tasks.length, 0);
       assert.equal(sectionStats(chapter, track).complete, false);
@@ -61,9 +61,9 @@ for (const language of ["de", "fr", "en"]) {
     }
     const stats = trackStats(course, track);
     assert.equal(stats.complete, true);
-    assert.equal(stats.sections, 15);
-    assert.equal(stats.sectionTotal, 15);
-    assert.equal(stats.plannedTotal, 17);
+    assert.equal(stats.sections, 16);
+    assert.equal(stats.sectionTotal, 16);
+    assert.equal(stats.plannedTotal, 16);
     assert.equal(
       stats.done,
       course.chapters.flatMap((c) => c.tasks).filter((t) => t.required).length,
