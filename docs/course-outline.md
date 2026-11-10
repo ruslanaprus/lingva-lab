@@ -1,6 +1,6 @@
 # Програма практикуму: теми та їхнє застосування
 
-У траєкторії Німецька / Основи — 32 розділи: 16 із наявними вправами й 16 з описами майбутніх тем.
+У траєкторії Німецька / Основи — 32 розділи: 17 із наявними вправами й 15 з описами майбутніх тем.
 
 Описи не впливають на завершення, XP, звіти та відзнаки. Додавання вправ згодом потребуватиме окремого перегляду навантаження. Наявне JSON-завдання збережено як додаткове; у базовому плані JSON/XML читаємо й розпізнаємо, а не вивчаємо формальний синтаксис.
 
@@ -152,7 +152,7 @@ ID: `bilingual-contexts` · вправи доступні (40)
 
 ## 10. Термінологія та глосарії
 
-ID: `terminology` · опис, вправи готуються
+ID: `terminology` · вправи доступні (42)
 
 **Практичне призначення.** Підтримувати послідовне спеціальне значення, зберігаючи джерела та невизначеність.
 
@@ -164,9 +164,9 @@ ID: `terminology` · опис, вправи готуються
 
 **Приклад для лінгвіста.** Команда перекладає університетські описи курсів. Одна назва в різних блоках позначає то програму, то окрему дисципліну. Визначення й контекст допоможуть погодити терміни без сліпої глобальної заміни.
 
-**Межі та зв’язки.** Запис містить визначення, відповідник, приклад, джерело, галузь і статус упевненості. Перший досвід термінобази вже є в розділі 2; тут плануємо окрему систематичну практику.
+**Межі та зв’язки.** Майстерня має 38 обов’язкових вправ на орієнтовні 180 хв і 4 добровільні на 36 хв. Від об’єкта, поняття й назви переходимо до кандидатів, визначень, джерел, статусів та підтримки. Підсумок – глосарій на 5–10 понять із джерелами, спірним відповідником, перевіркою на новому прикладі й README передачі. Є CSV, авторські картки та маршрут без платних інструментів. Зміст практичних робіт оцінює викладач.
 
-Джерела: [Google Документи — Як запропонувати зміни](https://support.google.com/docs/answer/6033474?hl=uk).
+Джерела: [ISO 1087:2019 – словник термінологічної роботи](https://www.iso.org/standard/62330.html), [ISO 704:2022 – принципи й методи термінологічної роботи](https://www.iso.org/standard/79077.html), [ISO 860:2007 – гармонізація понять і термінів](https://www.iso.org/standard/40130.html), [Європейська комісія – як працюють із термінологією та IATE](https://translation.ec.europa.eu/languages-and-translation-european-commission/terminology_en), [IATE – пошук термінологічних записів](https://iate.europa.eu/), [TERMIUM Plus – термінологічна база уряду Канади](https://www.btb.termiumplus.gc.ca/tpv2alpha/alpha-eng.html?lang=eng), [WIPO Pearl – технічні терміни, карти понять і надійність](https://www.wipo.int/en/web/wipo-pearl), [Sketch Engine – ключові слова й вилучення термінів](https://www.sketchengine.eu/guide/keywords-and-term-extraction/), [Sketch Engine – глосарій корпусних понять](https://www.sketchengine.eu/guide/glossary/), [Universal Dependencies – словоформа, лема та граматичні мітки](https://universaldependencies.org/u/overview/morphology.html), [memoQ – рівні термінологічного запису](https://docs.memoq.com/12-5/en/Concepts/concepts-term-bases-inside-an-entry.html), [RWS Campus – MultiTerm для студентів](https://community.rws.com/customers-partners/partner-groups/rws_campus/students/w/academic-guides/5724/multiterm), [TBX – обмін термінологічними даними](https://www.tbxinfo.net/), [Львівська політехніка – український комітет науково-технічної термінології](https://tc-terminology.lpnu.ua/TK_main.htm), [ГРАК – пошук за словоформою й лемою (українською)](https://uacorpus.org/poshuk-u-graku/poshuk-u-graku), [UCLouvain CECL – корпуси тих, хто вивчає мову](https://uclouvain.be/en/research-institutes/ilc/cecl/learner-corpora-around-the-world.html), [Zotero – збереження джерел і бібліографічних відомостей](https://www.zotero.org/support/quick_start_guide), [Universal Dependencies – універсальні POS-теги](https://universaldependencies.org/u/pos/), [УМІФ НАН України – каталог словників і лексикографічних ресурсів](https://lcorp.ulif.org.ua/LSlist/), [OPUS – колекції паралельних корпусів](https://opus.nlpl.eu/), [International Phonetic Association – IPA Chart](https://www.internationalphoneticassociation.org/content/ipa-chart), [Google Документи – Як запропонувати зміни](https://support.google.com/docs/answer/6033474?hl=uk).
 
 ## 11. Що таке корпус
 
@@ -488,7 +488,7 @@ ID: `digital-audio` · вправи доступні (5)
 
 ID: `speech-annotation` · вправи доступні (5)
 
-**Практичне призначення.** Зберігати узгоджену пару аудіо й анотації та робити відтворювані виміри.
+**Практичне призначення.** Зберігати узгоджену пару аудіо й анотації та вимірювати тривалість сегментів за описаними правилами.
 
 **Основи.** Осцилограма й спектрограма; часовий інтервал і тривалість; інтервальні та точкові рівні TextGrid.
 

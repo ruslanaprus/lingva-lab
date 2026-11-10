@@ -1,4 +1,94 @@
 export const SOURCES = {
+  "term-fr-pos": {
+    title: "ACL Anthology – французька назва операції POS-розмітки",
+    url: "https://aclanthology.org/2018.jeptalnrecital-long.6/",
+    note: "Назва й анотація фахової публікації засвідчують étiquetage en parties du discours. Для цієї майстерні достатньо перевірки назви операції; технічні методи зі статті вивчати не потрібно.",
+  },
+  "term-iso1087": {
+    title: "ISO 1087:2019 – словник термінологічної роботи",
+    url: "https://www.iso.org/standard/62330.html",
+    note: "Офіційна сторінка описує призначення стандарту. Повний текст може бути платним; купівля не потрібна для вправ. Авторські визначення курсу не є цитатами ISO.",
+  },
+  "term-iso704": {
+    title: "ISO 704:2022 – принципи й методи термінологічної роботи",
+    url: "https://www.iso.org/standard/79077.html",
+    note: "Про зв’язки об’єктів, понять, визначень і назв. Працюємо з навчальними прикладами; не заявляємо про відповідність глосарія стандарту.",
+  },
+  "term-iso860": {
+    title: "ISO 860:2007 – гармонізація понять і термінів",
+    url: "https://www.iso.org/standard/40130.html",
+    note: "Гармонізація зіставляє поняття, системи понять, визначення й терміни. Спільне написання саме не встановлює тотожності.",
+  },
+  "term-iate": {
+    title: "Європейська комісія – як працюють із термінологією та IATE",
+    url: "https://translation.ec.europa.eu/languages-and-translation-european-commission/terminology_en",
+    note: "Дослідження поняття, визначення, відповідники, перевірка й публікація. Статус конкретного запису та мовне покриття потрібно читати окремо.",
+  },
+  "term-iate-search": {
+    title: "IATE – пошук термінологічних записів",
+    url: "https://iate.europa.eu/",
+    note: "Пошук у багатомовній базі ЄС. Перевіряйте галузь, визначення, джерело й наявні мови; український інтерфейс або відомий бренд не гарантують українського відповідника.",
+  },
+  "term-termium": {
+    title: "TERMIUM Plus – термінологічна база уряду Канади",
+    url: "https://www.btb.termiumplus.gc.ca/tpv2alpha/alpha-eng.html?lang=eng",
+    note: "Обирайте мову запиту та галузь. Це не німецько-український ресурс; англійські й французькі записи також потребують перевірки сфери застосування. Якщо сайт недоступний, є навчальний набір.",
+  },
+  "term-wipo": {
+    title: "WIPO Pearl – технічні терміни, карти понять і надійність",
+    url: "https://www.wipo.int/en/web/wipo-pearl",
+    note: "Патентна й технічна галузь. Відрізняйте записи бази з відомостями про надійність від можливих машинних пропозицій для відсутніх відповідників.",
+  },
+  "term-sketch-extraction": {
+    title: "Sketch Engine – ключові слова й вилучення термінів",
+    url: "https://www.sketchengine.eu/guide/keywords-and-term-extraction/",
+    note: "Порівняння спеціалізованого й референтного корпусів дає кандидатів; їх потрібно перевірити в контексті. Для курсу не потрібен платний акаунт: використовуємо підготовлену добірку.",
+  },
+  "term-sketch-glossary": {
+    title: "Sketch Engine – глосарій корпусних понять",
+    url: "https://www.sketchengine.eu/guide/glossary/",
+    note: "Знайдіть token, type, lemma, corpus або concordance й зіставте визначення з правилами свого дослідження. Пояснення інструмента не замінює вашого протоколу підрахунку.",
+  },
+  "term-ud": {
+    title: "Universal Dependencies – словоформа, лема та граматичні мітки",
+    url: "https://universaldependencies.org/u/overview/morphology.html",
+    note: "Базова форма, POS та морфологічні ознаки розділені. У цьому розділі читаємо поняття й приклади, без написання розмітки або програмування.",
+  },
+  "term-memoq": {
+    title: "memoQ – рівні термінологічного запису",
+    url: "https://docs.memoq.com/12-5/en/Concepts/concepts-term-bases-inside-an-entry.html",
+    note: "Запис поняття, мовний рівень і окремі назви. Навчальний CSV спрощує модель; він не є готовим імпортом у будь-яку версію memoQ.",
+  },
+  "term-multiterm": {
+    title: "RWS Campus – MultiTerm для студентів",
+    url: "https://community.rws.com/customers-partners/partner-groups/rws_campus/students/w/academic-guides/5724/multiterm",
+    note: "Термінобаза в перекладацькому процесі, варіанти й статуси. Придбання або встановлення MultiTerm не є умовою виконання вправ.",
+  },
+  "term-tbx": {
+    title: "TBX – обмін термінологічними даними",
+    url: "https://www.tbxinfo.net/",
+    note: "Структуроване перенесення між сумісними системами. Перевіряйте діалект, відображення полів та втрати після імпорту; XML-синтаксис писати не потрібно.",
+  },
+  "term-uk-committee": {
+    title: "Львівська політехніка – український комітет науково-технічної термінології",
+    url: "https://tc-terminology.lpnu.ua/TK_main.htm",
+    note: "Україномовні матеріали про термінологію й стандартизацію. Відокремлюйте локальне редакторське рішення від документа, схваленого за формальною процедурою.",
+  },
+  "term-grac": {
+    title: "ГРАК – пошук за словоформою й лемою (українською)",
+    url: "https://uacorpus.org/poshuk-u-graku/poshuk-u-graku",
+    note: "Практичне пояснення атрибутів пошуку. Для цієї майстерні достатньо прочитати розділи про форму, лему й фразу; CQL не потрібна.",
+  },
+  "term-learner": {
+    title: "UCLouvain CECL – корпуси тих, хто вивчає мову",
+    url: "https://uclouvain.be/en/research-institutes/ilc/cecl/learner-corpora-around-the-world.html",
+    note: "Приклади learner corpora та їхніх описів. Відрізняйте матеріали мовців, які навчаються, від будь-якого корпусу, використаного на занятті.",
+  },
+  "term-zotero": {
+    title: "Zotero – збереження джерел і бібліографічних відомостей",
+    url: "https://www.zotero.org/support/quick_start_guide",
+    note: "Можна зберігати публікації й нотатки до визначень. Перевіряйте імпортовані назву, автора, дату та локатор; акаунт для вправ не потрібний.",
+  },
   "bilingual-reverso-de": {
     title: "Reverso Context – Antrag, німецька → англійська",
     url: "https://context.reverso.net/translation/german-english/Antrag",

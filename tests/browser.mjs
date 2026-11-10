@@ -6,6 +6,7 @@ import { checkTypographyWorkshop } from "./browser-typography.mjs";
 import { checkSearchWorkshop } from "./browser-search.mjs";
 import { checkDictionaryWorkshop } from "./browser-dictionaries.mjs";
 import { checkBilingualWorkshop } from "./browser-bilingual.mjs";
+import { checkTerminologyWorkshop } from "./browser-terminology.mjs";
 import { lexiconFixture, fillLexicon } from "./helpers/lexicon.mjs";
 import { portfolioAnswer } from "./helpers/answers.mjs";
 // Browser QA runs against dist/ using the development-only Playwright dependency.
@@ -99,6 +100,7 @@ try {
     await checkSearchWorkshop(browser, base, output);
     await checkDictionaryWorkshop(browser, base, output);
     await checkBilingualWorkshop(browser, base, output);
+    await checkTerminologyWorkshop(browser, base, output);
     // Real failure -> hint -> success -> retry: counters and XP are observed in the UI.
     await go("lab/workspace");
     assert.equal(await page.locator("[data-chapter-feedback]").count(), 0);
