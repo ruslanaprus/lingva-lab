@@ -1,3 +1,4 @@
+import terminology from "../chapters/terminology.js";
 import bilingualContexts from "../chapters/bilingual-contexts.js";
 import workspace from "../chapters/workspace.js";
 import academicDocuments from "../chapters/academic-documents.js";
@@ -98,7 +99,8 @@ const retainedDescriptions = {
     related: ["ipa-transcription", "speech-annotation", "speech-technologies"],
   },
   "speech-annotation": {
-    purpose: "Зберігати узгоджену пару аудіо й анотації та робити відтворювані виміри.",
+    purpose:
+      "Зберігати узгоджену пару аудіо й анотації та вимірювати тривалість сегментів за описаними правилами.",
     foundations:
       "Осцилограма й спектрограма; часовий інтервал і тривалість; інтервальні та точкові рівні TextGrid.",
     practice:
@@ -159,6 +161,7 @@ function withOverview(base, description) {
 }
 
 const existing = {
+  terminology,
   "bilingual-contexts": bilingualContexts,
   workspace,
   "academic-documents": academicDocuments,

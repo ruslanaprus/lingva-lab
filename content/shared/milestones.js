@@ -1,5 +1,13 @@
 export const foundationMilestones = [
   {
+    id: "terminology-editor",
+    name: "Редактор термінології",
+    mark: "{Aa}",
+    description:
+      "Завершено обов’язкову термінологічну майстерню й подано глосарій та досьє; якість понять, відповідників і джерел оцінює викладач",
+    chapterIds: ["terminology"],
+  },
+  {
     id: "context-investigator",
     name: "Дослідник контекстів",
     mark: "⇄",
