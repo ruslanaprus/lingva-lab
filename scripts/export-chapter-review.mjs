@@ -6,33 +6,37 @@ const course = getPath(pathId),
   chapter = course.chapters.find((c) => c.id === chapterId);
 if (!chapter) throw new Error("Unknown chapter");
 const exampleFile =
-  chapterId === "terminology"
-    ? "terminology"
-    : chapterId === "bilingual-contexts"
-      ? "bilingual"
-      : chapterId === "digital-dictionaries"
-        ? "dictionaries"
-        : chapterId === "information-search"
-          ? "search"
-          : chapterId === "unicode"
-            ? "typography"
-            : chapterId === "data-formats"
-              ? "formats"
-              : "documents";
+  chapterId === "corpus-foundations"
+    ? "corpus"
+    : chapterId === "terminology"
+      ? "terminology"
+      : chapterId === "bilingual-contexts"
+        ? "bilingual"
+        : chapterId === "digital-dictionaries"
+          ? "dictionaries"
+          : chapterId === "information-search"
+            ? "search"
+            : chapterId === "unicode"
+              ? "typography"
+              : chapterId === "data-formats"
+                ? "formats"
+                : "documents";
 const reviewFile =
-  chapterId === "terminology"
-    ? "chapter-ten-review.md"
-    : chapterId === "bilingual-contexts"
-      ? "chapter-nine-review.md"
-      : chapterId === "digital-dictionaries"
-        ? "chapter-eight-review.md"
-        : chapterId === "information-search"
-          ? "chapter-six-review.md"
-          : chapterId === "unicode"
-            ? "chapter-four-review.md"
-            : chapterId === "data-formats"
-              ? "chapter-three-review.md"
-              : "chapter-two-review.md";
+  chapterId === "corpus-foundations"
+    ? "chapter-eleven-review.md"
+    : chapterId === "terminology"
+      ? "chapter-ten-review.md"
+      : chapterId === "bilingual-contexts"
+        ? "chapter-nine-review.md"
+        : chapterId === "digital-dictionaries"
+          ? "chapter-eight-review.md"
+          : chapterId === "information-search"
+            ? "chapter-six-review.md"
+            : chapterId === "unicode"
+              ? "chapter-four-review.md"
+              : chapterId === "data-formats"
+                ? "chapter-three-review.md"
+                : "chapter-two-review.md";
 const lines = [
   `# ${chapter.title}: текст для перегляду`,
   "",

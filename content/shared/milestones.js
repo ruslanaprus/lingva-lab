@@ -1,5 +1,13 @@
 export const foundationMilestones = [
   {
+    id: "corpus-designer",
+    name: "Архітектор мінікорпусу",
+    mark: "[T]",
+    description:
+      "Завершено основну корпусну практику й подано невелику перевірку; добір, файли й мовні висновки оцінює викладач",
+    chapterIds: ["corpus-foundations"],
+  },
+  {
     id: "terminology-editor",
     name: "Редактор термінології",
     mark: "{Aa}",

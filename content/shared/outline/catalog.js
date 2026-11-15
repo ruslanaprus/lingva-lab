@@ -1,3 +1,4 @@
+import corpusFoundations from "../chapters/corpus-foundations.js";
 import terminology from "../chapters/terminology.js";
 import bilingualContexts from "../chapters/bilingual-contexts.js";
 import workspace from "../chapters/workspace.js";
@@ -161,6 +162,7 @@ function withOverview(base, description) {
 }
 
 const existing = {
+  "corpus-foundations": corpusFoundations,
   terminology,
   "bilingual-contexts": bilingualContexts,
   workspace,

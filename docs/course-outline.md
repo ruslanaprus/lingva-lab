@@ -1,6 +1,6 @@
 # Програма практикуму: теми та їхнє застосування
 
-У траєкторії Німецька / Основи — 32 розділи: 17 із наявними вправами й 15 з описами майбутніх тем.
+У траєкторії Німецька / Основи — 32 розділи: 18 із наявними вправами й 14 з описами майбутніх тем.
 
 Описи не впливають на завершення, XP, звіти та відзнаки. Додавання вправ згодом потребуватиме окремого перегляду навантаження. Наявне JSON-завдання збережено як додаткове; у базовому плані JSON/XML читаємо й розпізнаємо, а не вивчаємо формальний синтаксис.
 
@@ -170,7 +170,7 @@ ID: `terminology` · вправи доступні (42)
 
 ## 11. Що таке корпус
 
-ID: `corpus-foundations` · опис, вправи готуються
+ID: `corpus-foundations` · вправи доступні (31)
 
 **Практичне призначення.** Зібрати невелику колекцію, яка придатна для конкретного мовного питання.
 
@@ -182,9 +182,9 @@ ID: `corpus-foundations` · опис, вправи готуються
 
 **Приклад для лінгвіста.** Порівняти звертання в університетських листах і рекламних оголошеннях. Якщо одну групу представляє єдиний автор, відмінність може бути його стилем, а не властивістю жанру.
 
-**Межі та зв’язки.** Мінікорпус може бути достатньо малим для ручного перегляду. Основна складність — добір, походження, дозволи та межі висновків.
+**Межі та зв’язки.** Мінікорпус може бути достатньо малим для ручного перегляду. Практика має 28 обов’язкових вправ на орієнтовні 109 хв і 3 додаткові на 26 хв. Основна робота – будова корпусу, добір, метадані й пробний аналіз. Окремого README або передавання проєкту немає. Усі T01–T12 – авторські навчальні тексти, а не реальні спостереження.
 
-Джерела: [DataONE — Describe the overall organization of your dataset](https://dataoneorg.github.io/Education/bestpractices/describe-the-overall), [Laurence Anthony – AntConc](https://www.laurenceanthony.net/software/antconc/).
+Джерела: [ГРАК – про корпус і можливості добору текстів](https://uacorpus.org/), [TEI Guidelines – Language Corpora](https://www.tei-c.org/release/doc/tei-p5-doc/en/html/CC.html), [CLARIN – Virtual Language Observatory](https://www.clarin.eu/content/virtual-language-observatory-vlo), [BBAW – DWDS і корпусні приклади в лексикографії](https://www.bbaw.de/forschung/digitales-woerterbuch-der-deutschen-sprache), [University of Oxford – About the British National Corpus](https://www.natcorp.ox.ac.uk/corpus/index.xml), [CEFC-Orféo – корпус французького мовлення й документація](https://repository.ortolang.fr/api/content/cefc-orfeo/11/documentation/site-orfeo/index.html), [UCLouvain CECL – корпуси тих, хто вивчає мову](https://uclouvain.be/en/research-institutes/ilc/cecl/learner-corpora-around-the-world.html), [OPUS – колекції паралельних корпусів](https://opus.nlpl.eu/), [Laurence Anthony – AntConc](https://www.laurenceanthony.net/software/antconc/), [DataONE — Describe the overall organization of your dataset](https://dataoneorg.github.io/Education/bestpractices/describe-the-overall).
 
 ## 12. Командний рядок: навігація
 

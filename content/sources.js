@@ -1,4 +1,34 @@
 export const SOURCES = {
+  "corpus-grac": {
+    title: "ГРАК – про корпус і можливості добору текстів",
+    url: "https://uacorpus.org/",
+    note: "Україномовний опис корпусу й підкорпусів. Прочитайте про регістри, періоди та дослідницькі застосування; великі файли завантажувати не потрібно.",
+  },
+  "corpus-tei": {
+    title: "TEI Guidelines – Language Corpora",
+    url: "https://www.tei-c.org/release/doc/tei-p5-doc/en/html/CC.html",
+    note: "Довідка про корпуси, опис складників і правила добору. Для цієї роботи важливі принципи організації; писати XML або вивчати всі елементи TEI не потрібно.",
+  },
+  "corpus-vlo": {
+    title: "CLARIN – Virtual Language Observatory",
+    url: "https://www.clarin.eu/content/virtual-language-observatory-vlo",
+    note: "Каталог мовних ресурсів. За посиланням Go to the Virtual Language Observatory можна перейти до пошуку й уточнити мову та тип матеріалу. Перевіряйте опис і доступність конкретного ресурсу.",
+  },
+  "corpus-bnc": {
+    title: "University of Oxford – About the British National Corpus",
+    url: "https://www.natcorp.ox.ac.uk/corpus/index.xml",
+    note: "Приклад корпусу британської англійської з писемною та усною частинами. Прочитайте опис складу, періоду та добору; не переносіть висновки автоматично на інші різновиди мови.",
+  },
+  "corpus-orfeo": {
+    title: "CEFC-Orféo – корпус французького мовлення й документація",
+    url: "https://repository.ortolang.fr/api/content/cefc-orfeo/11/documentation/site-orfeo/index.html",
+    note: "Офіційна сторінка з переходом до пошуку й посібника PDF. Посібник показує доступ до писемного тексту або транскрипції усного мовлення; для вправ достатньо навчального набору.",
+  },
+  "corpus-dwds": {
+    title: "BBAW – DWDS і корпусні приклади в лексикографії",
+    url: "https://www.bbaw.de/forschung/digitales-woerterbuch-der-deutschen-sprache",
+    note: "Офіційний опис зв’язку словника з корпусами. Зверніть увагу, як приклади й відомості про вживання доповнюють визначення слова.",
+  },
   "term-fr-pos": {
     title: "ACL Anthology – французька назва операції POS-розмітки",
     url: "https://aclanthology.org/2018.jeptalnrecital-long.6/",
