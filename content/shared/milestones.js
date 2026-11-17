@@ -1,5 +1,13 @@
 export const foundationMilestones = [
   {
+    id: "concordance-reader",
+    name: "Дослідник контексту",
+    mark: "L | W | R",
+    description:
+      "Завершено основну конкордансну практику й подано дослідження вживання; мовні рішення й докази оцінює викладач",
+    chapterIds: ["concordance"],
+  },
+  {
     id: "corpus-designer",
     name: "Архітектор мінікорпусу",
     mark: "[T]",

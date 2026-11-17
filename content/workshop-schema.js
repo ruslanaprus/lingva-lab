@@ -1,3 +1,4 @@
+import { validateConcordance } from "./shared/concordance-data.js";
 import { lessonText } from "./shared/lesson-text.js";
 
 export function validateWorkshop(chapter, sources, validId) {
@@ -15,6 +16,13 @@ export function validateWorkshop(chapter, sources, validId) {
     !workshop.stages.length
   )
     fail("invalid workshop plan");
+  if (workshop.concordance !== undefined) {
+    try {
+      validateConcordance(workshop.concordance);
+    } catch (error) {
+      fail(error.message);
+    }
+  }
   const stages = new Map();
   for (const key of ["title", "exampleLabel", "fallbackGuidance"])
     if (workshop[key] !== undefined && !strings([workshop[key]]))
@@ -70,6 +78,12 @@ export function validateWorkshop(chapter, sources, validId) {
         ))
     )
       fail(`${task.id}: invalid symbol examples`);
+    if (
+      reading.concordancePreset !== undefined &&
+      (!workshop.concordance ||
+        !Object.hasOwn(workshop.concordance.presets, reading.concordancePreset))
+    )
+      fail(`${task.id}: unknown concordance preset`);
     const submission = task.submission;
     for (const key of ["title", "methodPlaceholder"])
       if (submission?.[key] !== undefined && !strings([submission[key]]))

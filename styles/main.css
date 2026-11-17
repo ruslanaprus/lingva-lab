@@ -2827,3 +2827,233 @@ dialog li + li {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Chapter 14: a contained, keyboard-accessible KWIC workspace. */
+.concordance-workbench {
+  border: 1px solid var(--ink, #25251f);
+  padding: clamp(12px, 3vw, 28px);
+  margin: 28px 0;
+  scroll-margin-top: 100px;
+  min-width: 0;
+  background: #f3f1e7;
+}
+.concordance-workbench h2 {
+  font-size: clamp(1.7rem, 4vw, 2.5rem);
+}
+.concordance-workbench p {
+  overflow-wrap: anywhere;
+}
+.concordance-route {
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 24px 0;
+}
+.concordance-route li {
+  border-top: 2px solid #b8b4a6;
+  padding-top: 8px;
+  font-size: 0.85rem;
+}
+.concordance-route b {
+  display: block;
+  color: #a03917;
+  font-size: 1.2rem;
+}
+.concordance-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+.concordance-fields > label {
+  min-width: 0;
+}
+.concordance-fields input,
+.concordance-fields select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin-top: 6px;
+  padding: 10px;
+  border: 1px solid #827f72;
+  background: #fffdf5;
+  color: #25251f;
+  font: inherit;
+}
+.concordance-query {
+  grid-column: 1 / -1;
+}
+.concordance-options {
+  min-width: 0;
+  border: 1px solid #b8b4a6;
+  padding: 14px;
+}
+.concordance-options legend {
+  font-size: 0.9rem;
+  padding: 0 8px;
+}
+.concordance-case {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.concordance-case input {
+  width: 20px;
+  height: 20px;
+}
+.concordance-buttons,
+.concordance-results-head,
+.concordance-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+}
+.concordance-buttons {
+  justify-content: flex-start;
+  margin-top: 18px;
+}
+.concordance-error {
+  color: #8b2610;
+}
+.concordance-applied {
+  background: #e3e0d3;
+  padding: 12px;
+}
+.kwic-head,
+.kwic-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(3rem, 0.7fr) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 10px;
+}
+.kwic-head {
+  padding: 12px 0;
+  border-block: 1px solid #b8b4a6;
+  font-size: 0.65rem;
+  text-align: center;
+}
+.kwic-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.kwic-item {
+  padding: 16px 0;
+  border-bottom: 1px solid #b8b4a6;
+}
+.kwic-line {
+  font-family: var(--mono, monospace);
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+.kwic-line > * {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.kwic-left {
+  text-align: right;
+}
+.kwic-hit {
+  width: 100%;
+  color: #fffdf5;
+  background: #773315;
+  border: 0;
+  padding: 6px;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.kwic-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-bottom: 0;
+  color: #514d40;
+}
+.kwic-meta button,
+.concordance-catalog button {
+  color: #684021;
+  text-decoration: underline;
+  background: none;
+  border: 0;
+  padding: 2px 0;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+}
+.concordance-pager {
+  margin: 18px 0;
+}
+.concordance-detail {
+  background: #e6eadf;
+  border-left: 4px solid #546449;
+  padding: 18px;
+  margin: 20px 0;
+  scroll-margin-top: 80px;
+}
+.concordance-source {
+  font-size: 1.1rem;
+  line-height: 1.85;
+}
+.concordance-source mark {
+  background: #e6bb7d;
+  padding: 2px;
+}
+.concordance-catalog,
+.concordance-history {
+  border-top: 1px solid #b8b4a6;
+  padding-top: 14px;
+  margin-top: 20px;
+}
+.concordance-catalog summary,
+.concordance-history summary {
+  cursor: pointer;
+}
+.concordance-catalog ul {
+  padding-left: 20px;
+}
+.concordance-catalog li {
+  margin: 10px 0;
+}
+.concordance-workbench button:focus-visible,
+.concordance-workbench input:focus-visible,
+.concordance-workbench select:focus-visible {
+  outline: 3px solid #416858;
+  outline-offset: 3px;
+}
+.concordance-workbench button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.concordance-empty {
+  border: 1px dashed #827f72;
+  padding: 18px;
+}
+@media (max-width: 650px) {
+  .concordance-route {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .concordance-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .concordance-options {
+    padding: 10px;
+  }
+  .kwic-head,
+  .kwic-line {
+    gap: 6px;
+  }
+  .kwic-line {
+    font-size: 0.78rem;
+  }
+  .concordance-pager .button {
+    padding: 8px;
+    font-size: 0.72rem;
+  }
+}

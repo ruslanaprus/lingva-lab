@@ -5,6 +5,7 @@ import {
 } from "./ui/exercises/lexicon.js";
 import { renderCharacterInspection, renderCsvPreview } from "./ui/exercises/formats.js";
 import { renderTypographyPreview } from "./ui/exercises/typography.js";
+import { createConcordanceWorkbench } from "./ui/exercises/concordance.js";
 import { renderAlignmentPreview } from "./ui/exercises/alignment.js";
 import {
   LANGUAGES,
@@ -66,6 +67,7 @@ import { createReferenceView } from "./ui/pages/reference.js";
 import { createEmptyView } from "./ui/pages/empty.js";
 import { createExerciseView } from "./ui/exercises/render.js";
 import { createFeedbackView } from "./ui/pages/feedback.js";
+const concordanceWorkbench = createConcordanceWorkbench({ download });
 let state = freshState(),
   progressWritable = true,
   recoveryCopy = null,
@@ -436,6 +438,10 @@ for (const event of ["input", "change"])
     if (form) rememberFeedback(form);
   });
 $("#main").addEventListener("submit", (e) => {
+  if (concordanceWorkbench.submit(e.target)) {
+    e.preventDefault();
+    return;
+  }
   if (!e.target.matches("[data-feedback-form]")) return;
   e.preventDefault();
   handleChapterFeedback(e.target);
@@ -479,6 +485,7 @@ function readValue(t) {
     );
 }
 $("#main").addEventListener("input", (e) => {
+  concordanceWorkbench.input(e.target);
   const article = e.target.closest("[data-task]");
   if (article) {
     const t = taskById(article.dataset.task);
@@ -491,6 +498,7 @@ $("#main").addEventListener("input", (e) => {
   if (e.target.id === "reference-search") filterGlossary(e.target.value);
 });
 $("#main").addEventListener("change", async (e) => {
+  concordanceWorkbench.input(e.target);
   if (e.target.matches("[data-lexicon-import]")) {
     await importDictionaryFile(e.target, e.target.closest("[data-task]"), language());
     return;
@@ -515,6 +523,10 @@ $("#main").addEventListener("keydown", (e) => {
 $("#main").addEventListener("click", async (e) => {
   const b = e.target.closest("button,a");
   if (!b) return;
+  if (concordanceWorkbench.click(b)) {
+    e.preventDefault();
+    return;
+  }
   if (b.dataset.lexiconAction) {
     dictionaryBuilderAction(b, b.closest("[data-task]"), LANGUAGES[language()]);
     return;
@@ -931,6 +943,7 @@ const { renderMap } = createMapView({
   filter: () => filter,
 });
 const { renderLab } = createChapterView({
+  renderConcordance: concordanceWorkbench.render,
   track,
   pathId,
   language,

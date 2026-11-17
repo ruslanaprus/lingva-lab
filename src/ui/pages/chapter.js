@@ -15,7 +15,14 @@ import { formatDuration } from "../../features/activity.js";
 import { t } from "../../i18n/index.js";
 import { renderChapterOverview, renderPlannedChapter } from "./overview.js";
 export function createChapterView(context = {}) {
-  const { track, pathId, language, renderTask, renderChapterFeedback } = context;
+  const {
+    track,
+    pathId,
+    language,
+    renderTask,
+    renderChapterFeedback,
+    renderConcordance = () => "",
+  } = context;
   function renderLab(m) {
     if (m.status === "planned") return renderPlannedChapter(m, pathId());
     const s = sectionStats(m, track());
@@ -25,6 +32,7 @@ export function createChapterView(context = {}) {
  <details class="theory" open><summary class="mono">ПЕРЕД ПОЧАТКОМ / ТЕОРІЯ ТА ДЖЕРЕЛА</summary><div class="theory-body">${esc(m.theory)}<div class="term-chips">${m.terms.map((t) => `<button class="term-chip" data-term="${esc(t)}">${esc(t)} ↗</button>`).join("")}</div><ul class="sources-list">${m.sources.map((key) => `<li><a href="${SOURCES[key].url}" target="_blank" rel="noopener noreferrer">${esc(SOURCES[key].title)} ↗</a></li>`).join("")}</ul></div></details>
  ${m.workshop ? "" : renderChapterOverview(m, pathId())}
  ${renderWorkshopIntro(m)}
+ ${renderConcordance(m.workshop?.concordance, pathId())}
  ${m.treasure ? `<p class="treasure-clue mono">${m.treasureClue ? esc(m.treasureClue) : m.treasure === "archive" ? "В архівах інколи трапляються листи з іншого століття." : m.treasure === "unicode" ? "Не всі двійники — той самий символ." : "Ідеальний результат може приховувати пропущене."} <button class="treasure-trigger" data-treasure="${m.treasure}" aria-label="Дослідити примітку: прихований виклик">◇</button></p><div id="treasure-slot"></div>` : ""}
  ${s.complete ? `<div class="section-complete"><p class="mono orange">МАРШРУТ РОЗДІЛУ ПРОЙДЕНО</p><h3>Є результат. Є історія.</h3><p>${s.passed} завдань перевірено автоматично; ${s.submitted} прикладних робіт подано для викладача. Обов’язкові завдання завершено. Завантажте звіт і передайте артефакти окремо.</p><button class="button small dark" data-action="report" data-module="${m.id}">${t("report.download")} ↓</button></div>` : ""}
  ${m.workshop ? renderWorkshopTasks(m, renderTask) : m.tasks.map((t, i) => renderTask(t, i)).join("")}${s.complete ? renderChapterFeedback(m) : ""}<div class="lab-end"><div><p>Маленька вибірка. Чіткий метод.</p><p class="mono">СИЛЬНЕ ДОСЛІДЖЕННЯ ПОЧИНАЄТЬСЯ З ВІДТВОРЮВАНОСТІ.</p></div><a class="button" href="${!nextChapter(pathId(), m.id) ? "#portfolio" : "#lab/" + nextChapter(pathId(), m.id).id}">${!nextChapter(pathId(), m.id) ? t("navigation.portfolio") : t("navigation.nextChapter")} ↗</a></div></div></div></div>`;

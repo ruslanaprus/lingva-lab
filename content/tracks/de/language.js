@@ -1,3 +1,4 @@
+import concordance from "./concordance.js";
 import corpus from "./corpus.js";
 import terminology from "./terminology.js";
 import bilingual from "./bilingual.js";
@@ -9,6 +10,7 @@ import outline from "./outline.js";
 import documents from "./documents.js";
 // Language material only: application behavior is shared.
 export default {
+  concordance,
   corpus,
   terminology,
   bilingual,
