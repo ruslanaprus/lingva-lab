@@ -6,6 +6,7 @@ import { checkTypographyWorkshop } from "./browser-typography.mjs";
 import { checkSearchWorkshop } from "./browser-search.mjs";
 import { checkDictionaryWorkshop } from "./browser-dictionaries.mjs";
 import { checkBilingualWorkshop } from "./browser-bilingual.mjs";
+import { checkConcordanceWorkshop } from "./browser-concordance.mjs";
 import { checkCorpusWorkshop } from "./browser-corpus.mjs";
 import { checkTerminologyWorkshop } from "./browser-terminology.mjs";
 import { lexiconFixture, fillLexicon } from "./helpers/lexicon.mjs";
@@ -103,6 +104,7 @@ try {
     await checkBilingualWorkshop(browser, base, output);
     await checkTerminologyWorkshop(browser, base, output);
     await checkCorpusWorkshop(browser, base, output);
+    await checkConcordanceWorkshop(browser, base, output);
     // Real failure -> hint -> success -> retry: counters and XP are observed in the UI.
     await go("lab/workspace");
     assert.equal(await page.locator("[data-chapter-feedback]").count(), 0);

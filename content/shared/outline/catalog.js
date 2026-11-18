@@ -1,3 +1,4 @@
+import concordance from "../chapters/concordance.js";
 import corpusFoundations from "../chapters/corpus-foundations.js";
 import terminology from "../chapters/terminology.js";
 import bilingualContexts from "../chapters/bilingual-contexts.js";
@@ -162,6 +163,7 @@ function withOverview(base, description) {
 }
 
 const existing = {
+  concordance,
   "corpus-foundations": corpusFoundations,
   terminology,
   "bilingual-contexts": bilingualContexts,

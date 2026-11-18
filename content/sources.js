@@ -1,4 +1,29 @@
 export const SOURCES = {
+  "concordance-antconc-help": {
+    title: "Laurence Anthony – AntConc 4.4.2: KWIC і File View",
+    url: "https://www.laurenceanthony.net/software/antconc/releases/AntConc442/docs/help.pdf",
+    note: "Офіційний посібник, розділи KWIC та File View. Для першої спроби підійде Quick Corpus з TXT. Перевірте Words, Case і вимкнений Regex для буквального пошуку.",
+  },
+  "concordance-nosketch": {
+    title: "Masaryk University – NoSketch Engine",
+    url: "https://nlp.fi.muni.cz/trac/noske",
+    note: "Офіційний опис відкритої корпусної системи. Функції конкретного вебінтерфейсу залежать від інсталяції; наша панель є навчальним тренажером основного маршруту.",
+  },
+  "concordance-grac": {
+    title: "ГРАК – пошук через NoSketch Engine (українською)",
+    url: "https://uacorpus.org/poshuk-u-graku/poshuk-u-graku",
+    note: "Знайдіть вибір корпусу, Concordance, word та lemma. Прочитайте пояснення simple: його поведінка не тотожна завжди точному пошуку словоформи. Для цих вправ не потрібно писати запити CQL.",
+  },
+  "concordance-grac-tags": {
+    title: "ГРАК – морфологічна розмітка (українською)",
+    url: "https://www.uacorpus.org/rozmitka-tekstiv/morfologichna-rozmitka",
+    note: "Опис зв’язку словоформи, леми та граматичних міток. Розмітка автоматична; позначки іншого корпусу потрібно читати за його власною схемою.",
+  },
+  "concordance-guide": {
+    title: "Sketch Engine – конкорданс, сортування та розгортання контексту",
+    url: "https://www.sketchengine.eu/guide/concordance-a-tool-to-search-a-corpus/",
+    note: "Офіційний опис маршруту від KWIC до джерела. Комерційний сервіс і конкретна інсталяція NoSketch Engine можуть мати різні функції; для роботи достатньо нашого тренажера.",
+  },
   "corpus-grac": {
     title: "ГРАК – про корпус і можливості добору текстів",
     url: "https://uacorpus.org/",

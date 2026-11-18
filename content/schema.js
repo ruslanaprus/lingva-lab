@@ -248,6 +248,11 @@ export function validateCourse(course, sources = {}, challenges = {}) {
       fail(`${chapter.id}: planned chapter needs an overview`);
     if (chapter.status !== "planned" && !chapter.tasks.some((task) => task.required))
       fail(`${chapter.id}: chapter must have a required exercise`);
+    if (
+      chapter.workshop?.concordance &&
+      chapter.workshop.concordance.language !== course.language
+    )
+      fail("concordance language does not match path");
     if (chapter.workshop) validateWorkshop(chapter, sources, validId);
   }
   if (
