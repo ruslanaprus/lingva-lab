@@ -1,3 +1,4 @@
+import research from "./concordance-research.js";
 // Original teaching texts and partial manual annotations. C10 intentionally has an incorrect POS tag.
 export default {
   code: "de",
@@ -9,8 +10,16 @@ export default {
   falseForm: "bitter",
   noun: "Bitte",
   resource: "corpus-dwds",
+  research: research.research,
   documents: {
+    ...research.documents,
     C01: {
+      title: "Оголошення бібліотеки",
+      genre: "notice",
+      year: "2025",
+      source: "S1",
+      collection: "training",
+      topic: "Прохання",
       text: "Bitte melden Sie sich bis Freitag an. Die Bibliothek bittet um eine frühe Anmeldung.",
       annotations: [
         {
@@ -28,6 +37,12 @@ export default {
       ],
     },
     C02: {
+      title: "Запрошення клубу",
+      genre: "notice",
+      year: "2025",
+      source: "S2",
+      collection: "training",
+      topic: "Прохання",
       text: "Meldet euch bitte für den offenen Abend an. Ich bitte euch, einen kurzen Text mitzubringen.",
       annotations: [
         {
@@ -45,6 +60,12 @@ export default {
       ],
     },
     C03: {
+      title: "Інструкція до форми",
+      genre: "guide",
+      year: "2025",
+      source: "S3",
+      collection: "training",
+      topic: "Прохання",
       text: "Tragen Sie die Bitte in das Formular ein. Die Kategorie Bitten enthält Anfragen von Studierenden.",
       annotations: [
         {
@@ -62,6 +83,12 @@ export default {
       ],
     },
     C04: {
+      title: "Розмова про старий анонс",
+      genre: "interview",
+      year: "2025",
+      source: "S1",
+      collection: "training",
+      topic: "Прохання",
       text: "Die Tutorin erzählt von einer früheren Sitzung. Sie bat die Gruppe um Geduld. Diese Bitte galt dem Termin von 2024, nicht dem heutigen Kurs.",
       annotations: [
         {
@@ -79,6 +106,12 @@ export default {
       ],
     },
     C05: {
+      title: "Торішнє оголошення",
+      genre: "notice",
+      year: "2024",
+      source: "S2",
+      collection: "training",
+      topic: "Прохання",
       text: "Bitte bringen Sie Ihren Ausweis mit. Dieses Treffen fand im Jahr 2024 statt.",
       annotations: [
         {
@@ -90,6 +123,12 @@ export default {
       ],
     },
     C06: {
+      title: "Пояснення службового терміна",
+      genre: "guide",
+      year: "2025",
+      source: "S3",
+      collection: "training",
+      topic: "Прохання",
       text: "Eine Bitte bezeichnet hier einen Eintrag im Formular. Der Absatz erklärt das Wort und fordert keine Handlung von den Lesenden.",
       annotations: [
         {
@@ -101,6 +140,12 @@ export default {
       ],
     },
     C07: {
+      title: "Прохання організаторів",
+      genre: "notice",
+      year: "2025",
+      source: "S1",
+      collection: "training",
+      topic: "Прохання",
       text: "Die Organisatoren bitten um eine Rückmeldung. Sie sammeln die Antworten bis Donnerstag.",
       annotations: [
         {
@@ -112,6 +157,12 @@ export default {
       ],
     },
     C08: {
+      title: "Інтерв’ю з іншим значенням",
+      genre: "interview",
+      year: "2024",
+      source: "S2",
+      collection: "training",
+      topic: "Прохання",
       text: "Der Kaffee schmeckte bitter. Im Gespräch ging es um das Essen, nicht um eine Aufforderung.",
       annotations: [
         {
@@ -123,6 +174,12 @@ export default {
       ],
     },
     C09: {
+      title: "Підсумок консультації",
+      genre: "guide",
+      year: "2025",
+      source: "S3",
+      collection: "training",
+      topic: "Прохання",
       text: "Nach dem Gespräch hat die Tutorin um eine kurze Zusammenfassung gebeten. Die Studierenden haben sie am nächsten Tag geschickt.",
       annotations: [
         {
@@ -134,6 +191,12 @@ export default {
       ],
     },
     C10: {
+      title: "Повідомлення координаторки",
+      genre: "notice",
+      year: "2025",
+      source: "S1",
+      collection: "training",
+      topic: "Прохання",
       text: "Die Koordinatorin bittet um eine kurze Antwort. Sie möchte die Zahl der Teilnehmenden wissen.",
       annotations: [
         {
@@ -145,6 +208,12 @@ export default {
       ],
     },
     C11: {
+      title: "Два вживання в одній розмові",
+      genre: "interview",
+      year: "2025",
+      source: "S2",
+      collection: "training",
+      topic: "Прохання",
       text: "Komm bitte früher, sagt die Sprecherin. Und bring bitte das Formular mit. Beide Äußerungen stammen aus demselben Gespräch.",
       annotations: [
         {
@@ -162,6 +231,12 @@ export default {
       ],
     },
     C12: {
+      title: "Прохання іншими словами",
+      genre: "notice",
+      year: "2025",
+      source: "S3",
+      collection: "training",
+      topic: "Прохання",
       text: "Bringen Sie ein kurzes Textbeispiel mit. Die Einführung beginnt um zehn Uhr.",
       annotations: [],
     },

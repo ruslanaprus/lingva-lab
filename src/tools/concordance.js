@@ -42,7 +42,7 @@ export function searchConcordance(dataset, options = {}) {
     rows = [];
   const documents = dataset.documents.filter(
     (d) =>
-      (settings.corpus === "all" || (d.genre === "notice" && d.year === "2025")) &&
+      dataset.corpora[settings.corpus].documentIds.includes(d.id) &&
       (settings.genre === "all" || d.genre === settings.genre) &&
       (settings.year === "all" || d.year === settings.year),
   );
@@ -101,14 +101,18 @@ export function searchConcordance(dataset, options = {}) {
     hitCount: rows.length,
     documentCount: new Set(rows.map((r) => r.documentId)).size,
     searchedDocuments: documents.length,
+    searchedWords: documents.reduce(
+      (n, d) => n + d.tokens.filter((t) => /\p{L}/u.test(t.form)).length,
+      0,
+    ),
   };
 }
 export function concordanceText(dataset, result) {
   const s = result.settings;
-  return `${dataset.title}\nНабір: ${result.datasetId}; версія: ${result.version}\nАвторські навчальні тексти й часткова ручна розмітка.\nЗапит: ${s.query}\nТип: ${s.mode}; регістр: ${s.caseSensitive ? "враховано" : "не враховано"}; корпус: ${s.corpus}\nЖанр: ${s.genre}; рік: ${s.year}; POS: ${s.pos}; контекст: ${s.window}; порядок: ${s.sort}\nПереглянуто документів: ${result.searchedDocuments}; збігів: ${result.hitCount}; документів зі збігами: ${result.documentCount}\nЕкспортовано всі результати поточного пошуку.\n\n${result.rows
+  return `${dataset.title}\nНабір: ${result.datasetId}; версія: ${result.version}\nАвторські навчальні тексти й часткова ручна розмітка.\nЗапит: ${s.query}\nТип: ${s.mode}; регістр: ${s.caseSensitive ? "враховано" : "не враховано"}; корпус: ${s.corpus} (${dataset.corpora[s.corpus].label})\nЖанр: ${s.genre}; рік: ${s.year}; POS: ${s.pos}; контекст: ${s.window}; порядок: ${s.sort}\nПереглянуто документів: ${result.searchedDocuments}; збігів: ${result.hitCount}; документів зі збігами: ${result.documentCount}\nСлів у добірці: ${result.searchedWords} (токени з літерами; без пунктуації та окремих чисел).\nЕкспортовано всі результати поточного пошуку.\n\n${result.rows
     .map((r) => {
       const d = dataset.documents.find((d) => d.id === r.documentId);
-      return `${r.id} | ${d.genre} | ${d.year} | ${d.source}\n${r.left} [${r.form}] ${r.right}\nЛема: ${r.lemma ?? "не визначено"}; POS: ${r.pos ?? "не визначено"}\nПовний контекст: ${d.text}`;
+      return `${r.id} | ${d.genre} | ${d.year} | ${d.source} | ${d.topic}\n${r.left} [${r.form}] ${r.right}\nЛема: ${r.lemma ?? "не визначено"}; POS: ${r.pos ?? "не визначено"}\nПовний контекст: ${d.text}`;
     })
     .join("\n\n")}\n`;
 }

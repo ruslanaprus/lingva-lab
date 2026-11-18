@@ -2,7 +2,7 @@ export const SOURCES = {
   "concordance-antconc-help": {
     title: "Laurence Anthony – AntConc 4.4.2: KWIC і File View",
     url: "https://www.laurenceanthony.net/software/antconc/releases/AntConc442/docs/help.pdf",
-    note: "Офіційний посібник, розділи KWIC та File View. Для першої спроби підійде Quick Corpus з TXT. Перевірте Words, Case та вимкнений Regex для буквального пошуку.",
+    note: "Офіційний посібник, розділи KWIC та File View. Для першої спроби підійде Quick Corpus з TXT. Перевірте Words, Case і вимкнений Regex для буквального пошуку.",
   },
   "concordance-nosketch": {
     title: "Masaryk University – NoSketch Engine",
@@ -12,7 +12,7 @@ export const SOURCES = {
   "concordance-grac": {
     title: "ГРАК – пошук через NoSketch Engine (українською)",
     url: "https://uacorpus.org/poshuk-u-graku/poshuk-u-graku",
-    note: "Знайдіть вибір корпусу, Concordance, word та lemma. Прочитайте пояснення simple: його поведінка не тотожна завжди точному пошуку словоформи. CQL для цих вправ не потрібний.",
+    note: "Знайдіть вибір корпусу, Concordance, word та lemma. Прочитайте пояснення simple: його поведінка не тотожна завжди точному пошуку словоформи. Для цих вправ не потрібно писати запити CQL.",
   },
   "concordance-grac-tags": {
     title: "ГРАК – морфологічна розмітка (українською)",

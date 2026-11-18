@@ -1,8 +1,8 @@
 // Shared teaching-data preparation: no page, storage or answer-checker dependencies.
 export const CONCORDANCE_CHOICES = {
   mode: ["word", "lemma", "substring"],
-  corpus: ["all", "notices2025"],
-  genre: ["all", "notice", "guide", "interview"],
+  corpus: ["training", "notices2025", "comparison", "office", "peer", "all"],
+  genre: ["all", "notice", "guide", "interview", "forum"],
   year: ["all", "2024", "2025"],
   pos: ["all", "NOUN", "VERB", "PART", "ADV", "ADJ"],
   sort: ["document", "left", "right"],
@@ -27,67 +27,89 @@ export function tokenizeConcordance(text) {
   );
 }
 export function prepareConcordance(material) {
-  const genres = [
-    "notice",
-    "notice",
-    "guide",
-    "interview",
-    "notice",
-    "guide",
-    "notice",
-    "interview",
-    "guide",
-    "notice",
-    "interview",
-    "notice",
-  ];
-  const titles = [
-    "Оголошення бібліотеки",
-    "Запрошення клубу",
-    "Інструкція до форми",
-    "Розмова про старий анонс",
-    "Торішнє оголошення",
-    "Пояснення службового терміна",
-    "Прохання організаторів",
-    "Інтерв’ю з іншим значенням",
-    "Підсумок консультації",
-    "Повідомлення координаторки",
-    "Два вживання в одній розмові",
-    "Прохання іншими словами",
-  ];
-  const documents = Object.entries(material.documents).map(([id, d]) => {
-    const index = Number(id.slice(1)) - 1,
-      tokens = tokenizeConcordance(d.text);
-    const used = new Set();
-    for (const a of d.annotations) {
-      const token = tokens.filter((t) => t.form === a.form)[(a.occurrence ?? 1) - 1];
-      if (!token || used.has(token.id))
-        throw new Error(`Invalid concordance annotation: ${id}/${a.form}`);
-      used.add(token.id);
-      token.lemma = a.lemma;
-      token.pos = a.pos;
-    }
-    return {
-      id,
-      title: titles[index],
-      genre: genres[index],
-      year: ["C05", "C08"].includes(id) ? "2024" : "2025",
-      source: `S${(index % 3) + 1}`,
-      text: d.text,
-      tokens,
-    };
-  });
+  const documents = Object.entries(material.documents)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([id, d]) => {
+      const tokens = tokenizeConcordance(d.text);
+      const used = new Set();
+      for (const a of d.annotations) {
+        const token = tokens.filter((t) => t.form === a.form)[(a.occurrence ?? 1) - 1];
+        if (!token || used.has(token.id))
+          throw new Error(`Invalid concordance annotation: ${id}/${a.form}`);
+        used.add(token.id);
+        token.lemma = a.lemma;
+        token.pos = a.pos;
+      }
+      return {
+        id,
+        title: d.title,
+        genre: d.genre,
+        year: d.year,
+        source: d.source,
+        collection: d.collection,
+        topic: d.topic,
+        text: d.text,
+        tokens,
+      };
+    });
   return {
     id: `concordance-${material.code}`,
-    version: 1,
+    version: 2,
     language: material.code,
     title: `Навчальний корпус / ${material.name}`,
     documents,
+    corpora: {
+      training: {
+        label: "Перші кроки: 12 коротких текстів",
+        description: "C01–C12: приклади для опанування пошуку, фільтрів і контексту.",
+        documentIds: documents
+          .filter((d) => d.collection === "training")
+          .map((d) => d.id),
+      },
+      notices2025: {
+        label: "Перші кроки: анонси 2025 року",
+        description: "Анонси 2025 року лише з початкового набору C01–C12.",
+        documentIds: documents
+          .filter(
+            (d) =>
+              d.collection === "training" && d.genre === "notice" && d.year === "2025",
+          )
+          .map((d) => d.id),
+      },
+      comparison: {
+        label: "Дослідження: обидві добірки",
+        description:
+          "C13–C24: шість тем, кожна в університетській інструкції та студентському обговоренні. Теми в добірках ті самі, але довжина текстів різна.",
+        documentIds: documents
+          .filter((d) => d.collection !== "training")
+          .map((d) => d.id),
+      },
+      office: {
+        label: "А / Університетські інструкції",
+        description:
+          "C13–C18: шість авторських інструкцій. Адресат – учасники університетських занять; мета – пояснити правила й умови.",
+        documentIds: documents
+          .filter((d) => d.collection === "office")
+          .map((d) => d.id),
+      },
+      peer: {
+        label: "Б / Студентські обговорення",
+        description:
+          "C19–C24: шість авторських дописів на ті самі теми. Адресат – інші студенти; мета – обговорити досвід, сумнів або запитання.",
+        documentIds: documents.filter((d) => d.collection === "peer").map((d) => d.id),
+      },
+      all: {
+        label: "Усі тексти: навчання й дослідження",
+        description:
+          "Усі документи разом. Для жанрового порівняння обирайте А та Б окремо, щоб не додати короткі тренувальні приклади.",
+        documentIds: documents.map((d) => d.id),
+      },
+    },
     defaults: {
       query: material.word,
       mode: "word",
       caseSensitive: false,
-      corpus: "all",
+      corpus: "training",
       genre: "all",
       year: "all",
       pos: "all",
@@ -95,6 +117,36 @@ export function prepareConcordance(material) {
       sort: "document",
     },
     presets: {
+      researchOffice: {
+        query: material.research.term,
+        mode: "lemma",
+        corpus: "office",
+        window: 6,
+      },
+      researchPeer: {
+        query: material.research.term,
+        mode: "lemma",
+        corpus: "peer",
+        window: 6,
+      },
+      researchBoth: {
+        query: material.research.term,
+        mode: "lemma",
+        corpus: "comparison",
+        window: 6,
+      },
+      researchAudio: {
+        query: material.research.audio,
+        mode: "lemma",
+        corpus: "comparison",
+        window: 6,
+      },
+      researchModal: {
+        query: material.research.modal,
+        mode: "word",
+        corpus: "comparison",
+        window: 6,
+      },
       initial: { query: material.word, mode: "word" },
       fragment: { query: material.fragment, mode: "substring" },
       exact: { query: material.word, mode: "word" },
@@ -132,10 +184,13 @@ export function validateConcordance(data) {
     if (
       !/^C\d{2}$/.test(d.id) ||
       ids.has(d.id) ||
-      !["notice", "guide", "interview"].includes(d.genre) ||
+      !["notice", "guide", "interview", "forum"].includes(d.genre) ||
       !/^\d{4}$/.test(d.year) ||
       typeof d.title !== "string" ||
       typeof d.source !== "string" ||
+      !["training", "office", "peer"].includes(d.collection) ||
+      typeof d.topic !== "string" ||
+      !d.topic.trim() ||
       typeof d.text !== "string" ||
       !d.text.length ||
       d.text.length > 5000 ||
@@ -160,6 +215,25 @@ export function validateConcordance(data) {
       )
         throw new Error("Invalid concordance token");
     });
+  }
+  if (
+    !data.corpora ||
+    Object.keys(data.corpora).length !== CONCORDANCE_CHOICES.corpus.length
+  )
+    throw new Error("Invalid concordance corpora");
+  for (const id of CONCORDANCE_CHOICES.corpus) {
+    const corpus = data.corpora[id];
+    if (
+      !corpus ||
+      typeof corpus.label !== "string" ||
+      !corpus.label.trim() ||
+      typeof corpus.description !== "string" ||
+      !Array.isArray(corpus.documentIds) ||
+      !corpus.documentIds.length ||
+      new Set(corpus.documentIds).size !== corpus.documentIds.length ||
+      corpus.documentIds.some((id) => !ids.has(id))
+    )
+      throw new Error("Invalid concordance corpus membership");
   }
   if (
     !data.defaults ||

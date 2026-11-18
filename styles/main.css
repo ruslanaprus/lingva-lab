@@ -3047,6 +3047,7 @@ dialog li + li {
   }
   .kwic-head,
   .kwic-line {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 8rem) minmax(0, 1fr);
     gap: 6px;
   }
   .kwic-line {
@@ -3055,5 +3056,35 @@ dialog li + li {
   .concordance-pager .button {
     padding: 8px;
     font-size: 0.72rem;
+  }
+}
+
+.concordance-comparison {
+  margin-top: 2rem;
+  border-top: 1px solid var(--ink);
+  padding-top: 1.5rem;
+}
+.concordance-compare-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.concordance-compare-grid article {
+  border: 1px solid currentColor;
+  padding: 1rem;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.concordance-compare-grid li {
+  margin-bottom: 0.75rem;
+}
+.concordance-compare-grid button {
+  font: inherit;
+  text-decoration: underline;
+}
+@media (max-width: 650px) {
+  .concordance-compare-grid {
+    grid-template-columns: 1fr;
   }
 }

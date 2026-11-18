@@ -67,10 +67,10 @@ export async function checkConcordanceWorkshop(browser, base, output) {
           ({ key, id }) => JSON.parse(localStorage.getItem(key)).paths[id].answers,
           { key: STORAGE_KEY, id: course.id },
         );
-      assert.equal(await page.locator(".task-lesson").count(), 31);
+      assert.equal(await page.locator(".task-lesson").count(), 42);
       assert.match(
         await page.locator(".workshop-intro").textContent(),
-        /109 ХВ \+ 22 ХВ/,
+        /163 ХВ \+ 42 ХВ/,
       );
       assert.equal(
         await panel.locator("[data-conc-count]").textContent(),
@@ -83,6 +83,14 @@ export async function checkConcordanceWorkshop(browser, base, output) {
       assert.equal(await panel.locator("[data-conc-row]").count(), 5);
       const originalAnswers = await answers(),
         originalXP = await page.locator("#xp-label").textContent();
+      await panel.locator(".concordance-ideas summary").click();
+      await panel
+        .locator('.concordance-ideas [data-concordance-preset="researchAudio"]')
+        .click();
+      await run();
+      assert.equal(await panel.locator("[data-conc-count]").textContent(), "7");
+      assert.equal(await form.locator('[name="corpus"]').inputValue(), "comparison");
+      await reset();
       await panel.locator('[data-conc-action="next"]').click();
       assert.equal(
         await page.evaluate(() => document.activeElement.dataset.concAction),
@@ -199,6 +207,70 @@ export async function checkConcordanceWorkshop(browser, base, output) {
         await panel.locator("[data-conc-count]").textContent(),
         String(m.expected.filteredHits),
       );
+      await page
+        .locator("#task-concordance-research-pairs [data-concordance-preset]")
+        .click();
+      await run();
+      assert.equal(await panel.locator("[data-conc-count]").textContent(), "11");
+      await panel.locator('[data-conc-action="pin"]').click();
+      // Changing the form does not replace either executed result or the pinned snapshot.
+      await settings({ corpus: "peer" });
+      assert.match(
+        await panel.locator("[data-conc-corpus-description]").textContent(),
+        /C19–C24/,
+      );
+      const stalePair = await download(
+        '[data-conc-action="export-comparison"]',
+        `concordance-stale-pair-${code}.txt`,
+      );
+      assert.ok(!stalePair.body.toString().includes("корпус: peer"));
+      await run();
+      assert.equal(await panel.locator("[data-conc-count]").textContent(), "9");
+      const comparison = panel.locator("[data-conc-comparison]");
+      assert.equal(await comparison.locator("article").count(), 2);
+      assert.match(
+        await comparison.locator("article").first().textContent(),
+        /11 збігів у 5 документах/,
+      );
+      assert.match(
+        await comparison.locator("article").last().textContent(),
+        /9 збігів у 5 документах/,
+      );
+      const pairFile = await download(
+        '[data-conc-action="export-comparison"]',
+        `concordance-pair-${code}.txt`,
+      );
+      assert.equal(pairFile.name, `concordance-comparison-${code}-v2.txt`);
+      const [partA, partB] = pairFile.body
+        .toString()
+        .split("Б / ОСТАННІЙ ВИКОНАНИЙ ПОШУК");
+      assert.ok(partA.includes("корпус: office") && partA.includes("C18:"));
+      assert.ok(!partA.includes("C24:"));
+      assert.ok(partB.includes("корпус: peer") && partB.includes("C24:"));
+      assert.ok(!partB.includes("C13:"));
+      // A source from the pinned search remains readable after searching the other corpus.
+      await comparison.locator('[data-conc-document="C13"]').first().click();
+      assert.equal(
+        await panel.locator(".concordance-source").textContent(),
+        m.documents.C13.text,
+      );
+      await page
+        .locator("#task-concordance-research-quoted-praise [data-concordance-preset]")
+        .click();
+      await run();
+      assert.equal(await panel.locator("[data-conc-comparison] article").count(), 2);
+      await panel.locator(".concordance-catalog summary").click();
+      await panel.locator('.concordance-catalog [data-conc-document="C21"]').click();
+      assert.ok(
+        (await panel.locator(".concordance-source").textContent()).includes(
+          m.research.quoted,
+        ),
+      );
+      // Restore the original task's applied settings; the saved A survives page re-renders.
+      await page
+        .locator("#task-concordance-metadata-filter [data-concordance-preset]")
+        .click();
+      await run();
       assert.deepEqual(await answers(), originalAnswers);
       assert.equal(await page.locator("#xp-label").textContent(), originalXP);
       const zip = await download(
@@ -207,6 +279,7 @@ export async function checkConcordanceWorkshop(browser, base, output) {
       );
       assert.equal(zip.body.readUInt32LE(0), 0x04034b50);
       assert.ok(zip.body.includes(Buffer.from(m.documents.C01.text)));
+      assert.ok(zip.body.includes(Buffer.from(m.documents.C24.text)));
       const template = await download(
         '[data-workshop-document="template"]',
         `concordance-template-${code}.txt`,
@@ -216,6 +289,10 @@ export async function checkConcordanceWorkshop(browser, base, output) {
       await exactCard.locator("[data-answer]").fill("999");
       await exactCard.locator("[data-check]").click();
       await exactCard.locator(".feedback.failed").waitFor();
+      assert.match(
+        await panel.locator("[data-conc-comparison] article").first().textContent(),
+        /11 збігів у 5 документах/,
+      );
       // A shared page re-render retains the applied simulator settings in this tab.
       assert.equal(
         await panel.locator("[data-conc-count]").textContent(),
@@ -266,6 +343,7 @@ export async function checkConcordanceWorkshop(browser, base, output) {
         xp + 60,
       );
       await page.reload();
+      assert.equal(await panel.locator("[data-conc-comparison]").count(), 0);
       assert.equal(
         await panel.locator("[data-conc-count]").textContent(),
         String(m.expected.wordHits),
@@ -304,6 +382,12 @@ export async function checkConcordanceWorkshop(browser, base, output) {
       await panel.locator(".concordance-catalog summary").click();
       await panel.locator('.concordance-catalog [data-conc-document="C04"]').click();
       await panel.locator(".concordance-history summary").click();
+      await settings({ query: m.research.term, mode: "lemma", corpus: "office" });
+      await run();
+      await panel.locator('[data-conc-action="pin"]').click();
+      await settings({ corpus: "peer" });
+      await run();
+      await page.locator(".toast.visible").waitFor({ state: "hidden" });
       for (const width of [320, 390, 768, 1024, 1440]) {
         await page.setViewportSize({ width, height: 1000 });
         assert.ok(
@@ -314,6 +398,9 @@ export async function checkConcordanceWorkshop(browser, base, output) {
       await panel.screenshot({ path: `${output}/concordance-${code}-desktop.png` });
       await page.setViewportSize({ width: 390, height: 1000 });
       await panel.screenshot({ path: `${output}/concordance-${code}-mobile.png` });
+      await panel.locator('[data-conc-action="unpin"]').click();
+      assert.equal(await panel.locator("[data-conc-comparison]").count(), 0);
+      assert.equal(await panel.locator("[data-conc-count]").textContent(), "9");
       assert.deepEqual(errors, []);
     } finally {
       await context.close();

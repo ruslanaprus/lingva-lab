@@ -147,12 +147,12 @@ for (const code of ["de", "fr", "en"]) {
   test(`${code}: required concordance work alone unlocks completion, feedback and milestone; records survive reload`, () => {
     const course = getPath(`${code}-foundations`),
       chapter = course.chapters.find((c) => c.id === "concordance");
-    assert.equal(chapter.tasks.length, 31);
-    assert.equal(chapter.tasks.filter((t) => t.required).length, 28);
-    assert.equal(chapter.time, 109);
+    assert.equal(chapter.tasks.length, 42);
+    assert.equal(chapter.tasks.filter((t) => t.required).length, 37);
+    assert.equal(chapter.time, 163);
     assert.equal(
       chapter.tasks.filter((t) => !t.required).reduce((n, t) => n + t.minutes, 0),
-      22,
+      42,
     );
     assert.ok(!JSON.stringify(chapter).includes("—"));
     const state = freshState(),
@@ -240,6 +240,87 @@ test("Concordance query validation rejects unsupported patterns and settings; NF
   assert.equal(searchConcordance(d, { query: word, mode: "lemma" }).hitCount, 0);
 });
 
+for (const code of ["de", "fr", "en"]) {
+  test(`${code}: research corpora retain paired topics and independently checked concordances`, () => {
+    const m = LANGUAGES[code].concordance,
+      d = prepareConcordance(m),
+      office = searchConcordance(d, d.presets.researchOffice),
+      peer = searchConcordance(d, d.presets.researchPeer),
+      both = searchConcordance(d, d.presets.researchBoth);
+    assert.equal(d.version, 2);
+    assert.equal(d.documents.length, 24);
+    assert.equal(office.searchedDocuments, 6);
+    assert.equal(peer.searchedDocuments, 6);
+    assert.deepEqual(
+      office.rows.map((r) => r.documentId),
+      ["C13", "C13", "C13", "C14", "C14", "C15", "C15", "C17", "C17", "C18", "C18"],
+    );
+    assert.deepEqual(
+      peer.rows.map((r) => r.documentId),
+      ["C19", "C19", "C20", "C20", "C21", "C21", "C23", "C24", "C24"],
+    );
+    assert.equal(both.hitCount, 20);
+    assert.equal(both.documentCount, 10);
+    assert.equal(both.searchedDocuments, 12);
+    assert.equal(both.searchedWords, office.searchedWords + peer.searchedWords);
+    assert.ok(office.searchedWords > 500 && peer.searchedWords > 500);
+    assert.notEqual(office.searchedWords, peer.searchedWords);
+    assert.ok(searchConcordance(d, { corpus: "all" }).searchedWords > 1200);
+    assert.equal(
+      searchConcordance(d, { ...d.presets.researchOffice, mode: "word" }).hitCount,
+      10,
+    );
+    assert.equal(
+      searchConcordance(d, { query: m.research.term, mode: "lemma" }).hitCount,
+      0,
+    );
+    assert.equal(
+      searchConcordance(d, { ...d.presets.researchPeer, genre: "guide" })
+        .searchedDocuments,
+      0,
+    );
+    assert.deepEqual(
+      searchConcordance(d, d.presets.researchAudio).rows.map((r) => r.documentId),
+      ["C16", "C16", "C16", "C17", "C22", "C22", "C23"],
+    );
+    for (let i = 13; i <= 18; i++) {
+      const a = d.documents.find((doc) => doc.id === `C${i}`),
+        b = d.documents.find((doc) => doc.id === `C${i + 6}`);
+      assert.equal(a.topic, b.topic);
+      assert.equal(a.year, b.year);
+      assert.notEqual(a.genre, b.genre);
+      assert.notEqual(a.source, b.source);
+    }
+    assert.equal(d.corpora.all.documentIds.length, 24);
+    assert.equal(
+      new Set([...d.corpora.training.documentIds, ...d.corpora.comparison.documentIds])
+        .size,
+      24,
+    );
+    const exportText = concordanceText(d, peer);
+    assert.match(exportText, /Студентські обговорення/);
+    assert.ok(exportText.includes("C24:"));
+    assert.ok(exportText.includes(m.documents.C21.text));
+    assert.match(exportText, /Слів у добірці:/);
+    const files = getPath(`${code}-foundations`).chapters.find(
+      (c) => c.id === "concordance",
+    ).workshop.files;
+    assert.equal(files.filter((f) => f.name.startsWith("texts/")).length, 24);
+    assert.ok(
+      files.find((f) => f.name === "metadata.csv").content.includes("collection,topic"),
+    );
+    assert.ok(
+      files.find((f) => f.name === "comparison-brief.txt").content.includes("C18/C24"),
+    );
+    // Metadata stays attached to IDs even if an author reorders the source object.
+    const reordered = {
+      ...m,
+      documents: Object.fromEntries(Object.entries(m.documents).reverse()),
+    };
+    assert.deepEqual(prepareConcordance(reordered), d);
+  });
+}
+
 test("Malformed concordance content, offsets, language or preset references fail course validation", () => {
   const course = getPath("de-foundations");
   for (const mutate of [
@@ -263,6 +344,15 @@ test("Malformed concordance content, offsets, language or preset references fail
     },
     (c) => {
       c.workshop.concordance.language = "fr";
+    },
+    (c) => {
+      c.workshop.concordance.corpora.office.documentIds.push("C99");
+    },
+    (c) => {
+      c.workshop.concordance.corpora.peer.documentIds.push("C19");
+    },
+    (c) => {
+      delete c.workshop.concordance.corpora.training;
     },
   ]) {
     const changed = structuredClone(course);

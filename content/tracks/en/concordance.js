@@ -1,3 +1,4 @@
+import research from "./concordance-research.js";
 // Original teaching texts and partial manual annotations. C10 intentionally has an incorrect POS tag.
 export default {
   code: "en",
@@ -9,8 +10,16 @@ export default {
   falseForm: "requester",
   noun: "request",
   resource: "corpus-bnc",
+  research: research.research,
   documents: {
+    ...research.documents,
     C01: {
+      title: "Оголошення бібліотеки",
+      genre: "notice",
+      year: "2025",
+      source: "S1",
+      collection: "training",
+      topic: "Прохання",
       text: "Request for participation: the library requests registration by Friday. The session is open to all students.",
       annotations: [
         {
@@ -28,6 +37,12 @@ export default {
       ],
     },
     C02: {
+      title: "Запрошення клубу",
+      genre: "notice",
+      year: "2025",
+      source: "S2",
+      collection: "training",
+      topic: "Прохання",
       text: "We request an early reply from club members. One request per person is enough to prepare the evening.",
       annotations: [
         {
@@ -45,6 +60,12 @@ export default {
       ],
     },
     C03: {
+      title: "Інструкція до форми",
+      genre: "guide",
+      year: "2025",
+      source: "S3",
+      collection: "training",
+      topic: "Прохання",
       text: "Enter the request in the form. The field stores the text sent by a student.",
       annotations: [
         {
@@ -56,6 +77,12 @@ export default {
       ],
     },
     C04: {
+      title: "Розмова про старий анонс",
+      genre: "interview",
+      year: "2025",
+      source: "S1",
+      collection: "training",
+      topic: "Прохання",
       text: "The tutor quotes an old notice. We request a short pause, it says. That request concerned a session in 2024, rather than the current class.",
       annotations: [
         {
@@ -73,6 +100,12 @@ export default {
       ],
     },
     C05: {
+      title: "Торішнє оголошення",
+      genre: "notice",
+      year: "2024",
+      source: "S2",
+      collection: "training",
+      topic: "Прохання",
       text: "Request for a place at the 2024 meeting. Bring your card to that session.",
       annotations: [
         {
@@ -84,6 +117,12 @@ export default {
       ],
     },
     C06: {
+      title: "Пояснення службового терміна",
+      genre: "guide",
+      year: "2025",
+      source: "S3",
+      collection: "training",
+      topic: "Прохання",
       text: "A request means an entry in this form. This paragraph explains the term and asks the reader to do nothing.",
       annotations: [
         {
@@ -95,6 +134,12 @@ export default {
       ],
     },
     C07: {
+      title: "Прохання організаторів",
+      genre: "notice",
+      year: "2025",
+      source: "S1",
+      collection: "training",
+      topic: "Прохання",
       text: "The organisers are requesting a reply by Thursday. They need time to prepare the list of participants.",
       annotations: [
         {
@@ -106,6 +151,12 @@ export default {
       ],
     },
     C08: {
+      title: "Інтерв’ю з іншим значенням",
+      genre: "interview",
+      year: "2024",
+      source: "S2",
+      collection: "training",
+      topic: "Прохання",
       text: "The requester forgot the room number. The interview describes a person rather than giving an instruction.",
       annotations: [
         {
@@ -117,6 +168,12 @@ export default {
       ],
     },
     C09: {
+      title: "Підсумок консультації",
+      genre: "guide",
+      year: "2025",
+      source: "S3",
+      collection: "training",
+      topic: "Прохання",
       text: "After the consultation, the tutor requested a short summary. The students sent it the following day.",
       annotations: [
         {
@@ -128,6 +185,12 @@ export default {
       ],
     },
     C10: {
+      title: "Повідомлення координаторки",
+      genre: "notice",
+      year: "2025",
+      source: "S1",
+      collection: "training",
+      topic: "Прохання",
       text: "The coordinator requests a short reply. She wants to know the number of participants.",
       annotations: [
         {
@@ -139,6 +202,12 @@ export default {
       ],
     },
     C11: {
+      title: "Два вживання в одній розмові",
+      genre: "interview",
+      year: "2025",
+      source: "S2",
+      collection: "training",
+      topic: "Прохання",
       text: "The request arrived this morning, says the speaker. Then we request another day to reply. Both examples come from the same interview.",
       annotations: [
         {
@@ -156,6 +225,12 @@ export default {
       ],
     },
     C12: {
+      title: "Прохання іншими словами",
+      genre: "notice",
+      year: "2025",
+      source: "S3",
+      collection: "training",
+      topic: "Прохання",
       text: "Please bring a short text example. The session starts at ten.",
       annotations: [],
     },

@@ -1,3 +1,4 @@
+import research from "./concordance-research.js";
 // Original teaching texts and partial manual annotations. C10 intentionally has an incorrect POS tag.
 export default {
   code: "fr",
@@ -9,8 +10,16 @@ export default {
   falseForm: "redemande",
   noun: "demande",
   resource: "corpus-orfeo",
+  research: research.research,
   documents: {
+    ...research.documents,
     C01: {
+      title: "Оголошення бібліотеки",
+      genre: "notice",
+      year: "2025",
+      source: "S1",
+      collection: "training",
+      topic: "Прохання",
       text: "Demande de participation : les bibliothécaires demandent une inscription avant vendredi. La séance est ouverte à tous les étudiants.",
       annotations: [
         {
@@ -28,6 +37,12 @@ export default {
       ],
     },
     C02: {
+      title: "Запрошення клубу",
+      genre: "notice",
+      year: "2025",
+      source: "S2",
+      collection: "training",
+      topic: "Прохання",
       text: "Je demande aux membres de venir plus tôt. Une demande par personne suffit pour préparer la rencontre.",
       annotations: [
         {
@@ -45,6 +60,12 @@ export default {
       ],
     },
     C03: {
+      title: "Інструкція до форми",
+      genre: "guide",
+      year: "2025",
+      source: "S3",
+      collection: "training",
+      topic: "Прохання",
       text: "Inscrivez la demande dans le formulaire. Le champ contient le texte envoyé par un étudiant.",
       annotations: [
         {
@@ -56,6 +77,12 @@ export default {
       ],
     },
     C04: {
+      title: "Розмова про старий анонс",
+      genre: "interview",
+      year: "2025",
+      source: "S1",
+      collection: "training",
+      topic: "Прохання",
       text: "La tutrice cite un message ancien. Elle demande aux étudiants de patienter. Cette demande concernait une séance de 2024, pas le cours actuel.",
       annotations: [
         {
@@ -73,6 +100,12 @@ export default {
       ],
     },
     C05: {
+      title: "Торішнє оголошення",
+      genre: "notice",
+      year: "2024",
+      source: "S2",
+      collection: "training",
+      topic: "Прохання",
       text: "Demande de réservation pour la rencontre de 2024. Apportez votre carte lors de cette séance.",
       annotations: [
         {
@@ -84,6 +117,12 @@ export default {
       ],
     },
     C06: {
+      title: "Пояснення службового терміна",
+      genre: "guide",
+      year: "2025",
+      source: "S3",
+      collection: "training",
+      topic: "Прохання",
       text: "Une demande désigne ici une entrée du formulaire. Le paragraphe explique un terme et ne demande aucune action au lecteur.",
       annotations: [
         {
@@ -101,6 +140,12 @@ export default {
       ],
     },
     C07: {
+      title: "Прохання організаторів",
+      genre: "notice",
+      year: "2025",
+      source: "S1",
+      collection: "training",
+      topic: "Прохання",
       text: "Nous demandons une réponse avant jeudi. Les organisateurs préparent la liste des participants.",
       annotations: [
         {
@@ -112,6 +157,12 @@ export default {
       ],
     },
     C08: {
+      title: "Інтерв’ю з іншим значенням",
+      genre: "interview",
+      year: "2024",
+      source: "S2",
+      collection: "training",
+      topic: "Прохання",
       text: "La personne redemande le numéro de la salle. Elle avait oublié la première réponse.",
       annotations: [
         {
@@ -123,6 +174,12 @@ export default {
       ],
     },
     C09: {
+      title: "Підсумок консультації",
+      genre: "guide",
+      year: "2025",
+      source: "S3",
+      collection: "training",
+      topic: "Прохання",
       text: "Après la consultation, la tutrice a demandé un bref résumé. Les étudiants l’ont envoyé le lendemain.",
       annotations: [
         {
@@ -134,6 +191,12 @@ export default {
       ],
     },
     C10: {
+      title: "Повідомлення координаторки",
+      genre: "notice",
+      year: "2025",
+      source: "S1",
+      collection: "training",
+      topic: "Прохання",
       text: "La coordinatrice demande une réponse courte. Elle souhaite connaître le nombre de participants.",
       annotations: [
         {
@@ -145,6 +208,12 @@ export default {
       ],
     },
     C11: {
+      title: "Два вживання в одній розмові",
+      genre: "interview",
+      year: "2025",
+      source: "S2",
+      collection: "training",
+      topic: "Прохання",
       text: "La demande est arrivée ce matin, dit la personne interrogée. Puis elle demande un délai supplémentaire. Les deux emplois viennent du même entretien.",
       annotations: [
         {
@@ -162,6 +231,12 @@ export default {
       ],
     },
     C12: {
+      title: "Прохання іншими словами",
+      genre: "notice",
+      year: "2025",
+      source: "S3",
+      collection: "training",
+      topic: "Прохання",
       text: "Veuillez apporter un court exemple de texte. La séance commence à dix heures.",
       annotations: [],
     },
